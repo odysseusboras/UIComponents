@@ -1,0 +1,33 @@
+<div class="ui-shared-html-editor" [class.ui-shared-html-editor--disabled]="disabled()">
+  <div class="ui-shared-html-editor__toolbar">
+    <button mat-button type="button"
+            class="ui-shared-html-editor__tab"
+            [class.ui-shared-html-editor__tab--active]="mode() === 'source'"
+            (click)="showSource()"
+            [matTooltip]="'htmlEditor.source' | uiTranslate">
+      <mat-icon>code</mat-icon>
+      <span>{{ 'htmlEditor.source' | uiTranslate }}</span>
+    </button>
+    <button mat-button type="button"
+            class="ui-shared-html-editor__tab"
+            [class.ui-shared-html-editor__tab--active]="mode() === 'preview'"
+            (click)="showPreview()"
+            [matTooltip]="'htmlEditor.preview' | uiTranslate">
+      <mat-icon>visibility</mat-icon>
+      <span>{{ 'htmlEditor.preview' | uiTranslate }}</span>
+    </button>
+  </div>
+
+  @if (mode() === 'source') {
+    <textarea #ta class="ui-shared-html-editor__source"
+              [rows]="rows()"
+              [value]="value()"
+              [disabled]="disabled()"
+              [placeholder]="placeholder()"
+              (input)="onInput($event)"
+              (blur)="onBlur()"
+              spellcheck="false"></textarea>
+  } @else {
+    <div class="ui-shared-html-editor__preview" [innerHTML]="previewHtml()"></div>
+  }
+</div>

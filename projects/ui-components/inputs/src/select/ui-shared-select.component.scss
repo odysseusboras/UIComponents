@@ -1,0 +1,5 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.form-field;
+
+.ui-shared-select__arrow { cursor: pointer; }

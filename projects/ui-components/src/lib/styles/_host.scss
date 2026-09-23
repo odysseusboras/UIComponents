@@ -1,0 +1,20 @@
+// The structure every ui-shared component starts from. Components add layout
+// only (display, flex/grid, position, overflow, cursor); the look — colours,
+// borders, spacing, type — lives in the global theme (styles/_theme.scss).
+@mixin host($display: block) {
+  :host {
+    display: $display;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+// Inputs that wrap a mat-form-field: they fill their slot, and take a fixed
+// width when projected into <ui-shared-grid> as a filter.
+@mixin form-field {
+  @include host(block);
+  :host { width: 100%; }
+  :host(.ui-shared-filter) { width: var(--ui-filter-width, 260px); }
+  mat-form-field { width: 100%; }
+}

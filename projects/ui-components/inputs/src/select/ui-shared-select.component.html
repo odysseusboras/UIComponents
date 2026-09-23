@@ -1,0 +1,36 @@
+<mat-form-field appearance="outline" subscriptSizing="dynamic">
+  <mat-label>{{ labelKey | uiTranslate }}</mat-label>
+  <input matInput #input type="text" autocomplete="off"
+         [formControl]="text"
+         [required]="required"
+         [errorStateMatcher]="errorMatcher"
+         [attr.inputmode]="inputMode"
+         [matAutocomplete]="panel" #trigger="matAutocompleteTrigger"
+         (input)="onInput($event)"
+         (focus)="onFocus($event)"
+         (blur)="onBlur()" />
+  <mat-autocomplete #panel="matAutocomplete" autoActiveFirstOption
+                    [displayWith]="displayWith"
+                    (optionSelected)="onPick($event)">
+    @if (nullable) {
+      <mat-option [value]="''">{{ nullLabelKey | uiTranslate }}</mat-option>
+    }
+    @for (o of filtered(); track o.value) {
+      <mat-option [value]="o.value">{{ o | uiOptionText }}</mat-option>
+    } @empty {
+      @if (emptyHintKey) {
+        <mat-option disabled>{{ emptyHintKey | uiTranslate }}</mat-option>
+      }
+    }
+  </mat-autocomplete>
+  <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
+  <mat-icon matSuffix class="ui-shared-select__arrow"
+            (mousedown)="$event.preventDefault()"
+            (click)="toggle(trigger, input)">arrow_drop_down</mat-icon>
+  @if (hintText || hintKey) {
+    <mat-hint>{{ hintText || ((hintKey ?? '') | uiTranslate) }}</mat-hint>
+  }
+  @if (firstError(control); as err) {
+    <mat-error>{{ err | uiTranslate }}</mat-error>
+  }
+</mat-form-field>

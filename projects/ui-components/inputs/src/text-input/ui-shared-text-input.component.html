@@ -1,0 +1,23 @@
+<mat-form-field appearance="outline" [subscriptSizing]="subscriptSizing()">
+  <mat-label>{{ labelKey() | uiTranslate }}</mat-label>
+  <ng-content select="[prefix]" ngProjectAs="[matTextPrefix]" />
+  <input matInput
+         [formControl]="ctrl()"
+         [type]="type()"
+         [required]="required()"
+         [readonly]="readonly()"
+         [attr.placeholder]="placeholderKey() ? (placeholderKey() | uiTranslate) : null"
+         [attr.maxlength]="maxlength()"
+         [attr.min]="min()"
+         [attr.max]="max()"
+         [attr.step]="step()"
+         [attr.inputmode]="inputMode() || null"
+         [attr.autocomplete]="autocomplete() || null" />
+  <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
+  @if (hintText() || hintKey()) {
+    <mat-hint>{{ hintText() || (hintKey() | uiTranslate) }}</mat-hint>
+  }
+  @if (firstError(ctrl()); as key) {
+    <mat-error>{{ key | uiTranslate }}</mat-error>
+  }
+</mat-form-field>

@@ -1,0 +1,38 @@
+@use '../../../src/lib/styles/host' as ui;
+
+// The host is re-parented to <body> (see the component).
+@include ui.host(contents);
+
+// Below the CDK overlay container (z-index 1000) on purpose: selects, menus and
+// dialogs opened FROM INSIDE the drawer must paint above it.
+.ui-shared-side-drawer__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ui-z-drawer, 900);
+}
+.ui-shared-side-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: calc(var(--ui-z-drawer, 900) + 1);
+  display: flex;
+  flex-direction: column;
+  width: min(var(--side-drawer-w), 100vw);
+  height: var(--ui-viewport-h, 100dvh);
+  max-height: var(--ui-viewport-h, 100dvh);
+  overflow: hidden;
+}
+.ui-shared-side-drawer__head,
+.ui-shared-side-drawer__actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+.ui-shared-side-drawer__head { justify-content: space-between; }
+.ui-shared-side-drawer__actions { justify-content: flex-end; }
+.ui-shared-side-drawer__actions:empty { display: none; }
+.ui-shared-side-drawer__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+
+@media (max-width: 600px) {
+  .ui-shared-side-drawer { width: 100vw; }
+}

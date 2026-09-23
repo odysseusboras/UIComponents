@@ -1,0 +1,8 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+
+.ui-shared-confirm-dialog__icon { display: inline-flex; align-items: center; justify-content: center; }
+// Long words wrap instead of forcing a horizontal scrollbar; line breaks are kept.
+mat-dialog-content { overflow-x: hidden; }
+.ui-shared-confirm-dialog__message { overflow-wrap: anywhere; white-space: pre-line; }

@@ -1,0 +1,12 @@
+@if (control(); as c) {
+  <mat-checkbox [formControl]="c" [matTooltip]="tooltipKey() ? (tooltipKey() | uiTranslate) : ''"
+                [aria-label]="ariaLabelKey() ? (ariaLabelKey() | uiTranslate) : ''"><ng-container *ngTemplateOutlet="label" /></mat-checkbox>
+} @else {
+  <mat-checkbox [checked]="checked()" [indeterminate]="indeterminate()" [disabled]="disabled()"
+                [matTooltip]="tooltipKey() ? (tooltipKey() | uiTranslate) : ''"
+                [aria-label]="ariaLabelKey() ? (ariaLabelKey() | uiTranslate) : ''"
+                (change)="changed.emit($event.checked)">
+    <ng-container *ngTemplateOutlet="label" />
+  </mat-checkbox>
+}
+<ng-template #label>@if (labelKey()) { {{ labelKey() | uiTranslate }} } @else { <ng-content /> }</ng-template>

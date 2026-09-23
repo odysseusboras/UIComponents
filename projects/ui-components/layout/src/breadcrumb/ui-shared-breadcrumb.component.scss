@@ -1,0 +1,15 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+// No trail (fewer than two crumbs): take no room in the page header.
+:host(:empty) { display: none; }
+
+.ui-shared-breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-shared-breadcrumb__item { display: inline-flex; align-items: center; }

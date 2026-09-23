@@ -1,0 +1,11 @@
+<mat-form-field appearance="outline" [subscriptSizing]="subscriptSizing()">
+  <mat-label>{{ labelKey() | uiTranslate }}</mat-label>
+  <textarea matInput [formControl]="control()" [rows]="rows()" [required]="required()" [readonly]="readonly()"
+            [attr.maxlength]="maxlength()"></textarea>
+  @if (hintText() || hintKey()) {
+    <mat-hint>{{ hintText() || (hintKey() | uiTranslate) }}</mat-hint>
+  }
+  @if (firstError(control()); as key) {
+    <mat-error>{{ key | uiTranslate }}</mat-error>
+  }
+</mat-form-field>

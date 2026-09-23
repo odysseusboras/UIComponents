@@ -1,0 +1,4 @@
+@use '../../../src/lib/styles/host' as ui;
+
+// A column is a descriptor only; the grid renders its cells.
+@include ui.host(none);

@@ -1,0 +1,12 @@
+<ng-template #content>
+  <ui-shared-button-content [icon]="icon()" [labelKey]="labelKey()" [label]="label()"><ng-content /></ui-shared-button-content>
+</ng-template>
+@if (link(); as l) {
+  <a mat-menu-item class="ui-shared-menu-item" [class.ui-shared-menu-item--danger]="danger()" [disabled]="disabled()" [routerLink]="disabled() ? null : l">
+    <ng-container *ngTemplateOutlet="content" />
+  </a>
+} @else {
+  <button mat-menu-item type="button" class="ui-shared-menu-item" [class.ui-shared-menu-item--danger]="danger()" [disabled]="disabled()">
+    <ng-container *ngTemplateOutlet="content" />
+  </button>
+}

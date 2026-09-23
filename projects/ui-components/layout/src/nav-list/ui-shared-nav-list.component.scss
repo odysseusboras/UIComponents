@@ -1,0 +1,4 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(flex);
+:host { flex-direction: column; }

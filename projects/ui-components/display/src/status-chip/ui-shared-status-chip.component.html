@@ -1,0 +1,18 @@
+<span class="ui-shared-status-chip"
+      [class.ui-shared-status-chip--ok]="tone() === 'ok'"
+      [class.ui-shared-status-chip--warn]="tone() === 'warn'"
+      [class.ui-shared-status-chip--bad]="tone() === 'bad'"
+      [class.ui-shared-status-chip--info]="tone() === 'info'"
+      [class.ui-shared-status-chip--muted]="tone() === 'muted'"
+      [class.ui-shared-status-chip--lg]="size() === 'lg'"
+      [class.ui-shared-status-chip--outline]="outline()"
+      [class.ui-shared-status-chip--help]="!!tooltip()"
+      [matTooltip]="tooltip()"
+      [matTooltipDisabled]="!tooltip()">
+  @if (dot()) {
+    <span class="ui-shared-status-chip__dot" aria-hidden="true"></span>
+  } @else if (icon()) {
+    <mat-icon aria-hidden="true">{{ icon() }}</mat-icon>
+  }
+  <ng-content></ng-content>
+</span>

@@ -1,0 +1,3 @@
+@use '../../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);

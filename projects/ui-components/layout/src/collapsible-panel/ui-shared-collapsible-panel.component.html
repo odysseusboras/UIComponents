@@ -1,0 +1,20 @@
+<section class="ui-shared-collapsible-panel" [class.ui-shared-collapsible-panel--collapsed]="collapsed()">
+  <!-- One control: the whole header row toggles (keyboard: it is a real button). -->
+  <button type="button" class="ui-shared-collapsible-panel__head" (click)="toggle()"
+          [attr.aria-expanded]="!collapsed()"
+          [matTooltip]="(collapsed() ? 'common.expand' : 'common.collapse') | uiTranslate"
+          matTooltipPosition="above">
+    <span class="ui-shared-collapsible-panel__title-group">
+      <span class="ui-shared-collapsible-panel__title">{{ titleKey() | uiTranslate }}</span>
+      @if (ledeKey() && !collapsed()) {
+        <span class="ui-shared-collapsible-panel__lede">{{ ledeKey() | uiTranslate }}</span>
+      }
+    </span>
+    <mat-icon class="ui-shared-collapsible-panel__chevron" aria-hidden="true">expand_more</mat-icon>
+  </button>
+  @if (!collapsed()) {
+    <div class="ui-shared-collapsible-panel__body">
+      <ng-content />
+    </div>
+  }
+</section>

@@ -1,0 +1,5 @@
+@if (formatted(); as text) {
+  <span class="ui-shared-display-date">{{ text }}</span>
+} @else {
+  <span class="ui-shared-display-date ui-shared-display-date--empty">{{ empty() }}</span>
+}

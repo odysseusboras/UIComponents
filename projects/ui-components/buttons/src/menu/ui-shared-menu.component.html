@@ -1,0 +1,8 @@
+<span class="ui-shared-menu__trigger" [matMenuTriggerFor]="panel" (menuOpened)="onOpened()" (menuClosed)="closed.emit()">
+  <ng-content select="[slot=trigger]" />
+</span>
+<mat-menu #panel="matMenu" [xPosition]="align() === 'end' ? 'before' : 'after'" [class]="panelClasses">
+  <div class="ui-shared-menu__list" (keydown)="onKeydown($event)">
+    <ng-content />
+  </div>
+</mat-menu>

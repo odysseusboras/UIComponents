@@ -1,0 +1,21 @@
+@if (open()) {
+  <div class="ui-shared-side-drawer__backdrop" (click)="close.emit()"></div>
+
+  <aside class="ui-shared-side-drawer" role="dialog" aria-modal="true" [style.--side-drawer-w]="widthVar()">
+    <header class="ui-shared-side-drawer__head">
+      <h2 class="ui-shared-side-drawer__title">{{ titleKey() | uiTranslate }}</h2>
+      <button mat-icon-button type="button" class="ui-shared-side-drawer__close"
+              (click)="close.emit()" [attr.aria-label]="'common.close' | uiTranslate">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <div class="ui-shared-side-drawer__body">
+      <ng-content></ng-content>
+    </div>
+
+    <footer class="ui-shared-side-drawer__actions">
+      <ng-content select="[slot=actions]"></ng-content>
+    </footer>
+  </aside>
+}

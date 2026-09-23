@@ -1,0 +1,6 @@
+<mat-radio-group [formControl]="control()" class="ui-shared-radio-group" [class.ui-shared-radio-group--column]="direction() === 'column'">
+  @if (labelKey()) { <span class="ui-shared-radio-group__label">{{ labelKey() | uiTranslate }}</span> }
+  @for (o of options(); track o.value) {
+    <mat-radio-button [value]="o.value">{{ o | uiOptionText }}</mat-radio-button>
+  }
+</mat-radio-group>

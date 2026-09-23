@@ -1,0 +1,14 @@
+@if (loading()) {
+  <ui-shared-spinner class="ui-shared-button-content__spinner" size="16" />
+} @else if (icon()) {
+  <ui-shared-icon class="ui-shared-button-content__icon" [name]="icon()" size="sm" />
+}
+<span class="ui-shared-button-content__label">
+  @if (loading() && loadingKey()) { {{ loadingKey() | uiTranslate }} }
+  @else if (labelKey()) { {{ labelKey() | uiTranslate }} }
+  @else if (label()) { {{ label() }} }
+  @else { <ng-content /> }
+</span>
+@if (iconEnd() && !loading()) {
+  <ui-shared-icon class="ui-shared-button-content__icon" [name]="iconEnd()" size="sm" />
+}

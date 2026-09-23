@@ -1,0 +1,10 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+
+.ui-shared-html-editor { display: flex; flex-direction: column; overflow: hidden; }
+.ui-shared-html-editor--disabled { pointer-events: none; }
+.ui-shared-html-editor__toolbar { display: flex; align-items: stretch; }
+.ui-shared-html-editor__tab { display: inline-flex; align-items: center; min-width: 0; }
+.ui-shared-html-editor__source { width: 100%; resize: vertical; }
+.ui-shared-html-editor__preview { overflow-y: auto; }

@@ -1,0 +1,18 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+
+.ui-shared-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.ui-shared-pager__nav,
+.ui-shared-pager__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.ui-shared-pager__ellipsis { display: inline-flex; align-items: center; justify-content: center; }
+.ui-shared-pager__summary { white-space: nowrap; }

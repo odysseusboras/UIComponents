@@ -1,0 +1,52 @@
+<nav class="ui-shared-pager" [attr.aria-label]="'pager.label' | uiTranslate">
+  <div class="ui-shared-pager__nav">
+    <button mat-icon-button type="button"
+            (click)="goTo(1)" [disabled]="!canPrev()"
+            [attr.aria-label]="'pager.first' | uiTranslate">
+      <mat-icon>first_page</mat-icon>
+    </button>
+    <button mat-icon-button type="button"
+            (click)="goTo(page() - 1)" [disabled]="!canPrev()"
+            [attr.aria-label]="'pager.prev' | uiTranslate">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    @for (p of visiblePages(); track $index) {
+      @if (p === null) {
+        <span class="ui-shared-pager__ellipsis">…</span>
+      } @else {
+        <button mat-button type="button"
+                class="ui-shared-pager__page"
+                [class.ui-shared-pager__page--current]="p === page()"
+                [attr.aria-current]="p === page() ? 'page' : null"
+                (click)="goTo(p)">
+          {{ p }}
+        </button>
+      }
+    }
+
+    <button mat-icon-button type="button"
+            (click)="goTo(page() + 1)" [disabled]="!canNext()"
+            [attr.aria-label]="'pager.next' | uiTranslate">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <button mat-icon-button type="button"
+            (click)="goTo(totalPages())" [disabled]="!canNext()"
+            [attr.aria-label]="'pager.last' | uiTranslate">
+      <mat-icon>last_page</mat-icon>
+    </button>
+  </div>
+
+  <div class="ui-shared-pager__meta">
+    <ui-shared-select class="ui-shared-pager__size"
+                      labelKey="pager.pageSize"
+                      [control]="sizeControl"
+                      [options]="sizeOptions()" />
+
+    <span class="ui-shared-pager__summary">
+      {{ from() }}–{{ to() }}
+      <span class="ui-shared-pager__of">{{ 'pager.of' | uiTranslate }}</span>
+      {{ total() }}
+    </span>
+  </div>
+</nav>

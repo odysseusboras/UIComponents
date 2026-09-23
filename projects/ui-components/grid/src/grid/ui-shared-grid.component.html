@@ -1,0 +1,220 @@
+@if (hasFilters()) {
+  <div class="ui-shared-grid__filters">
+    <!-- Enter in any filter runs Search (a dropdown pick lands before keyup). -->
+    <div class="ui-shared-grid__filter-inputs" (keyup.enter)="onSearch()">
+      <ng-content select="ui-shared-text-input, ui-shared-select, ui-shared-segmented"></ng-content>
+    </div>
+    <div class="ui-shared-grid__filter-actions">
+      @if (hasActiveFilters()) {
+        <button mat-button type="button" (click)="onClearFilters()">
+          {{ 'core.grid.filter.clear' | uiTranslate }}
+        </button>
+      }
+      <button mat-stroked-button type="button" (click)="onSearch()">
+        <mat-icon>search</mat-icon>
+        <span>{{ 'core.grid.filter.search' | uiTranslate }}</span>
+      </button>
+    </div>
+  </div>
+}
+
+@if (pagerTop() && total() > 0) {
+  <ui-shared-pager class="ui-shared-grid__pager--top"
+    [page]="page()"
+    [pageSize]="pageSize()"
+    [total]="total()"
+    [pageSizeOptions]="pageSizeOptions()"
+    (pageChange)="onPage($event)"
+    (pageSizeChange)="onPageSize($event)">
+  </ui-shared-pager>
+}
+
+@if (selectable() && anySelected()) {
+  <div class="ui-shared-grid__bulk-bar">
+    <span class="ui-shared-grid__bulk-count">
+      {{ selected().length }} {{ 'core.grid.selected' | uiTranslate }}
+    </span>
+    <div class="ui-shared-grid__bulk-actions">
+      @if (bulkActionsTemplate(); as bulk) {
+        <ng-container [ngTemplateOutlet]="bulk"
+                      [ngTemplateOutletContext]="{ $implicit: selected() }">
+        </ng-container>
+      }
+      <button mat-button type="button" (click)="clearSelection()">
+        {{ 'core.grid.clearSelection' | uiTranslate }}
+      </button>
+    </div>
+  </div>
+}
+
+@if (!loaded()) {
+  <div class="ui-shared-grid__state ui-shared-grid__state--loading">
+    <mat-progress-spinner mode="indeterminate" diameter="28" />
+    <span>{{ 'core.grid.loading' | uiTranslate }}</span>
+  </div>
+} @else if (rows().length === 0 && !loading()) {
+  <div class="ui-shared-grid__state">
+    <mat-icon>inbox</mat-icon>
+    <p class="ui-shared-grid__state-title">{{ emptyKey() | uiTranslate }}</p>
+    <div class="ui-shared-grid__state-actions">
+      <ng-content select="[slot=empty-actions]"></ng-content>
+    </div>
+  </div>
+} @else {
+  <div class="ui-shared-grid__wrap" [class.ui-shared-grid__wrap--loading]="loading()" [attr.aria-busy]="loading()">
+    <table class="ui-shared-grid">
+      <thead>
+        <tr>
+          @if (selectable()) {
+            <th class="ui-shared-grid__th ui-shared-grid__th--check">
+              <mat-checkbox
+                  [checked]="allOnPageSelected()"
+                  [indeterminate]="anySelected() && !allOnPageSelected()"
+                  (change)="toggleAll($event.checked)">
+              </mat-checkbox>
+            </th>
+          }
+          @for (col of visibleColumns(); track col.key()) {
+            <th #thEl class="ui-shared-grid__th"
+                [class.ui-shared-grid__th--sortable]="col.sortable"
+                [class.ui-shared-grid__th--sorted]="sortField() === col.sortField()"
+                [class.ui-shared-grid__th--right]="col.align() === 'right'"
+                [class.ui-shared-grid__th--center]="col.align() === 'center'"
+                [attr.data-col-key]="col.key()"
+                [style.width]="widthFor(col)"
+                draggable="true"
+                [attr.tabindex]="col.sortable ? 0 : null"
+                [attr.role]="col.sortable ? 'button' : null"
+                [attr.aria-sort]="ariaSortFor(col)"
+                (dragstart)="onDragStart($event, col)"
+                (dragover)="onDragOver($event)"
+                (drop)="onDrop($event, col)"
+                (click)="col.sortable && onHeaderClick(col)"
+                (keydown.enter)="col.sortable && onHeaderClick(col)"
+                (keydown.space)="col.sortable && onHeaderClick(col); $event.preventDefault()">
+              <span class="ui-shared-grid__th-label">{{ col.labelKey() | uiTranslate }}</span>
+              @if (col.sortable) {
+                <mat-icon class="ui-shared-grid__th-sort">{{ sortIconFor(col) }}</mat-icon>
+              }
+              <!-- Resize handle: own pointer events, don't propagate to the
+                   sort-click handler on the header. -->
+              <span class="ui-shared-grid__th-resizer"
+                    (pointerdown)="startResize($event, col, thEl)"
+                    (click)="$event.stopPropagation()"
+                    (dragstart)="$event.preventDefault(); $event.stopPropagation()"
+                    aria-hidden="true"></span>
+            </th>
+          }
+          <!-- Always-present rightmost utility column: hosts the grid settings
+               gear in the header, and the per-row actions menu in the body
+               (if an [#actions] template was projected). 48px wide. -->
+          <th class="ui-shared-grid__th ui-shared-grid__th--actions">
+            <button mat-icon-button
+                    type="button"
+                    class="ui-shared-grid__icon-btn ui-shared-grid__settings-trigger"
+                    [matMenuTriggerFor]="gridSettingsMenu"
+                    [matTooltip]="'core.grid.settings' | uiTranslate"
+                    [attr.aria-label]="'core.grid.settings' | uiTranslate"
+                    aria-haspopup="menu">
+              <mat-icon>settings</mat-icon>
+            </button>
+            <mat-menu #gridSettingsMenu="matMenu" xPosition="before" class="ui-shared-grid__settings-menu">
+              <!-- Clicks inside the menu must not close it: the user toggles several columns in a row. -->
+              <div class="ui-shared-grid__settings" (click)="$event.stopPropagation()" (keydown.tab)="$event.stopPropagation()">
+                <mat-slide-toggle class="ui-shared-grid__settings-toggle"
+                    [checked]="pagerTop()"
+                    (change)="setPagerTop($event.checked)">
+                  {{ 'core.grid.pagerTop' | uiTranslate }}
+                </mat-slide-toggle>
+                <mat-divider />
+                <div class="ui-shared-grid__settings-title">{{ 'core.grid.columns' | uiTranslate }}</div>
+                @for (col of orderedColumns(); track col.key()) {
+                  <mat-checkbox class="ui-shared-grid__settings-column"
+                      [checked]="!isHidden(col)"
+                      [disabled]="!isHidden(col) && visibleColumns().length === 1"
+                      (change)="toggleColumn(col, $event.checked)">
+                    {{ col.labelKey() | uiTranslate }}
+                  </mat-checkbox>
+                }
+                <mat-divider />
+              </div>
+              <button mat-menu-item type="button"
+                      [disabled]="!hasLayoutChanges()"
+                      (click)="resetLayout()">
+                <mat-icon>restart_alt</mat-icon>
+                <span>{{ 'core.grid.resetLayout' | uiTranslate }}</span>
+              </button>
+            </mat-menu>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track $index) {
+          <tr class="ui-shared-grid__row"
+              [class.ui-shared-grid__row--selected]="isSelected(row)"
+              [class.ui-shared-grid__row--clickable]="interactive()"
+              [attr.tabindex]="interactive() ? 0 : null"
+              (click)="interactive() && rowClick.emit(row)"
+              (keydown.enter)="onRowKeyEnter($event, row)">
+            @if (selectable()) {
+              <td class="ui-shared-grid__td ui-shared-grid__td--check" (click)="$event.stopPropagation()">
+                <mat-checkbox
+                    [checked]="isSelected(row)"
+                    (change)="toggleRow(row, $event.checked)">
+                </mat-checkbox>
+              </td>
+            }
+            @for (col of visibleColumns(); track col.key()) {
+              <td class="ui-shared-grid__td"
+                  [class.ui-shared-grid__td--right]="col.align() === 'right'"
+                  [class.ui-shared-grid__td--center]="col.align() === 'center'"
+                  [style.width]="widthFor(col)">
+                <ng-container [ngTemplateOutlet]="col.cell()"
+                              [ngTemplateOutletContext]="{ $implicit: row }">
+                </ng-container>
+              </td>
+            }
+            <td class="ui-shared-grid__td ui-shared-grid__td--actions" (click)="$event.stopPropagation()">
+              @if (actionsTemplate(); as actions) {
+                <!-- The template decides per row what it shows; no items = no trigger. -->
+                <div hidden uiEmpty #probe="uiEmpty">
+                  <ng-container [ngTemplateOutlet]="actions" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+                </div>
+                @if (!probe.empty()) {
+                <button mat-icon-button
+                        [matMenuTriggerFor]="rowMenu"
+                        [matTooltip]="'core.grid.rowActions' | uiTranslate"
+                        [attr.aria-label]="'core.grid.rowActions' | uiTranslate"
+                        aria-haspopup="menu"
+                        type="button"
+                        class="ui-shared-grid__icon-btn ui-shared-grid__row-menu-trigger">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #rowMenu="matMenu" xPosition="before">
+                  <ng-container [ngTemplateOutlet]="actions"
+                                [ngTemplateOutletContext]="{ $implicit: row }">
+                  </ng-container>
+                </mat-menu>
+                }
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@if (total() > 0) {
+  <!-- Pager stays mounted across loads so the page-change click is never
+       lost to an unmount/remount cycle. Buttons disable themselves via
+       canPrev / canNext; loading state is shown above. -->
+  <ui-shared-pager
+    [page]="page()"
+    [pageSize]="pageSize()"
+    [total]="total()"
+    [pageSizeOptions]="pageSizeOptions()"
+    (pageChange)="onPage($event)"
+    (pageSizeChange)="onPageSize($event)">
+  </ui-shared-pager>
+}

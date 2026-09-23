@@ -1,0 +1,29 @@
+{
+  "name": "ui-components-workspace",
+  "private": true,
+  "scripts": {
+    "build": "ng-packagr -p projects/ui-components/ng-package.json -c projects/ui-components/tsconfig.lib.json",
+    "pack": "npm run build && npm pack ./dist/ui-components --pack-destination ./packages",
+    "check": "npm run build && node tools/check.mjs"
+  },
+  "devDependencies": {
+    "@angular/animations": "~19.2.0",
+    "@angular/cdk": "~19.2.0",
+    "@angular/common": "~19.2.0",
+    "@angular/compiler": "~19.2.0",
+    "@angular/compiler-cli": "~19.2.0",
+    "@angular/core": "~19.2.0",
+    "@angular/forms": "~19.2.0",
+    "@angular/material": "~19.2.0",
+    "@angular/platform-browser": "~19.2.0",
+    "@angular/platform-server": "~19.2.0",
+    "@angular/router": "~19.2.0",
+    "esbuild": "^0.25.12",
+    "ng-packagr": "~19.2.0",
+    "qrcode-generator": "^1.5.2",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "typescript": "~5.7.2",
+    "zone.js": "~0.15.0"
+  }
+}

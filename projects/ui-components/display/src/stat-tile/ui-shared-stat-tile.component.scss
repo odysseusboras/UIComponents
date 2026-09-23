@@ -1,0 +1,16 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+
+.ui-shared-stat-tile {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+.ui-shared-stat-tile__icon { display: grid; place-items: center; }
+.ui-shared-stat-tile__body { display: flex; flex-direction: column; min-width: 0; }
+.ui-shared-stat-tile__value { display: flex; align-items: center; }
+.ui-shared-stat-tile__sub:empty { display: none; }

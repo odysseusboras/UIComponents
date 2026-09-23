@@ -1,0 +1,28 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+
+.ui-shared-page-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+.ui-shared-page-header__main { display: flex; flex-direction: column; min-width: 0; }
+.ui-shared-page-header__back {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  cursor: pointer;
+}
+.ui-shared-page-header__actions {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.ui-shared-page-header__actions:empty { display: none; }
+
+@media (max-width: 640px) {
+  .ui-shared-page-header { grid-template-columns: 1fr; }
+  .ui-shared-page-header__actions { grid-column: 1; justify-content: flex-start; }
+}

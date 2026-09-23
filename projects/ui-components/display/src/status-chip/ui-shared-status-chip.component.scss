@@ -1,0 +1,12 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(inline-flex);
+
+:host { vertical-align: middle; }
+.ui-shared-status-chip {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.ui-shared-status-chip--help { cursor: help; }

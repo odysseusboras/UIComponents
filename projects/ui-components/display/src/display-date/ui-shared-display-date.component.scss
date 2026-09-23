@@ -1,0 +1,5 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(inline);
+
+.ui-shared-display-date { white-space: nowrap; }

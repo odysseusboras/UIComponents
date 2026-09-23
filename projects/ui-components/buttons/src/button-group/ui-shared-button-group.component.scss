@@ -1,0 +1,12 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(flex);
+:host {
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+:host([data-align='start']) { justify-content: flex-start; }
+:host([data-align='between']) { justify-content: space-between; }
+:host([data-align='center']) { justify-content: center; }
+:host(.ui-shared-button-group--stack) { flex-direction: column; align-items: stretch; }

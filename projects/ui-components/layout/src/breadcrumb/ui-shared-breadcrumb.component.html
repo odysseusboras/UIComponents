@@ -1,0 +1,16 @@
+@if (visible()) {
+  <nav class="ui-shared-breadcrumb" [attr.aria-label]="'breadcrumb.label' | uiTranslate">
+    <ol class="ui-shared-breadcrumb__list">
+      @for (c of crumbs(); track c.url) {
+        <li class="ui-shared-breadcrumb__item">
+          @if (!c.last) {
+            <a class="ui-shared-breadcrumb__link" [routerLink]="c.url">{{ c.labelKey ? (c.labelKey | uiTranslate) : c.label }}</a>
+            <span class="ui-shared-breadcrumb__sep" aria-hidden="true">/</span>
+          } @else {
+            <span class="ui-shared-breadcrumb__current" aria-current="page">{{ c.labelKey ? (c.labelKey | uiTranslate) : (c.label || currentLabel()) }}</span>
+          }
+        </li>
+      }
+    </ol>
+  </nav>
+}

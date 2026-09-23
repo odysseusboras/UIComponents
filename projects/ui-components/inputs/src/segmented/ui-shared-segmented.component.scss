@@ -1,0 +1,5 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(inline-flex);
+
+mat-button-toggle-group { flex-wrap: wrap; }

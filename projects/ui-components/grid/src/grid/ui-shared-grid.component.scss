@@ -1,0 +1,85 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+
+.ui-shared-grid__wrap { position: relative; overflow-x: clip; }
+.ui-shared-grid__wrap--loading { pointer-events: none; }
+.ui-shared-grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
+
+.ui-shared-grid__th {
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+  user-select: none;
+  cursor: grab;
+  &:active { cursor: grabbing; }
+}
+.ui-shared-grid__th--sortable { cursor: pointer; }
+.ui-shared-grid__th-label {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ui-shared-grid__th-sort { vertical-align: middle; }
+.ui-shared-grid__th-resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.ui-shared-grid__td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.ui-shared-grid__th--right, .ui-shared-grid__td--right { text-align: right; }
+.ui-shared-grid__th--center, .ui-shared-grid__td--center { text-align: center; }
+.ui-shared-grid__th--actions, .ui-shared-grid__td--actions { width: 48px; }
+.ui-shared-grid__th--check, .ui-shared-grid__td--check { width: 44px; }
+.ui-shared-grid__th--actions, .ui-shared-grid__th--check, .ui-shared-grid__td--check { cursor: default; }
+.ui-shared-grid__td--actions, .ui-shared-grid__th--check, .ui-shared-grid__td--check { overflow: visible; }
+.ui-shared-grid__row--clickable { cursor: pointer; }
+.ui-shared-grid__icon-btn { display: inline-grid; place-items: center; }
+
+.ui-shared-grid__filters,
+.ui-shared-grid__bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.ui-shared-grid__filter-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+.ui-shared-grid__filter-actions,
+.ui-shared-grid__bulk-actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.ui-shared-grid__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.ui-shared-grid__state--loading { flex-direction: row; }
+.ui-shared-grid__state-actions { display: flex; }
+.ui-shared-grid__state-actions:empty { display: none; }
+
+// Settings menu: pager position toggle + one checkbox per column.
+.ui-shared-grid__settings { display: flex; flex-direction: column; }
+.ui-shared-grid__pager--top { display: block; }

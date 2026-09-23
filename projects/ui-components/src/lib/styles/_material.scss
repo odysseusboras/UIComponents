@@ -1,0 +1,22 @@
+// The Material base theme every app includes once, before the ui-shared theme:
+//
+//   @use '@borassoft/ui-components/styles/material' as ui-material;
+//   @use '@borassoft/ui-components/styles/theme';
+//   html { @include ui-material.theme(); }
+//
+// Apps never `@use '@angular/material'` themselves - the palettes are chosen
+// here and the ui-shared theme repaints everything through --ui-* tokens.
+@use '@angular/material' as mat;
+
+@mixin theme(
+  $typography: 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+  $density: 0,
+  $primary: mat.$azure-palette,
+  $tertiary: mat.$green-palette
+) {
+  @include mat.theme((
+    color: (primary: $primary, tertiary: $tertiary),
+    typography: $typography,
+    density: $density,
+  ));
+}

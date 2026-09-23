@@ -1,0 +1,10 @@
+<ng-content />
+<mat-tab-group class="ui-shared-tabs" animationDuration="0ms" mat-stretch-tabs="false" mat-align-tabs="start"
+               [dynamicHeight]="false" [preserveContent]="false"
+               [selectedIndex]="selected()" (selectedIndexChange)="selectedChange.emit($event)">
+  @for (tab of tabs(); track tab) {
+    <mat-tab [label]="tab.labelKey() ? (tab.labelKey() | uiTranslate) : tab.label()">
+      <ng-template matTabContent><ng-container *ngTemplateOutlet="tab.content()" /></ng-template>
+    </mat-tab>
+  }
+</mat-tab-group>

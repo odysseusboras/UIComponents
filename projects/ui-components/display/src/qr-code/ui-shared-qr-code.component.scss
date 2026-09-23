@@ -1,0 +1,8 @@
+@use '../../../src/lib/styles/host' as ui;
+
+// The injected SVG has only a viewBox, so it fills the box; zero line-height
+// removes the inline baseline gap.
+@include ui.host(inline-block);
+
+:host { line-height: 0; }
+.ui-shared-qr-code { width: 100%; height: 100%; }

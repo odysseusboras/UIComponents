@@ -1,0 +1,7 @@
+<mat-button-toggle-group [formControl]="ctrl()" hideSingleSelectionIndicator
+                         [attr.aria-label]="ariaLabelKey() ? (ariaLabelKey() | uiTranslate) : null"
+                         (change)="onChange($event.value)">
+  @for (o of options(); track o.value) {
+    <mat-button-toggle [value]="o.value">{{ o | uiOptionText }}</mat-button-toggle>
+  }
+</mat-button-toggle-group>

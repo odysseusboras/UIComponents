@@ -1,0 +1,5 @@
+@use '../../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+.ui-shared-nav-item { display: flex; align-items: center; }
+.ui-shared-nav-item__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

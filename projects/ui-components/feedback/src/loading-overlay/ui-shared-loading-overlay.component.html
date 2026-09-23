@@ -1,0 +1,9 @@
+@if (loading.visible()) {
+  <div class="ui-shared-loading-overlay" role="status" aria-busy="true" aria-live="polite">
+    <div class="ui-shared-loading-overlay__bar" aria-hidden="true"></div>
+    <div class="ui-shared-loading-overlay__card">
+      <span class="ui-shared-loading-overlay__ring" aria-hidden="true"></span>
+      <span class="ui-shared-loading-overlay__label">{{ 'common.loading' | uiTranslate }}</span>
+    </div>
+  </div>
+}

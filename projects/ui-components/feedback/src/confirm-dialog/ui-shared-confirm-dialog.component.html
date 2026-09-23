@@ -1,0 +1,26 @@
+<div class="ui-shared-confirm-dialog__icon" [class.ui-shared-confirm-dialog__icon--warn]="variant === 'warn'" [class.ui-shared-confirm-dialog__icon--primary]="variant === 'primary'" aria-hidden="true">
+  <mat-icon>{{ variant === 'warn' ? 'warning' : 'help_outline' }}</mat-icon>
+</div>
+
+<h2 mat-dialog-title>
+  @if (data.titleKey) { {{ data.titleKey | uiTranslate }} }
+  @else                { {{ data.titleText }} }
+</h2>
+
+<mat-dialog-content>
+  <p class="ui-shared-confirm-dialog__message">
+    @if (data.messageKey) { {{ data.messageKey | uiTranslate }} }
+    @else                  { {{ data.messageText }} }
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" (click)="cancel()">
+    {{ cancelKey | uiTranslate }}
+  </button>
+  <button mat-flat-button type="button"
+          color="primary"
+          (click)="confirm()">
+    {{ confirmKey | uiTranslate }}
+  </button>
+</mat-dialog-actions>

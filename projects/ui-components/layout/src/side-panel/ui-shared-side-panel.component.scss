@@ -1,0 +1,47 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(flex);
+
+:host { flex-direction: column; flex: 1 0 auto; }
+
+// Two columns in normal document flow; the WINDOW is the only scroll container.
+.ui-shared-side-panel { flex: 1 0 auto; display: flex; align-items: stretch; }
+.ui-shared-side-panel__nav {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--side-panel-width, 248px);
+}
+.ui-shared-side-panel--dragging .ui-shared-side-panel__nav { transition: none; user-select: none; }
+
+// The part of the rail that follows the viewport: sticks below the host's header.
+.ui-shared-side-panel__nav-sticky {
+  position: sticky;
+  top: var(--ui-sticky-top, 0px);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(var(--ui-viewport-h, 100dvh) - var(--ui-sticky-top, 0px));
+  min-height: min(100%, calc(var(--ui-viewport-h, 100dvh) - var(--ui-sticky-top, 0px)));
+}
+.ui-shared-side-panel__nav-body { flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; }
+.ui-shared-side-panel__handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  cursor: col-resize;
+}
+.ui-shared-side-panel__toggle {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.4rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+// Collapsed: the toggle is the whole rail's content, centred.
+.ui-shared-side-panel__toggle--rail { position: relative; top: auto; right: auto; display: flex; margin-left: auto; margin-right: auto; }
+.ui-shared-side-panel__content { flex: 1; min-width: 0; }

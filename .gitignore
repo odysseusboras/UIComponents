@@ -1,0 +1,21 @@
+# dependencies & build output
+node_modules/
+dist/
+out-tsc/
+.angular/
+
+# IDE / OS
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+.DS_Store
+Thumbs.db
+
+# local tooling output
+graphify-out/
+__pycache__/
+_to_delete/
+*.log
+npm-debug.log*

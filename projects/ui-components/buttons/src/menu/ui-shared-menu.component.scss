@@ -1,0 +1,4 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(inline-flex);
+.ui-shared-menu__trigger { display: inline-flex; }

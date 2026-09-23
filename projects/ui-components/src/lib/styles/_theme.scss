@@ -1,0 +1,869 @@
+// @borassoft/ui-components default look. Include it ONCE in the app's global
+// stylesheet and override what differs:
+//
+//   @use '@borassoft/ui-components/styles/theme';
+//
+// Components carry structure only; everything visual is here, driven by the
+// --ui-* tokens (which fall back to the app's own tokens, see _tokens.scss).
+// Sections follow the entry points (buttons, display, feedback, grid, inputs,
+// layout), then the app-wide Material behaviour, then the keyframes.
+// Selectors are global and namespaced `ui-shared-*`, so an app overrides them
+// with plain CSS — no ::ng-deep, no !important.
+@use 'sass:list';
+@use 'tokens' as t;
+
+// Every ui-shared-* element, by entry point (a new component is added here too).
+$components:
+  ui-shared-button, ui-shared-button-content, ui-shared-button-group, ui-shared-icon-button, ui-shared-menu, ui-shared-menu-item,
+  ui-shared-icon, ui-shared-display-date, ui-shared-qr-code, ui-shared-stat-tile, ui-shared-status-chip,
+  ui-shared-confirm-dialog, ui-shared-loading-overlay, ui-shared-progress-bar, ui-shared-spinner,
+  ui-shared-grid, ui-shared-pager,
+  ui-shared-select, ui-shared-text-input, ui-shared-textarea-input, ui-shared-date-input, ui-shared-password-field,
+  ui-shared-checkbox, ui-shared-toggle, ui-shared-radio-group, ui-shared-segmented, ui-shared-file-button, ui-shared-html-editor,
+  ui-shared-divider, ui-shared-breadcrumb, ui-shared-page-header, ui-shared-collapsible-panel, ui-shared-side-drawer, ui-shared-side-panel,
+  ui-shared-tabs, ui-shared-nav-list, ui-shared-nav-item, ui-shared-nav-group;
+
+// Tokens on the root (Material overlays, forms) and again on each component,
+// so an app can also theme one subtree.
+:root, :where(#{$components}) { @include t.tokens; }
+
+// While a column / panel is drag-resized. !important: it must beat every
+// element's own cursor for the length of the drag.
+body.ui-resizing, body.ui-resizing * { cursor: col-resize !important; user-select: none !important; }
+
+// ================================================================ buttons
+// ---- ui-shared-button: the whole look lives here (no Material button underneath).
+.ui-shared-button {
+  --ui-button-bg: transparent;
+  --ui-button-fg: var(--ui-text-base);
+  --ui-button-border: transparent;
+  --ui-button-hover-bg: var(--ui-hover);
+  --ui-button-hover-border: var(--ui-button-border);
+  --ui-button-shadow: none;
+  box-sizing: border-box;
+  height: var(--ui-button-height, 36px);
+  min-width: 0;
+  margin: 0;
+  padding: 0 1rem;
+  border: var(--ui-hairline) solid var(--ui-button-border);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-button-bg);
+  color: var(--ui-button-fg);
+  box-shadow: var(--ui-button-shadow);
+  font: inherit;
+  font-size: var(--ui-font-size-sm);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--ui-motion-fast), border-color var(--ui-motion-fast), color var(--ui-motion-fast),
+    box-shadow var(--ui-motion-fast), transform var(--ui-motion-fast);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.ui-shared-button:hover:not(:disabled):not([aria-disabled='true']) {
+  background: var(--ui-button-hover-bg);
+  border-color: var(--ui-button-hover-border);
+}
+.ui-shared-button:active:not(:disabled) { transform: translateY(0); filter: brightness(0.97); }
+.ui-shared-button:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: 2px; }
+.ui-shared-button:disabled,
+.ui-shared-button[aria-disabled='true'] {
+  --ui-button-bg: var(--ui-surface-alt);
+  --ui-button-fg: var(--ui-text-faint);
+  --ui-button-border: var(--ui-line);
+  --ui-button-shadow: none;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.ui-shared-button-content__spinner circle { stroke: currentColor !important; }
+
+.ui-shared-button--primary {
+  --ui-button-bg: linear-gradient(180deg, var(--ui-accent-mid) 0%, var(--ui-accent) 100%);
+  --ui-button-fg: var(--ui-on-accent);
+  --ui-button-hover-bg: var(--ui-accent-mid);
+  --ui-button-shadow: 0 1px 2px color-mix(in srgb, var(--ui-accent) 35%, transparent),
+    0 2px 8px -2px color-mix(in srgb, var(--ui-accent) 28%, transparent),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.ui-shared-button--primary:hover:not(:disabled) { box-shadow: var(--ui-shadow-accent); transform: translateY(-1px); }
+.ui-shared-button--danger-filled {
+  --ui-button-bg: var(--ui-danger);
+  --ui-button-fg: var(--ui-on-danger);
+  --ui-button-hover-bg: var(--ui-danger);
+  --ui-button-shadow: 0 1px 2px color-mix(in srgb, var(--ui-danger) 30%, transparent);
+}
+.ui-shared-button--danger-filled:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+.ui-shared-button--secondary {
+  --ui-button-bg: var(--ui-surface);
+  --ui-button-border: var(--ui-line-strong);
+  --ui-button-hover-border: var(--ui-text-muted);
+}
+.ui-shared-button--secondary:hover:not(:disabled) { box-shadow: var(--ui-shadow-xs); }
+.ui-shared-button--accent {
+  --ui-button-bg: var(--ui-surface);
+  --ui-button-fg: var(--ui-accent);
+  --ui-button-border: color-mix(in srgb, var(--ui-accent) 45%, transparent);
+  --ui-button-hover-bg: var(--ui-accent-soft);
+  --ui-button-hover-border: var(--ui-accent);
+}
+.ui-shared-button--danger {
+  --ui-button-bg: var(--ui-surface);
+  --ui-button-fg: var(--ui-danger);
+  --ui-button-border: color-mix(in srgb, var(--ui-danger) 45%, transparent);
+  --ui-button-hover-bg: var(--ui-danger-soft);
+  --ui-button-hover-border: var(--ui-danger);
+}
+.ui-shared-button--text { --ui-button-fg: inherit; }
+
+.ui-shared-button--sm { --ui-button-height: 30px; padding: 0 0.75rem; font-size: 0.8rem; }
+.ui-shared-button--lg { --ui-button-height: 48px; padding: 0 1.75rem; font-weight: 600; font-size: 0.95rem; }
+
+// ---- ui-shared-button-content: icon + label inside button, menu item and nav item.
+.ui-shared-button-content, .ui-shared-button-content__label { gap: 0.45rem; }
+
+// ---- ui-shared-button-group: the action row; `divided` is a form footer.
+.ui-shared-button-group { gap: 0.6rem; }
+.ui-shared-button-group--divided {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: var(--ui-hairline) solid var(--ui-line);
+}
+
+// ---- ui-shared-icon-button: square, quiet; tone colours the hover.
+.ui-shared-icon-button {
+  --ui-icon-button-size: 32px;
+  --ui-icon-button-icon: 18px;
+  box-sizing: border-box;
+  width: var(--ui-icon-button-size);
+  height: var(--ui-icon-button-size);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-radius-sm);
+  background: transparent;
+  color: var(--ui-text-muted);
+  cursor: pointer;
+  transition: background var(--ui-motion-fast), color var(--ui-motion-fast);
+  -webkit-appearance: none;
+  appearance: none;
+  .mat-icon, mat-icon {
+    font-size: var(--ui-icon-button-icon); width: var(--ui-icon-button-icon); height: var(--ui-icon-button-icon); line-height: var(--ui-icon-button-icon);
+  }
+  &:hover:not(:disabled) { color: var(--ui-text-base); background: var(--ui-hover); }
+  &:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: 2px; }
+  &:disabled { color: var(--ui-text-faint); cursor: not-allowed; }
+}
+.ui-shared-icon-button--md { --ui-icon-button-size: 40px; --ui-icon-button-icon: 20px; }
+.ui-shared-icon-button--danger:hover:not(:disabled) { color: var(--ui-danger); background: var(--ui-danger-soft); }
+.ui-shared-icon-button--accent { color: var(--ui-accent); }
+.ui-shared-icon-button--accent:hover:not(:disabled) { color: var(--ui-accent); background: var(--ui-accent-soft); }
+.ui-shared-icon-button--warning { color: var(--ui-warning); }
+.ui-shared-icon-button--warning:hover:not(:disabled) { color: var(--ui-warning); background: var(--ui-warning-soft); }
+
+// ---- ui-shared-menu: the panel.
+.mat-mdc-menu-panel.ui-shared-menu__panel--flush .mat-mdc-menu-content { padding: 0; }
+.mat-mdc-menu-panel.ui-shared-menu__panel--wide {
+  width: min(420px, 92vw);
+  max-width: none !important;
+  max-height: min(70vh, 560px);
+}
+.ui-shared-menu__trigger { border-radius: var(--ui-radius-sm); }
+
+// ---- ui-shared-menu-item
+ui-shared-menu-item { display: block; }
+.mat-mdc-menu-item .mat-mdc-menu-item-text { display: inline-flex; align-items: center; min-width: 0; }
+.mat-mdc-menu-item .ui-shared-button-content { gap: 0.6rem; }
+.mat-mdc-menu-item .ui-shared-button-content__icon { --ui-icon-size: 18px; color: var(--ui-text-muted); }
+.mat-mdc-menu-item .ui-shared-icon .mat-icon { margin: 0 !important; }
+.mat-mdc-menu-item.ui-shared-menu-item--danger,
+.mat-mdc-menu-item.ui-shared-menu-item--danger .ui-shared-icon { color: var(--ui-danger) !important; }
+.mat-mdc-menu-item.ui-shared-menu-item--danger:hover:not([disabled]) { background: var(--ui-danger-soft) !important; }
+
+// ================================================================ display
+// ---- ui-shared-icon: sized through --ui-icon-size so a host rule can resize it.
+.ui-shared-icon { --ui-icon-size: 24px; }
+.ui-shared-icon--sm { --ui-icon-size: 18px; }
+.ui-shared-icon--lg { --ui-icon-size: 32px; }
+.ui-shared-icon .mat-icon {
+  font-size: var(--ui-icon-size); width: var(--ui-icon-size); height: var(--ui-icon-size); line-height: var(--ui-icon-size);
+  overflow: visible;
+}
+.ui-shared-icon--muted { color: var(--ui-text-muted); }
+.ui-shared-icon--accent { color: var(--ui-accent); }
+.ui-shared-icon--danger { color: var(--ui-danger); }
+.ui-shared-icon--success { color: var(--ui-success); }
+.ui-shared-icon--warning { color: var(--ui-warning); }
+.ui-shared-icon--info { color: var(--ui-info); }
+.ui-shared-icon .mat-badge-content { font-size: 10px; font-weight: 600; }
+
+.ui-shared-display-date { font-variant-numeric: tabular-nums; }
+.ui-shared-display-date--empty { color: var(--ui-text-muted); }
+
+.ui-shared-stat-tile {
+  gap: 0.85rem;
+  padding: 0.95rem 1.1rem;
+  background: var(--ui-surface);
+  border: var(--ui-hairline) solid var(--ui-line);
+  border-radius: var(--ui-radius);
+  transition: border-color var(--ui-motion-fast), box-shadow var(--ui-motion-fast);
+}
+.ui-shared-stat-tile:not(.ui-shared-stat-tile--static):hover { border-color: var(--ui-line-strong); box-shadow: var(--ui-shadow-sm); }
+.ui-shared-stat-tile:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: 2px; }
+.ui-shared-stat-tile__icon { width: 40px; height: 40px; border-radius: var(--ui-radius-sm); background: var(--ui-surface-alt); color: var(--ui-text); }
+.ui-shared-stat-tile__icon mat-icon { width: 20px; height: 20px; font-size: 20px; }
+.ui-shared-stat-tile__body { gap: 0.15rem; }
+.ui-shared-stat-tile__label, .ui-shared-stat-tile__sub { font-size: 0.78rem; color: var(--ui-text-muted); }
+.ui-shared-stat-tile__value {
+  min-height: 1.6rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--ui-text);
+}
+.ui-shared-stat-tile__value, .ui-shared-stat-tile__sub { font-variant-numeric: tabular-nums; }
+.ui-shared-stat-tile__empty { font-weight: 500; color: var(--ui-text-faint); }
+.ui-shared-stat-tile__arrow { color: var(--ui-text-faint); }
+.ui-shared-stat-tile__icon[data-tone='ok'] { color: var(--ui-success); background: var(--ui-success-soft); }
+.ui-shared-stat-tile__icon[data-tone='warn'] { color: var(--ui-warning); background: var(--ui-warning-soft); }
+.ui-shared-stat-tile__icon[data-tone='bad'] { color: var(--ui-danger); background: var(--ui-danger-soft); }
+.ui-shared-stat-tile__value[data-tone='ok'] { color: var(--ui-success); }
+.ui-shared-stat-tile__value[data-tone='warn'] { color: var(--ui-warning); }
+.ui-shared-stat-tile__value[data-tone='bad'] { color: var(--ui-danger); }
+
+.ui-shared-status-chip {
+  --chip-color: var(--ui-text-muted);
+  --chip-bg: var(--ui-surface-alt);
+  gap: 0.3rem;
+  height: 22px;
+  padding: 0 0.55rem;
+  border: var(--ui-hairline) solid transparent;
+  border-radius: var(--ui-radius-sm);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: var(--chip-color);
+  background: var(--chip-bg);
+}
+.ui-shared-status-chip mat-icon { width: 14px; height: 14px; font-size: 14px; line-height: 14px; color: inherit; }
+.ui-shared-status-chip--ok    { --chip-color: var(--ui-success); --chip-bg: var(--ui-success-soft); }
+.ui-shared-status-chip--warn  { --chip-color: var(--ui-warning); --chip-bg: var(--ui-warning-soft); }
+.ui-shared-status-chip--bad   { --chip-color: var(--ui-danger);  --chip-bg: var(--ui-danger-soft); }
+.ui-shared-status-chip--info  { --chip-color: var(--ui-info);    --chip-bg: var(--ui-info-soft); }
+.ui-shared-status-chip--muted { --chip-color: var(--ui-text-muted); --chip-bg: var(--ui-surface-alt); }
+.ui-shared-status-chip--lg { gap: 0.4rem; height: 28px; padding: 0 0.8rem; font-size: 0.84rem; }
+.ui-shared-status-chip--lg mat-icon { width: 16px; height: 16px; font-size: 16px; line-height: 16px; }
+.ui-shared-status-chip--outline { background: transparent; border-color: color-mix(in srgb, var(--chip-color) 40%, transparent); }
+.ui-shared-status-chip__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--chip-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--chip-color) 22%, transparent);
+}
+
+// ================================================================ feedback
+// ---- confirm dialog
+.ui-shared-confirm-dialog__icon { width: 44px; height: 44px; margin: 1.5rem 1.5rem 0; border-radius: var(--ui-radius); }
+.ui-shared-confirm-dialog__icon mat-icon { width: 24px; height: 24px; font-size: 24px; }
+.ui-shared-confirm-dialog__icon--warn { color: var(--ui-danger); background: var(--ui-danger-soft); }
+.ui-shared-confirm-dialog__icon--primary { color: var(--ui-accent); background: var(--ui-accent-soft); }
+// Material's title reserves 40px of top space; the icon already gives the room.
+.ui-shared-confirm-dialog__icon + [mat-dialog-title]::before { height: 0.9rem; }
+.ui-shared-confirm-dialog__message { margin: 0; font-size: 0.95rem; line-height: 1.5; color: var(--ui-text-base); }
+ui-shared-confirm-dialog [mat-dialog-actions] { gap: 0.5rem; padding: 0.75rem 1.5rem 1.25rem; }
+ui-shared-confirm-dialog [mat-dialog-actions] button { min-width: 5.5rem; }
+
+// ---- loading overlay
+.ui-shared-loading-overlay {
+  background: color-mix(in srgb, var(--ui-bg) 58%, transparent);
+  backdrop-filter: blur(2px);
+  animation: ui-shared-fade var(--ui-motion-fast) both;
+}
+.ui-shared-loading-overlay__bar { height: 3px; background: var(--ui-accent-soft); }
+.ui-shared-loading-overlay__bar::before {
+  width: 40%;
+  border-radius: var(--ui-radius-pill);
+  background: linear-gradient(90deg, transparent, var(--ui-accent), var(--ui-accent-alt));
+  will-change: transform;
+  animation: ui-shared-bar 1.1s ease-in-out infinite;
+}
+.ui-shared-loading-overlay__card {
+  gap: 0.85rem;
+  padding: 1.5rem 1.85rem;
+  background: var(--ui-surface);
+  border: var(--ui-hairline) solid var(--ui-line);
+  border-radius: var(--ui-radius-lg);
+  box-shadow: var(--ui-shadow-lg);
+  animation: ui-shared-pop-in 220ms var(--ui-ease-out) both;
+}
+.ui-shared-loading-overlay__ring {
+  width: 42px;
+  height: 42px;
+  border: 4px solid var(--ui-accent-soft);
+  border-top-color: var(--ui-accent);
+  border-right-color: var(--ui-accent-alt);
+  border-radius: 50%;
+  will-change: transform;
+  animation: ui-shared-spin 0.7s linear infinite;
+}
+.ui-shared-loading-overlay__label { font-size: 0.85rem; font-weight: 500; letter-spacing: 0.01em; color: var(--ui-text-muted); }
+
+// ---- ui-shared-progress-bar: a hairline of accent.
+.ui-shared-progress-bar { height: 3px; }
+.ui-shared-progress-bar .mat-mdc-progress-bar { --mdc-linear-progress-track-height: 3px; --mdc-linear-progress-active-indicator-height: 3px; }
+
+// ================================================================ grid
+.ui-shared-grid__wrap {
+  border: var(--ui-hairline) solid var(--ui-line);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+  transition: opacity var(--ui-motion);
+}
+.ui-shared-grid__wrap--loading { opacity: 0.55; }
+.ui-shared-grid { font-size: var(--ui-font-size); }
+.ui-shared-grid__th {
+  padding: var(--ui-cell-pad-y) var(--ui-cell-pad-x);
+  text-align: left;
+  font-size: var(--ui-font-size-sm);
+  font-weight: 600;
+  color: var(--ui-text-muted);
+  background: var(--ui-surface-alt);
+  border-bottom: var(--ui-hairline) solid var(--ui-line);
+}
+.ui-shared-grid__th[draggable='true']:active { background: var(--ui-hover); }
+.ui-shared-grid__th-sort {
+  margin-left: 0.25rem;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  opacity: 0.55;
+  transition: opacity var(--ui-motion-fast);
+}
+.ui-shared-grid__th--sortable:hover { background: var(--ui-hover); color: var(--ui-text); }
+.ui-shared-grid__th--sortable:hover .ui-shared-grid__th-sort { opacity: 0.85; }
+.ui-shared-grid__th--sorted { color: var(--ui-text); }
+.ui-shared-grid__th--sorted .ui-shared-grid__th-sort { opacity: 1; color: var(--ui-accent); }
+.ui-shared-grid__th-resizer:hover { background: var(--ui-accent); opacity: 0.4; }
+.ui-shared-grid__th--actions { padding: 0; text-align: center; }
+.ui-shared-grid__row { transition: background-color var(--ui-motion-fast); }
+.ui-shared-grid__row:hover { background: var(--ui-hover); }
+.ui-shared-grid__row--clickable:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: -2px; }
+.ui-shared-grid__row--selected { background: var(--ui-selected); }
+.ui-shared-grid__row--selected:hover { background: color-mix(in srgb, var(--ui-selected) 55%, var(--ui-hover) 45%); }
+.ui-shared-grid__td {
+  padding: var(--ui-cell-pad-y) var(--ui-cell-pad-x);
+  color: var(--ui-text);
+  font-variant-numeric: tabular-nums;
+  border-bottom: var(--ui-hairline) solid var(--ui-line);
+}
+.ui-shared-grid__row:last-child .ui-shared-grid__td { border-bottom: 0; }
+.ui-shared-grid__td--actions { padding: 0 0.25rem; text-align: right; }
+.ui-shared-grid__th--check, .ui-shared-grid__td--check { padding-left: 0.5rem; padding-right: 0; text-align: center; }
+.ui-shared-grid__icon-btn { width: 32px; height: 32px; padding: 0; }
+.ui-shared-grid__icon-btn mat-icon { width: 20px; height: 20px; font-size: 20px; }
+.ui-shared-grid__filters { gap: 1rem; margin-bottom: 0.85rem; align-items: flex-start; }
+.ui-shared-grid__filter-inputs { gap: 0.75rem; }
+.ui-shared-grid__filter-actions, .ui-shared-grid__bulk-actions { gap: 0.5rem; }
+.ui-shared-grid__filter-inputs .mat-mdc-form-field-subscript-wrapper { display: none; }
+.ui-shared-grid__bulk-bar {
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--ui-selected);
+  border: var(--ui-hairline) solid var(--ui-line);
+  border-radius: var(--ui-radius);
+}
+.ui-shared-grid__bulk-count { font-weight: 600; color: var(--ui-text); }
+.ui-shared-grid__state {
+  gap: 0.5rem;
+  padding: 3rem 1.5rem;
+  color: var(--ui-text-muted);
+  border: var(--ui-hairline) dashed var(--ui-line-strong);
+  border-radius: var(--ui-radius);
+}
+.ui-shared-grid__state mat-icon { width: 2rem; height: 2rem; font-size: 2rem; color: var(--ui-text-faint); }
+.ui-shared-grid__state--loading { border-style: solid; }
+.ui-shared-grid__state-title { margin: 0; font-weight: 600; color: var(--ui-text); }
+.ui-shared-grid__state-actions { gap: 0.5rem; }
+// Settings menu: pager position toggle + one checkbox per column.
+.ui-shared-grid__settings { gap: 0.15rem; min-width: 220px; padding: 0.5rem 1rem 0.25rem; }
+.ui-shared-grid__settings .mat-divider { margin: 0.4rem 0; }
+.ui-shared-grid__settings-title {
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+}
+.ui-shared-grid__settings-toggle { margin: 0.25rem 0; }
+.ui-shared-grid__pager--top { margin-bottom: 0.5rem; }
+
+// ---- pager
+.ui-shared-pager {
+  gap: 0.75rem 1.25rem;
+  margin-top: 0.5rem;
+  padding: 0.85rem 0.25rem 0.35rem;
+  border-top: var(--ui-hairline) solid var(--ui-line);
+}
+.ui-shared-pager__nav { gap: 0.15rem; }
+.ui-shared-pager__meta { gap: 1rem; }
+// Two classes: outranks Material's single-class button rules.
+.ui-shared-pager .ui-shared-pager__page {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 0.5rem;
+  line-height: 32px;
+  font-size: var(--ui-font-size-sm);
+  font-weight: 500;
+  color: var(--ui-text-muted);
+  border-radius: var(--ui-radius-sm);
+}
+.ui-shared-pager .ui-shared-pager__page:hover { background: var(--ui-hover); color: var(--ui-text); }
+.ui-shared-pager .ui-shared-pager__page--current { background: var(--ui-accent-soft); color: var(--ui-accent); font-weight: 600; }
+.ui-shared-pager__ellipsis { width: 32px; height: 32px; color: var(--ui-text-faint); }
+// Compact page-size dropdown: no reserved hint row, shorter than a form field.
+ui-shared-select.ui-shared-pager__size { width: 7.5rem; }
+.ui-shared-pager__size .mat-mdc-form-field-subscript-wrapper { display: none; }
+.ui-shared-pager__size .mat-mdc-text-field-wrapper { height: 42px; padding-top: 0; }
+.ui-shared-pager__size .mat-mdc-form-field-infix { min-height: 42px; padding-top: 0.6rem; padding-bottom: 0.6rem; }
+// The arrow suffix eats into the value's box, so keep a little air on both sides.
+.ui-shared-pager__size .mat-mdc-form-field-icon-suffix { padding-right: 0.25rem; }
+.ui-shared-pager__summary { font-size: var(--ui-font-size-sm); color: var(--ui-text-muted); font-variant-numeric: tabular-nums; }
+.ui-shared-pager__of { margin: 0 0.25rem; color: var(--ui-text-faint); }
+
+// ================================================================ inputs
+.ui-shared-radio-group { gap: 0.25rem 1rem; }
+.ui-shared-radio-group__label { color: var(--ui-text-muted); font-size: var(--ui-font-size-sm); }
+
+// Segmented: one bordered row with the corners of a form field, no inner
+// dividers, and the picked option tinted with the accent.
+ui-shared-segmented {
+  --mat-standard-button-toggle-divider-color: transparent;
+  --mat-standard-button-toggle-shape: var(--ui-radius-sm);
+  --mat-standard-button-toggle-selected-state-background-color: var(--ui-accent-soft);
+  --mat-standard-button-toggle-selected-state-text-color: var(--ui-accent);
+}
+ui-shared-segmented .mat-button-toggle-group { border: var(--ui-hairline) solid var(--ui-line-strong); }
+ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
+
+.ui-shared-html-editor {
+  border: var(--ui-hairline) solid var(--ui-line);
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+}
+.ui-shared-html-editor--disabled { opacity: 0.65; }
+.ui-shared-html-editor__toolbar {
+  gap: 0.25rem;
+  padding: 0.35rem 0.45rem;
+  border-bottom: var(--ui-hairline) solid var(--ui-line);
+  background: var(--ui-bg);
+}
+// Material reads the label colour from its MDC variable.
+.ui-shared-html-editor__tab {
+  --mdc-text-button-label-text-color: var(--ui-text-muted);
+  gap: 0.35rem;
+  font-size: var(--ui-font-size-sm);
+  font-weight: 500;
+  border-radius: var(--ui-radius-sm);
+}
+.ui-shared-html-editor__tab mat-icon { width: 16px; height: 16px; font-size: 16px; }
+.ui-shared-html-editor__tab--active { --mdc-text-button-label-text-color: var(--ui-text); background: var(--ui-surface-alt); }
+.ui-shared-html-editor__source {
+  padding: 0.85rem 1rem;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ui-text);
+  font-family: var(--ui-font-mono);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  tab-size: 2;
+}
+.ui-shared-html-editor__source::placeholder { color: var(--ui-text-muted); opacity: 0.7; }
+.ui-shared-html-editor__preview {
+  min-height: 200px;
+  max-height: 480px;
+  padding: 1rem 1.1rem;
+  color: var(--ui-text);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+// ================================================================ layout
+// ---- ui-shared-divider
+.ui-shared-divider { height: var(--ui-hairline); margin: 0.35rem 0; background: var(--ui-line); border: 0; }
+.ui-shared-divider--vertical { width: var(--ui-hairline); height: auto; margin: 0 0.4rem; }
+.mat-mdc-menu-panel .ui-shared-divider { margin: 0.25rem 0; }
+
+// ---- breadcrumb (rendered by the page header)
+.ui-shared-breadcrumb { margin: 0 0 0.6rem; font-size: var(--ui-font-size-sm); line-height: 1.4; color: var(--ui-text-muted); }
+.ui-shared-breadcrumb__list { gap: 0.1rem; }
+.ui-shared-breadcrumb__link,
+.ui-shared-breadcrumb__current,
+.ui-shared-breadcrumb__sep { padding: 0.2rem 0.4rem; line-height: inherit; }
+.ui-shared-breadcrumb__link {
+  border-radius: var(--ui-radius-sm);
+  font-weight: 500;
+  color: var(--ui-text-muted);
+  text-decoration: none;
+  transition: color var(--ui-motion-fast), background var(--ui-motion-fast);
+}
+.ui-shared-breadcrumb__link:hover { color: var(--ui-accent); background: var(--ui-accent-soft); }
+.ui-shared-breadcrumb__sep { padding: 0.2rem 0.1rem; color: var(--ui-text-faint); }
+.ui-shared-breadcrumb__current { font-weight: 600; color: var(--ui-text); }
+
+// ---- page header
+.ui-shared-page-header { column-gap: 2rem; row-gap: 0.5rem; margin-bottom: 2rem; }
+.ui-shared-page-header__main { row-gap: 0.5rem; }
+.ui-shared-page-header__back {
+  gap: 0.3rem;
+  margin: 0 0 0.6rem;
+  padding: 0.2rem 0.45rem 0.2rem 0.3rem;
+  border: 0;
+  border-radius: var(--ui-radius-sm);
+  background: transparent;
+  font: inherit;
+  font-size: var(--ui-font-size-sm);
+  font-weight: 500;
+  color: var(--ui-text-muted);
+  text-decoration: none;
+  transition: color var(--ui-motion-fast), background var(--ui-motion-fast);
+}
+.ui-shared-page-header__back mat-icon { width: 16px; height: 16px; font-size: 16px; }
+.ui-shared-page-header__back:hover { color: var(--ui-accent); background: var(--ui-accent-soft); }
+.ui-shared-page-header__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 2.6vw, 2.125rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--ui-text);
+}
+.ui-shared-page-header__lede { margin: 0.45rem 0 0; font-size: 1rem; line-height: 1.6; color: var(--ui-text-muted); }
+.ui-shared-page-header__actions { gap: 0.5rem; align-self: end; }
+@media (max-width: 640px) {
+  .ui-shared-page-header__actions { margin-top: 0.75rem; }
+}
+
+// ---- collapsible panel
+.ui-shared-collapsible-panel {
+  background: var(--ui-surface);
+  border: var(--ui-hairline) solid var(--ui-line);
+  border-radius: var(--ui-radius);
+  transition: border-color var(--ui-motion-fast);
+}
+.ui-shared-collapsible-panel:hover { border-color: var(--ui-line-strong); }
+.ui-shared-collapsible-panel__head {
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+  border: 0;
+  border-radius: var(--ui-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  transition: background var(--ui-motion-fast);
+}
+.ui-shared-collapsible-panel__head:hover { background: var(--ui-hover); }
+.ui-shared-collapsible-panel__head:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: -2px; }
+.ui-shared-collapsible-panel:not(.ui-shared-collapsible-panel--collapsed) .ui-shared-collapsible-panel__head {
+  border-bottom: var(--ui-hairline) solid var(--ui-line);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.ui-shared-collapsible-panel__title { font-size: 1rem; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; color: var(--ui-text); }
+.ui-shared-collapsible-panel__lede { max-width: 62ch; margin-top: 0.25rem; font-size: 0.86rem; line-height: 1.55; color: var(--ui-text-muted); }
+.ui-shared-collapsible-panel__chevron {
+  width: 22px; height: 22px; font-size: 22px; line-height: 22px;
+  color: var(--ui-text-muted);
+  transition: transform var(--ui-motion-fast);
+}
+.ui-shared-collapsible-panel--collapsed .ui-shared-collapsible-panel__chevron { transform: rotate(-90deg); }
+.ui-shared-collapsible-panel__body { padding: 1.25rem; }
+
+// ---- side drawer
+.ui-shared-side-drawer__backdrop { background: var(--ui-backdrop); animation: ui-shared-fade var(--ui-motion); }
+.ui-shared-side-drawer {
+  background: var(--ui-surface);
+  border-left: var(--ui-hairline) solid var(--ui-line);
+  box-shadow: var(--ui-shadow-md);
+  animation: ui-shared-slide-in var(--ui-motion);
+}
+.ui-shared-side-drawer__head { gap: 1rem; padding: 1.1rem 1.5rem; border-bottom: var(--ui-hairline) solid var(--ui-line); }
+.ui-shared-side-drawer__title { margin: 0; font-size: 1.1rem; font-weight: 600; letter-spacing: -0.015em; color: var(--ui-text); }
+.ui-shared-side-drawer__body { padding: 1.5rem; }
+.ui-shared-side-drawer__actions { gap: 0.75rem; padding: 1rem 1.5rem; border-top: var(--ui-hairline) solid var(--ui-line); }
+@media (max-width: 600px) {
+  .ui-shared-side-drawer { border-left: 0; }
+}
+
+// ---- side panel
+.ui-shared-side-panel { background: var(--ui-bg); }
+.ui-shared-side-panel__nav {
+  background: var(--ui-surface);
+  border-right: var(--ui-hairline) solid var(--ui-line);
+  transition: width var(--ui-motion);
+}
+.ui-shared-side-panel__nav-body { padding-right: 6px; }
+.ui-shared-side-panel__handle-grip {
+  width: 2px;
+  height: 36px;
+  border-radius: 1px;
+  background: var(--ui-line);
+  opacity: 0.6;
+  transition: background var(--ui-motion-fast), opacity var(--ui-motion-fast);
+}
+.ui-shared-side-panel__handle:hover .ui-shared-side-panel__handle-grip,
+.ui-shared-side-panel--dragging .ui-shared-side-panel__handle-grip { background: var(--ui-accent); opacity: 0.7; }
+.ui-shared-side-panel__toggle {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: var(--ui-hairline) solid var(--ui-line);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+  transition: background var(--ui-motion-fast), color var(--ui-motion-fast), border-color var(--ui-motion-fast);
+}
+.ui-shared-side-panel__toggle:hover { background: var(--ui-surface-alt); color: var(--ui-text); border-color: var(--ui-text-muted); }
+.ui-shared-side-panel__toggle:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: 2px; }
+.ui-shared-side-panel__toggle mat-icon { width: 18px; height: 18px; font-size: 18px; }
+.ui-shared-side-panel__toggle--rail { margin-top: 0.6rem; }
+.ui-shared-side-panel__content { padding: var(--ui-page-pad); }
+
+// ---- ui-shared-tabs: flat strip, hairline under the labels, body owns its own inset.
+.ui-shared-tabs .mat-mdc-tab-header { border-bottom: var(--ui-hairline) solid var(--ui-line); }
+.ui-shared-tabs .mat-mdc-tab .mdc-tab__text-label { font-size: 0.86rem; letter-spacing: 0.01em; }
+.ui-shared-tabs .mat-mdc-tab-body-content { padding: 0; }
+
+// ---- ui-shared-nav-list: the shell rail.
+.ui-shared-nav-list { padding: 0.5rem 0.5rem 1rem; gap: 1px; }
+.ui-shared-nav-item {
+  height: 40px;
+  padding: 0 0.75rem;
+  gap: 0.7rem;
+  border-radius: var(--ui-radius-sm);
+  color: var(--ui-text-base);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--ui-motion-fast), color var(--ui-motion-fast);
+  .ui-shared-button-content__icon { --ui-icon-size: 19px; color: var(--ui-text-muted); }
+  &:hover { background: var(--ui-hover); }
+  &:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: -2px; }
+}
+.ui-shared-nav-item--active {
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent);
+  font-weight: 600;
+  .ui-shared-button-content__icon { color: var(--ui-accent); }
+}
+.ui-shared-nav-group {
+  margin: 1rem 0.35rem 0.3rem;
+  padding: 0.75rem 0.55rem 0.35rem;
+  border-top: var(--ui-hairline) solid var(--ui-line);
+  color: var(--ui-text-muted);
+  font-size: 0.74rem;
+  font-weight: 500;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ui-shared-nav-group:first-child { border-top: 0; margin-top: 0.25rem; padding-top: 0.4rem; }
+
+// ================================================================ Material, app-wide
+// The same form, overlay and button behaviour in every app. `!important` only
+// where Material's own rules would otherwise win.
+
+// ---- form fields
+.mat-mdc-form-field-focus-overlay,
+.mdc-text-field--focused .mdc-notched-outline__leading,
+.mdc-text-field--focused .mdc-notched-outline__notch,
+.mdc-text-field--focused .mdc-notched-outline__trailing { border-width: var(--ui-focus-width) !important; }
+// Focus is the accent colour — except on a field in error, which stays error-coloured.
+// Set it PER SIDE, never with the `border-color` shorthand on the notch: the
+// shorthand also colours the notch's left/right borders, which MDC keeps at full
+// width and transparent, so a focused field grew a second vertical line either
+// side of its floating label. The notch's top border is left alone too — a focused
+// field is always notched, and the `--notched` rule below keeps that side clear so
+// the outline never strikes through the label.
+.mdc-text-field--focused:not(.mdc-text-field--invalid) :is(.mdc-notched-outline__leading, .mdc-notched-outline__trailing) {
+  border-color: var(--ui-accent) !important;
+}
+.mdc-text-field--focused:not(.mdc-text-field--invalid) .mdc-notched-outline__notch {
+  border-bottom-color: var(--ui-accent) !important;
+}
+// The notch (gap under the floating label) has top/bottom borders only: no side
+// lines, and no top line through the label (it read as a strike-through).
+.mdc-text-field--focused .mdc-notched-outline__notch {
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+}
+.mdc-notched-outline--notched .mdc-notched-outline__notch { border-top-color: transparent !important; }
+// The outline already shows focus; an inner ring only draws a second line.
+.mat-mdc-form-field .mat-mdc-input-element:focus,
+.mat-mdc-form-field .mat-mdc-input-element:focus-visible,
+.mat-mdc-form-field textarea:focus-visible,
+.mat-mdc-form-field .mat-mdc-chip-input:focus-visible { outline: none; }
+// Errors show only once the user has left a field (Material's error state), in ONE
+// colour: outline, label, icon and message stay the same on hover and focus.
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-error-hover-outline-color: var(--mdc-outlined-text-field-error-outline-color, var(--mat-sys-error));
+  --mdc-outlined-text-field-error-focus-outline-color: var(--mdc-outlined-text-field-error-outline-color, var(--mat-sys-error));
+  --mdc-outlined-text-field-error-hover-label-text-color: var(--mdc-outlined-text-field-error-label-text-color, var(--mat-sys-error));
+  --mdc-outlined-text-field-error-focus-label-text-color: var(--mdc-outlined-text-field-error-label-text-color, var(--mat-sys-error));
+  --mat-form-field-error-hover-trailing-icon-color: var(--mat-form-field-error-trailing-icon-color, var(--mat-sys-error));
+  --mat-form-field-error-focus-trailing-icon-color: var(--mat-form-field-error-trailing-icon-color, var(--mat-sys-error));
+}
+// Hint / error text gets breathing room under the field.
+.mat-mdc-form-field-subscript-wrapper { min-height: 1.25rem; }
+.mat-mdc-form-field-error,
+.mat-mdc-form-field-hint { display: inline-block; padding-top: 0.35rem; line-height: 1.3; }
+// A hint (explanatory text under an input) keeps its own space before whatever follows the field.
+.mat-mdc-form-field-hint-wrapper { padding-bottom: 0.25rem; }
+.mat-mdc-form-field-subscript-wrapper:has(.mat-mdc-form-field-hint) { margin-bottom: 0.35rem; }
+
+// ---- dropdown panels (select / autocomplete)
+.mat-mdc-option.mdc-list-item { min-height: 36px; padding-block: 0.45rem; align-items: flex-start; }
+.mat-mdc-option .mdc-list-item__primary-text { white-space: normal; line-height: 1.4; }
+.mat-mdc-option:focus,
+.mat-mdc-option:focus-visible,
+.mat-mdc-option.mat-mdc-option-active,
+.mat-mdc-select:focus,
+.mat-mdc-select:focus-visible,
+.mat-mdc-select-trigger:focus,
+.mat-mdc-select-trigger:focus-visible,
+.mat-mdc-select-panel,
+.mat-mdc-select-panel:focus,
+.mat-mdc-select-panel:focus-visible { outline: none; }
+
+// ---- overlays
+.mat-mdc-dialog-surface.mdc-dialog__surface {
+  border: var(--ui-hairline) solid var(--ui-line);
+  border-radius: var(--ui-radius-lg) !important;
+  box-shadow: var(--ui-shadow-xl) !important;
+  animation: ui-shared-pop-in 220ms var(--ui-ease-out) both;
+}
+.mat-mdc-menu-panel {
+  border: var(--ui-hairline) solid var(--ui-line);
+  border-radius: var(--ui-radius) !important;
+  box-shadow: var(--ui-shadow-lg) !important;
+}
+.mat-mdc-tooltip .mdc-tooltip__surface {
+  padding: 0.4rem 0.6rem !important;
+  border-radius: var(--ui-radius-sm) !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.01em !important;
+  color: var(--ui-surface) !important;
+  background: var(--ui-text) !important;
+}
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  border-radius: var(--ui-radius) !important;
+  box-shadow: var(--ui-shadow-lg) !important;
+}
+// UiNotificationService panels.
+$toasts: (success: (--ui-success, --ui-on-danger), warn: (--ui-warning, --ui-on-danger),
+  error: (--ui-danger, --ui-on-danger), info: (--ui-accent, --ui-on-accent));
+@each $name, $colors in $toasts {
+  $bg: list.nth($colors, 1);
+  $fg: list.nth($colors, 2);
+  .cdk-overlay-pane:has(.ui-shared-toast--#{$name}) {
+    .mdc-snackbar__surface { background: var(#{$bg}) !important; }
+    .mdc-snackbar__surface,
+    .mat-mdc-snack-bar-label,
+    .mat-mdc-button.mat-mdc-snack-bar-action { color: var(#{$fg}) !important; }
+  }
+}
+
+// ---- tabs: a tab body never scrolls on its own; the window does, once.
+.mat-mdc-tab-group {
+  .mat-mdc-tab-body-wrapper { height: auto !important; overflow: visible !important; }
+  .mat-mdc-tab-body { overflow: visible !important; }
+  .mat-mdc-tab-body-content { overflow: visible !important; transform: none !important; }
+}
+
+// ---- buttons
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: var(--ui-radius-sm) !important;
+  letter-spacing: 0 !important;
+  font-weight: 500 !important;
+  transition: background var(--ui-motion-fast), border-color var(--ui-motion-fast),
+    box-shadow var(--ui-motion-fast), transform var(--ui-motion-fast) !important;
+}
+.mat-mdc-button-base:focus-visible { outline-offset: 3px; }
+.mat-mdc-unelevated-button.mat-primary {
+  background: linear-gradient(180deg, var(--ui-accent-mid) 0%, var(--ui-accent) 100%) !important;
+  color: var(--ui-on-accent) !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ui-accent) 35%, transparent),
+    0 2px 8px -2px color-mix(in srgb, var(--ui-accent) 28%, transparent),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+.mat-mdc-unelevated-button.mat-primary:hover:not([disabled]) {
+  background: var(--ui-accent-mid) !important;
+  box-shadow: var(--ui-shadow-accent), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-1px);
+}
+.mat-mdc-unelevated-button.mat-primary:active:not([disabled]) { transform: translateY(0); filter: brightness(0.96); }
+.mat-mdc-unelevated-button.mat-warn {
+  background: var(--ui-danger) !important;
+  color: var(--ui-on-danger) !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ui-danger) 30%, transparent) !important;
+}
+.mat-mdc-unelevated-button.mat-warn:hover:not([disabled]) { filter: brightness(1.06); transform: translateY(-1px); }
+.mat-mdc-unelevated-button.mat-primary[disabled],
+.mat-mdc-unelevated-button.mat-warn[disabled] {
+  background: var(--ui-surface-alt) !important;
+  color: var(--ui-text-faint) !important;
+  box-shadow: none !important;
+}
+.mat-mdc-outlined-button { border-color: var(--ui-line-strong) !important; color: var(--ui-text-base) !important; }
+.mat-mdc-outlined-button:hover:not([disabled]) {
+  background: var(--ui-hover) !important;
+  border-color: var(--ui-text-muted) !important;
+  box-shadow: var(--ui-shadow-xs);
+}
+.mat-mdc-outlined-button.mat-primary {
+  color: var(--ui-accent) !important;
+  border-color: color-mix(in srgb, var(--ui-accent) 45%, transparent) !important;
+}
+.mat-mdc-outlined-button.mat-primary:hover:not([disabled]) { background: var(--ui-accent-soft) !important; border-color: var(--ui-accent) !important; }
+.mat-mdc-outlined-button.mat-warn {
+  color: var(--ui-danger) !important;
+  border-color: color-mix(in srgb, var(--ui-danger) 45%, transparent) !important;
+}
+.mat-mdc-outlined-button.mat-warn:hover:not([disabled]) { background: var(--ui-danger-soft) !important; border-color: var(--ui-danger) !important; }
+.mat-mdc-outlined-button[disabled] { color: var(--ui-text-faint) !important; border-color: var(--ui-line) !important; }
+.mat-mdc-button.mat-warn { color: var(--ui-danger) !important; }
+.mat-mdc-button.mat-warn:hover:not([disabled]) { background: var(--ui-danger-soft) !important; }
+
+// ---- app-wide Material behaviour the apps used to carry themselves
+// Reduced motion kills decorative motion only: busy indicators keep spinning.
+@media (prefers-reduced-motion: reduce) {
+  *:not(.mat-mdc-progress-spinner):not(.mat-mdc-progress-spinner *):not(.mat-mdc-progress-bar):not(.mat-mdc-progress-bar *):not(.ui-shared-loading-overlay__ring):not(.ui-shared-loading-overlay__bar),
+  *:not(.mat-mdc-progress-spinner *)::before,
+  *:not(.mat-mdc-progress-spinner *)::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+// Outlined fields follow --ui-hairline so a zoomed root still lands on whole pixels.
+:root {
+  --mdc-outlined-text-field-outline-width: var(--ui-hairline);
+  --mdc-outlined-text-field-focus-outline-width: var(--ui-focus-width);
+}
+
+// ================================================================ motion
+@keyframes ui-shared-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ui-shared-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes ui-shared-pop-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes ui-shared-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes ui-shared-bar { 0% { transform: translateX(-120%); } 100% { transform: translateX(320%); } }

@@ -1,0 +1,33 @@
+<div class="ui-shared-side-panel" [class.ui-shared-side-panel--collapsed]="collapsed()" [class.ui-shared-side-panel--dragging]="dragging()">
+  <aside class="ui-shared-side-panel__nav">
+    <div class="ui-shared-side-panel__nav-sticky">
+      @if (!collapsed()) {
+        <div class="ui-shared-side-panel__nav-body">
+          <ng-content select="[slot=nav]" />
+        </div>
+
+        <div class="ui-shared-side-panel__handle"
+             (pointerdown)="startDrag($event)"
+             role="separator"
+             aria-orientation="vertical"
+             [attr.aria-label]="'sidePanel.resize' | uiTranslate">
+          <span class="ui-shared-side-panel__handle-grip"></span>
+        </div>
+      }
+
+      <button type="button"
+              class="ui-shared-side-panel__toggle"
+              [class.ui-shared-side-panel__toggle--rail]="collapsed()"
+              (click)="toggleCollapsed()"
+              [matTooltip]="(collapsed() ? 'sidePanel.show' : 'sidePanel.hide') | uiTranslate"
+              matTooltipPosition="right"
+              [attr.aria-label]="(collapsed() ? 'sidePanel.show' : 'sidePanel.hide') | uiTranslate">
+        <mat-icon>{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+    </div>
+  </aside>
+
+  <section class="ui-shared-side-panel__content">
+    <ng-content select="[slot=content]" />
+  </section>
+</div>

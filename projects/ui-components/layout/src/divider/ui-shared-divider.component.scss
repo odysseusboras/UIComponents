@@ -1,0 +1,4 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+:host(.ui-shared-divider--vertical) { display: inline-block; align-self: stretch; }

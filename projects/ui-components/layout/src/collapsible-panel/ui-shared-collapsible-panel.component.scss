@@ -1,0 +1,16 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+
+.ui-shared-collapsible-panel { position: relative; }
+.ui-shared-collapsible-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+}
+.ui-shared-collapsible-panel__title-group { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; }
+.ui-shared-collapsible-panel__chevron { flex: 0 0 auto; }

@@ -1,0 +1,41 @@
+<header class="ui-shared-page-header" [class.ui-shared-page-header--with-back]="hasBack()">
+  <!-- One column for the text, so the actions never stretch it with empty rows. -->
+  <div class="ui-shared-page-header__main">
+    @if (breadcrumb()) {
+      <ui-shared-breadcrumb class="ui-shared-page-header__breadcrumb" [currentLabel]="titleLabel()" />
+    }
+    @if (hasBack()) {
+      @if (backLink(); as link) {
+        <a class="ui-shared-page-header__back" [routerLink]="link">
+          <mat-icon aria-hidden="true">arrow_back</mat-icon>
+          <span>{{ backKey() | uiTranslate }}</span>
+        </a>
+      } @else {
+        <button type="button" class="ui-shared-page-header__back" (click)="back.emit()">
+          <mat-icon aria-hidden="true">arrow_back</mat-icon>
+          <span>{{ backKey() | uiTranslate }}</span>
+        </button>
+      }
+    }
+
+    <h1 class="ui-shared-page-header__title">
+      @if (titleKey()) {
+        {{ titleKey() | uiTranslate }}
+      } @else {
+        {{ titleText() }}
+      }
+    </h1>
+
+    @if (ledeKey()) {
+      <p class="ui-shared-page-header__lede">{{ ledeKey() | uiTranslate }}</p>
+    } @else if (ledeText()) {
+      <p class="ui-shared-page-header__lede">{{ ledeText() }}</p>
+    }
+  </div>
+
+  @if (showActions()) {
+    <div class="ui-shared-page-header__actions">
+      <ng-content select="[slot=actions]"></ng-content>
+    </div>
+  }
+</header>
