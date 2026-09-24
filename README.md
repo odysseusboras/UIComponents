@@ -1,6 +1,6 @@
 # @borassoft/ui-components
 
-Shared Angular Material UI for Borassoft apps. Every component is prefixed `ui-shared-` (selectors) / `UiShared` (classes); services, tokens and the pipe keep `Ui` / `UI_`; app-specific components keep `app-`. MIT. Peer deps: Angular 19.2+ (common, core, forms, router, platform-browser) and RxJS; Angular Material/CDK and `qrcode-generator` come with the package.
+Shared Angular Material UI for Borassoft apps. Every component is prefixed `ui-shared-` (selectors) / `UiShared` (classes); services, tokens and the pipe keep `Ui` / `UI_`; app-specific components keep `app-`. Extracted from EINV; consumed by EINV and ATLAS (CHARIS_TOURISM). MIT. Peer deps: Angular 19.2+ (common, core, forms, router, platform-browser) and RxJS; Angular Material/CDK and `qrcode-generator` come with the package.
 
 ## Entry points
 
@@ -16,226 +16,20 @@ Import from the entry point that owns the symbol — each is its own bundle file
 | `@borassoft/ui-components/feedback` | confirm dialog/service, loading overlay/service, notifications, spinner, progress bar |
 | `@borassoft/ui-components/display` | status chip (+ tones), stat tile, display date, QR code, icon |
 
-## Component reference
+## What's in it
 
-Every label input ending in `Key` is a translation key resolved through `UI_TRANSLATE`; its plain twin (`label`, `titleText`, `hintText`…) takes already-translated text. Boolean inputs accept the bare attribute (`disabled`, `nullable`, `block`). Inputs marked **required** must be set.
-
-### Buttons — `@borassoft/ui-components/buttons`
-
-**`<ui-shared-button>`** — the one text button (renders a `<button>`, or an `<a>` with `routerLink`).
-- `variant`: `primary` (filled accent) · `secondary` (default, outlined neutral) · `accent` · `danger` · `danger-filled` · `text`
-- `size`: `sm` · `md` (default) · `lg`; `block` stretches it to full width
-- `labelKey` / `label` (with neither, projected content is the label), `icon`, `iconEnd`
-- `type`: `button` (default) · `submit`; `disabled`; `tooltipKey`
-- `loading` shows a spinner (and `loadingKey` instead of the label) and disables the button
-- `routerLink`, `queryParams`: render an anchor; a disabled anchor is `aria-disabled` and out of the tab order
-- Listen to `(click)` on the element.
-
-```html
-<ui-shared-button variant="primary" icon="add" labelKey="products.add" (click)="create()" />
-<ui-shared-button type="submit" variant="primary" labelKey="common.save" [loading]="saving()" loadingKey="common.saving" [disabled]="form.invalid" />
-<ui-shared-button variant="secondary" size="lg" labelKey="home.signIn" routerLink="/auth/login" block />
-```
-
-**`<ui-shared-icon-button>`** — square icon-only button; `tooltipKey` is also its accessible name.
-- `icon` **required**, `tooltipKey` **required**
-- `tone`: `default` · `danger` (red on hover) · `accent` (always accent) · `warning`
-- `size`: `sm` (32px, default, row actions) · `md` (40px, toolbars); `type`, `disabled`; `badge` (count bubble, hidden for null / 0)
-
-```html
-<ui-shared-icon-button icon="delete" tone="danger" tooltipKey="common.delete" (click)="remove(i)" />
-```
-
-**`<ui-shared-button-group>`** — the action row: uniform gap, wraps on narrow screens.
-- `align`: `end` (default, form actions) · `start` · `between` · `center`; `divided` adds the form-footer rule above; `stack` = vertical full-width buttons
-
-```html
-<ui-shared-button-group divided>
-  <ui-shared-button labelKey="common.cancel" (click)="close()" />
-  <ui-shared-button variant="primary" labelKey="common.save" (click)="save()" />
-</ui-shared-button-group>
-```
-
-**`<ui-shared-menu>`** + **`<ui-shared-menu-item>`** — dropdown menu. The trigger is whatever you project with `slot="trigger"`; the rest is the panel. Arrow / Home / End move between rows, Escape closes.
-- menu: `align` `start` (default) · `end`; `flush` (no inner padding); `wide` (up to 420px, scrolls inside); `panelClass`; `(opened)`, `(closed)`
-- menu item: `icon`, `labelKey` / `label` (or projected content), `danger`, `disabled` (never emits, never navigates), `link` (navigates, renders an anchor); listen to `(click)`
-
-```html
-<ui-shared-menu align="end">
-  <ui-shared-icon-button slot="trigger" icon="more_vert" tooltipKey="core.grid.rowActions" />
-  <ui-shared-menu-item icon="edit" labelKey="common.edit" (click)="edit()" />
-  <ui-shared-divider />
-  <ui-shared-menu-item icon="delete" labelKey="common.delete" danger (click)="remove()" />
-</ui-shared-menu>
-```
-
-**`<ui-shared-button-content>`** — the icon + label + trailing icon inside button, menu item and nav item (`icon`, `iconEnd`, `labelKey`, `label`, `loading`, `loadingKey`). Only needed for custom clickable rows.
-
-### Display — `@borassoft/ui-components/display`
-
-**`<ui-shared-icon>`** — a Material Symbols icon.
-- `name` **required**; `size` `sm` 18px · `md` 24px (default) · `lg` 32px (or any size through `--ui-icon-size`)
-- `tone`: `inherit` (default) · `muted` · `accent` · `danger` · `success` · `warning` · `info`; `badge` (count, hidden for null / '' / 0)
-
-```html
-<ui-shared-icon name="notifications" [badge]="unread()" />
-```
-
-**`<ui-shared-status-chip>`** — the one status pill; projected content is its text.
-- `tone`: `ok` · `warn` · `bad` · `info` · `muted` (default) — `activeTone(isDeleted)` maps a soft-delete flag to `ok` / `bad`
-- `icon` or `dot`; `size` `sm` (default) · `lg`; `outline`; `tooltip` (translated text, adds a help cursor)
-
-```html
-<ui-shared-status-chip [tone]="activeTone(row.isDeleted)" dot>{{ 'status.active' | uiTranslate }}</ui-shared-status-chip>
-```
-
-**`<ui-shared-stat-tile>`** — KPI tile: icon + label + value, optional link. Projected content renders under the value.
-- `icon` **required**, `label` **required** (translated); `value` (formatted; `—` when empty); `loading`
-- `tone` (`StatusTone`, tints icon and value); `link` + `queryParams` make the tile a link with a chevron
-
-```html
-<ui-shared-stat-tile icon="trending_up" [label]="'dashboard.income' | uiTranslate" [value]="income() | number:'1.2-2'" [link]="['/documents']" />
-```
-
-**`<ui-shared-display-date>`** — renders ANY date in the one app format (`UI_DATE_FORMAT`, default `dd/MM/yyyy, HH:mm`) and locale (`UI_LOCALE`).
-- `value` (ISO string, `Date`, number, null); `empty` (text for no value, default `—`; an unreadable value shows it too). `mode` is accepted but ignored.
-
-**`<ui-shared-qr-code>`** — `value` **required**: the text to encode, drawn as an SVG that fills the host (size it from outside).
-
-### Feedback — `@borassoft/ui-components/feedback`
-
-**`UiConfirmService`** + `<ui-shared-confirm-dialog>` — the one Yes / No question. `confirm(data)` returns a stream that emits only on Yes.
-- `ConfirmDialogData`: `titleKey` / `titleText`, `messageKey` / `messageText`, `confirmKey` (default `common.yes`), `cancelKey` (default `common.no`), `variant` `warn` (default) · `primary` (icon only)
-
-```ts
-inject(UiConfirmService).confirm({ titleKey: 'x.delete', messageKey: 'x.deleteConfirm' }).subscribe(() => this.delete());
-```
-
-**`UiNotificationService`** — toasts: `success(msg)`, `info(msg)` (3s), `warn(msg)` (5s), `error(msg)` (6s); each takes optional `MatSnackBarConfig` overrides. The action label is `common.ok`.
-
-**`UiLoadingService`** + `<ui-shared-loading-overlay>` — mount the overlay once in the root component; call `start()` / `stop()` around work (e.g. from an HTTP interceptor). It shows only after 250 ms of pending work (`visible` signal) and blocks input meanwhile.
-
-**`<ui-shared-spinner>`** — indeterminate spinner, `size` in px (default 24).
-**`<ui-shared-progress-bar>`** — thin bar; indeterminate, or determinate with `value` 0–100.
-
-### Grid — `@borassoft/ui-components/grid`
-
-**`<ui-shared-grid>`** — OData grid: filters, sorting, paging, row actions, bulk selection, persisted layout.
-- `source` **required**: an `OdataSource<T>` (`get(query) → Observable<{ items, total }>`), usually built on `fetchOdataPage`
-- `initialSortField` + `initialSortDir` (`asc` default); `initialPageSize` (20), `pageSizeOptions` ([10, 20, 50, 100]); `emptyKey`
-- `storageKey`: remember column widths, order, hidden columns, pager position and the current view (filters, page, page size)
-- `selectable`: checkbox column + bulk bar (`#bulkActions let-rows` template); `preselect`: rows ticked when a page arrives
-- `refreshKey`: reload the current page when `UI_REFRESH` emits `{ grid: refreshKey }`
-- `(rowClick)`: emitted for a row click / Enter — only when the grid has a `#actions` template
-- Methods: `refresh()` (same page), `reset()` (page 1), `clearSelection()`
-- Content: `<ui-shared-grid-column>`s, filter inputs (see *Inputs are also the grid filters*), `<ng-template #actions let-row>` (row menu items; a row whose template renders nothing gets no ⋮), `<ng-template #bulkActions let-rows>`, `[slot=empty-actions]` (buttons in the empty state)
-
-**`<ui-shared-grid-column>`** — `key` **required**, `labelKey` **required**, `sortField` (OData field; omit for unsortable), `align` `left` · `right` · `center`; body cell = `<ng-template #cell let-row>`.
-
-```html
-<ui-shared-grid [source]="source" storageKey="users" initialSortField="Name" (rowClick)="open($event)">
-  <ui-shared-text-input labelKey="users.search" [fields]="['Name','Email']" />
-  <ui-shared-segmented [options]="statusOptions" initial="active" [clauseBuilder]="softDeleteClauseBuilder" />
-  <ui-shared-grid-column key="name" labelKey="users.name" sortField="Name">
-    <ng-template #cell let-u>{{ u.name }}</ng-template>
-  </ui-shared-grid-column>
-  <ng-template #actions let-u><ui-shared-menu-item icon="edit" labelKey="common.edit" (click)="open(u)" /></ng-template>
-</ui-shared-grid>
-```
-
-```ts
-source: OdataSource<UserRow> = { get: q => fetchOdataPage(this.http, '/odata/Users', q, { defaultSort: 'Name' }, toRow) };
-```
-
-**`<ui-shared-pager>`** — used by the grid; standalone: `page`, `pageSize`, `total` (all **required**), `pageSizeOptions`, `(pageChange)`, `(pageSizeChange)`.
-
-Helpers: `fetchOdataPage(http, url, query, { filter, expand, defaultSort }, toView)`, `SOFT_DELETE_STATUS_OPTIONS` + `softDeleteClauseBuilder` (Active / Deleted / All on `IsDeleted`), `UiEmptyDirective` (`uiEmpty`: tells whether projected content rendered anything).
-
-### Inputs — `@borassoft/ui-components/inputs`
-
-All form-field inputs take the `FormControl` directly as `[control]`, show a required marker when the control has `Validators.required`, and show `firstError(control)` as a translated `mat-error` once the field is touched or dirty. `subscriptSizing` (`dynamic` / `fixed`) sets whether space is reserved for the hint / error line.
-
-**`<ui-shared-select>`** — the one dropdown (see *Dropdowns*). `control` (optional as a grid filter), `labelKey` **required**, `options` (`SelectOption[]`), `freeText`, `nullable` + `nullLabelKey`, `hintKey` / `hintText`, `emptyHintKey`, `disableWhenEmpty`, `inputMode` (`text` / `numeric`), `storageKey`; as a filter: `field`, `clauseBuilder`, `initial`. Project `[suffix]` content next to the arrow.
-
-**`<ui-shared-text-input>`** — single-line input. `control` (optional as a filter), `labelKey` **required**, `type` (`text` · `email` · `number` · `tel` · `url` · `search` · `time` · `date`), `hintKey` / `hintText`, `placeholderKey`, `maxlength`, `min`, `max`, `step`, `inputMode`, `autocomplete`, `readonly`; as a filter: `fields`, `clauseBuilder`. Project `[prefix]` / `[suffix]` (icons, units).
-
-```html
-<ui-shared-text-input [control]="form.controls.amount" labelKey="form.amount" type="number" min="0" step="0.01"><span suffix>€</span></ui-shared-text-input>
-```
-
-**`<ui-shared-textarea-input>`** — multi-line: `control` **required**, `labelKey` **required**, `rows` (3), `hintKey` / `hintText`, `maxlength`, `readonly`.
-
-**`<ui-shared-date-input>`** — date picker: `control` **required**, `labelKey` **required**, `min`, `max`, `hintKey` / `hintText`. Add `provideUiDates()` to the app config for day-first `dd/MM/yyyy` typing and display.
-
-**`<ui-shared-password-field>`** — masked input with a show / hide eye: `control` **required**, `labelKey` **required**, `autocomplete` (`off`; use `current-password` / `new-password`), `hintKey`, `maxlength`.
-
-**`<ui-shared-checkbox>`** — form mode: `[control]` (boolean); selection mode (no control): `checked`, `indeterminate`, `disabled`, `(changed)`. Label: `labelKey` or projected content; `ariaLabelKey` for a label-less box; `tooltipKey`.
-
-**`<ui-shared-toggle>`** — on / off switch: `control` **required** (boolean), `labelKey` or projected content.
-
-**`<ui-shared-radio-group>`** — `control` **required**, `options` **required** (`SelectOption[]`), `labelKey`, `direction` `row` (default) · `column`.
-
-**`<ui-shared-segmented>`** — single-choice button row. View state: `value` + `(valueChange)`; form: `control`; filter: `field` (`all` = no filter) or `clauseBuilder`, plus `initial` (defaults to the first option). Also `options` **required**, `disabled`, `ariaLabelKey`, `storageKey` (remember the pick).
-
-```html
-<ui-shared-segmented [options]="years" [value]="year()" (valueChange)="year.set($event)" storageKey="home.year" />
-```
-
-**`<ui-shared-file-button>`** — opens the native file picker: `labelKey` **required**, `icon` (`upload`), `accept`, `multiple`, `disabled`, `variant` `flat` · `stroked`, `color`; `(filesSelected)` emits `File[]` (picking the same file twice emits twice).
-
-**`<ui-shared-html-editor>`** — Source / Preview editor for trusted HTML; a form control (`formControlName` / `[formControl]`), `rows` (16), `placeholder`.
-
-### Layout — `@borassoft/ui-components/layout`
-
-**`<ui-shared-page-header>`** — the page title block: breadcrumb trail, back link, `h1`, lede, actions.
-- `titleKey` / `titleText`, `ledeKey` / `ledeText` (keys win)
-- `backLink` (routerLink target) or `showBack` + `(back)` for an imperative back button; `backKey` (`common.back`). The back link is hidden while a breadcrumb trail shows.
-- `breadcrumb` (default on): render the trail from `provideUiBreadcrumbs`; `showActions` (default on) + `slot="actions"` content
-
-```html
-<ui-shared-page-header titleKey="admin.companies.title" ledeKey="admin.companies.lede">
-  <ui-shared-button slot="actions" variant="primary" icon="add" labelKey="admin.companies.add" (click)="create()" />
-</ui-shared-page-header>
-```
-
-**Breadcrumbs** — `provideUiBreadcrumbs(tree)` registers the app's tree once; `<ui-shared-page-header>` renders the trail above every title (pages never place `<ui-shared-breadcrumb>` themselves). A `UiBreadcrumbNode` is `{ path, labelKey?, label?(params), redirect?, children? }`: `path` is one URL segment, static or `:param` (static wins); a node without a label shows the page title; `redirect` is where a parent crumb links (and a parent redirecting to the current page is dropped). The trail stops at the first unknown segment and hides with fewer than two crumbs. `resolveUiBreadcrumbs(tree, url)` is the pure resolver.
-
-```ts
-provideUiBreadcrumbs([
-  { path: 'admin', labelKey: 'nav.admin', redirect: 'companies', children: [
-    { path: 'companies', labelKey: 'admin.companies.title', children: [{ path: ':id' }] },
-  ] },
-]),
-```
-
-**`<ui-shared-collapsible-panel>`** — card whose body collapses to its header; `titleKey` **required**, `storageKey` **required** (state in `ui.collapsible.<key>`), `ledeKey`.
-
-**`<ui-shared-side-drawer>`** — right slide-in panel for edit / detail forms. `[open]` + `(close)` (backdrop click or Escape — unless an overlay inside it handled Escape), `titleKey`, `size` `md` · `lg` or an explicit `width`; body = content, footer = `slot="actions"`. Re-parents itself to `<body>` so no ancestor can trap it.
-
-```html
-<ui-shared-side-drawer [open]="!!editing()" titleKey="admin.companies.edit" (close)="editing.set(null)">
-  …form…
-  <ui-shared-button slot="actions" labelKey="common.cancel" (click)="editing.set(null)" />
-  <ui-shared-button slot="actions" variant="primary" labelKey="common.save" (click)="save()" />
-</ui-shared-side-drawer>
-```
-
-**`<ui-shared-side-panel>`** — the left shell column: collapsible to a rail, drag-resizable, state in `ui.sidePanel.<key>`. `storageKey` **required**, `defaultWidth` (248), `minWidth` (200), `maxWidth` (480); content in `slot="nav"` and `slot="content"`. It sticks below the app header (`--header-h` / `--ui-sticky-top`).
-
-**`<ui-shared-tabs>`** + **`<ui-shared-tab>`** — flat tab strip, content rendered only for the selected tab. Tabs: `selected` + `(selectedChange)`; tab: `labelKey` / `label`.
-
-**`<ui-shared-nav-list>`** + **`<ui-shared-nav-item>`** + **`<ui-shared-nav-group>`** — shell navigation. Item: `link` **required**, `labelKey` **required**, `icon`, `exact` (highlight on exact match only); group: `labelKey` **required** (small uppercase section label).
-
-**`<ui-shared-divider>`** — hairline rule; `vertical` for toolbars.
-
-### Primary entry — `@borassoft/ui-components`
-
-- **i18n**: `UI_TRANSLATE` (key → text), `UI_DEFAULT_TEXTS` (English fallbacks), `uiTranslate` pipe, `UI_LOCALE`, `UI_DATE_FORMAT`, `UI_REFRESH` (grid reload signals)
-- **forms**: `firstError(control)` → `form.errors.<validator>`; `SelectOption<T>` (`{ value, label }` or `{ value, labelKey }`) + `uiOptionText` pipe / `optionText()`; `provideUiDates()` / `UiDateAdapter` / `UI_DATE_FORMATS`
-- **grid-filter contract**: `UI_GRID_FILTER`, `UiGridFilter`, `GridFilterState`, `provideGridFilter`, `ClauseBuilder`, `odataString`, `odataLiteral`, `eqClause`, `andClauses`
-- **storage**: `uiStorage` (get / set / remove / getJson / setJson, never throws), `storedChoice` / `storeChoice`
-- **theme**: `UiThemeService` (`theme`, `isDark`, `toggle()`, `set()`), `UI_THEME_STORAGE_KEY`
-- `trackPointerDrag(zone, onMove, onEnd)` — the drag-resize helper behind grid columns and the side panel
+| Area | Selector / class | Notes |
+|---|---|---|
+| Grid | `<ui-shared-grid>` `UiSharedGridComponent`, `<ui-shared-grid-column>` `UiSharedGridColumnComponent`, `<ui-shared-pager>` `UiSharedPagerComponent` | OData grid: filters (the inputs below, see *Inputs are also the grid filters*), sorting, paging, row actions, bulk selection, persisted column layout. `OdataSource`, `fetchOdataPage`, `SOFT_DELETE_STATUS_OPTIONS`, `softDeleteClauseBuilder`. |
+| Inputs | `<ui-shared-select>` `UiSharedSelectComponent` (the one dropdown: type to filter, `freeText` optional), `<ui-shared-text-input>`, `<ui-shared-textarea-input>`, `<ui-shared-date-input>`, `<ui-shared-password-field>`, `<ui-shared-checkbox>`, `<ui-shared-toggle>`, `<ui-shared-radio-group>`, `<ui-shared-segmented>` `UiSharedSegmentedComponent`, `<ui-shared-color-swatches>` (`[control]`, `[presets]` default `UI_COLOR_PRESETS`, `optional` adds a "none" swatch), `<ui-shared-file-button>` `UiSharedFileButtonComponent`, `<ui-shared-html-editor>` `UiSharedHtmlEditorComponent` | Options are `SelectOption` (`{ value, label }` or `{ value, labelKey }`). `firstError(control)` → `form.errors.<validator>`. Text input, select and segmented double as grid filters. |
+| Buttons | `<ui-shared-button>` `UiSharedButtonComponent`, `<ui-shared-icon-button>` `UiSharedIconButtonComponent`, `<ui-shared-button-group>` `UiSharedButtonGroupComponent`, `<ui-shared-menu>` `UiSharedMenuComponent`, `<ui-shared-menu-item>` `UiSharedMenuItemComponent`, `<ui-shared-button-content>` (the shared icon + label + trailing icon inside button, menu item and nav item) | The only buttons an app renders. Menus are keyboard-navigable (arrows / Home / End). Menu: project the trigger into `[slot=trigger]`, the rows after it; `align` start / end, `flush`, `wide`, `(opened)`. `variant` primary / secondary / accent / danger / danger-filled / text, `size` sm / md / lg, `icon` / `iconEnd`, `labelKey` or `label`, `loading` + `loadingKey`, `routerLink` (renders an anchor), `block`. Icon button: `icon`, `tooltipKey` (= aria-label), `tone` default / danger / accent / warning, `size` sm (32px) / md (40px). Button group: `align` end / start / between / center, `divided` (form footer rule), `stack`. Menu item: `icon`, `labelKey`, `danger`, `disabled`, listen to `(click)`. |
+| Primitives | `<ui-shared-icon>` (`name`, `size` sm / md / lg, `tone`, `badge`; resize from an app rule with `--ui-icon-size`), `<ui-shared-spinner>` (`size` px), `<ui-shared-progress-bar>` (`value` or indeterminate), `<ui-shared-divider>` (`vertical`) | The Material icon / spinner / progress / divider, wrapped so apps never import `@angular/material`. |
+| Calendar | `<ui-shared-calendar>` `UiSharedCalendarComponent` (`@borassoft/ui-components/calendar`: `[source]="(from, to) => Observable<UiCalendarEvent[]>"`, `[actions]` hover buttons, `[month]` / `(monthChange)`, `(dateClick)`, `(eventClick)`, `(eventAction)`, `reload()`) | Month grid of all-day events on FullCalendar (a library dependency); the look is in the theme, locale follows `UI_LOCALE`. |
+| Layout | `<ui-shared-page-header>` `UiSharedPageHeaderComponent` (renders the breadcrumb trail above the title), `<ui-shared-breadcrumb>` + `provideUiBreadcrumbs(tree)` (`UiBreadcrumbNode`: `path`, `labelKey` / `label(params)`, `redirect`, `children`; a node without a label shows the page title), `<ui-shared-collapsible-panel>` `UiSharedCollapsiblePanelComponent`, `<ui-shared-side-drawer>` `UiSharedSideDrawerComponent`, `<ui-shared-side-panel>` `UiSharedSidePanelComponent`, `<ui-shared-tabs>` + `<ui-shared-tab>` (`labelKey` / `label`, lazy content, `[selected]` / `(selectedChange)`), `<ui-shared-nav-list>` + `<ui-shared-nav-item>` (`link`, `icon`, `labelKey`, `exact`) + `<ui-shared-nav-group>` | Page title/lede/back, collapsible card (state in `ui.collapsible.<key>`), right slide-in drawer (re-parents itself to `<body>`), resizable left shell nav (state in `ui.sidePanel.<key>`). |
+| Feedback | `<ui-shared-confirm-dialog>` + `UiConfirmService` (`ConfirmDialogData`), `<ui-shared-loading-overlay>` + `UiLoadingService`, `UiNotificationService` | Yes/No dialog emitting only on Yes; loading overlay with a 250 ms grace period (`start()/stop()/visible`); snackbar wrapper (`success/info/warn/error`). |
+| Display | `<ui-shared-status-chip>` `UiSharedStatusChipComponent` (`StatusTone`, `activeTone()`), `<ui-shared-stat-tile>` `UiSharedStatTileComponent`, `<ui-shared-display-date>` `UiSharedDisplayDateComponent`, `<ui-shared-qr-code>` `UiSharedQrCodeComponent` | Status pill, KPI tile, the one date format, QR code SVG. |
+| Theme | `UiThemeService` (`UiTheme`), `UI_THEME_STORAGE_KEY` | Light/dark on `<html data-theme>`, persisted under `ui.theme` by default. |
+| i18n | `UI_TRANSLATE`, `UI_DEFAULT_TEXTS`, `UiTranslatePipe` (`uiTranslate`), `UI_REFRESH`, `UI_LOCALE`, `UI_DATE_FORMAT` | |
 
 ## Styling: structure in the components, the look in one theme
 
@@ -296,7 +90,7 @@ Copy the tarball into the app's own `packages/` folder (next to its `package.jso
 
 ```jsonc
 // <app>/package.json
-"@borassoft/ui-components": "file:packages/borassoft-ui-components-1.0.0.tgz"
+"@borassoft/ui-components": "file:packages/borassoft-ui-components-4.4.0.tgz"
 ```
 
 ```ts
@@ -305,15 +99,54 @@ Copy the tarball into the app's own `packages/` folder (next to its `package.jso
 { provide: UI_REFRESH,   useFactory: () => inject(GridRefreshService).signals$ },
 { provide: UI_LOCALE,    useFactory: () => { const i18n = inject(I18nService); return () => i18n.locale(); } },
 { provide: UI_DATE_FORMAT, useValue: 'dd/MM/yyyy, HH:mm' },
-{ provide: UI_THEME_STORAGE_KEY, useValue: 'myapp.theme' },
-provideUiDates(),
-provideUiBreadcrumbs([...]),   // see Breadcrumbs
+{ provide: UI_THEME_STORAGE_KEY, useValue: 'aade.theme' },
 ```
 
-- Without `UI_TRANSLATE` the components use English defaults (`UI_DEFAULT_TEXTS`: `core.grid.*`, `pager.*`, `breadcrumb.*`, `common.*`, `sidePanel.*`, `htmlEditor.*`, `form.password.*`, `form.errors.*` — including the datepicker's `matDatepickerParse` / `Min` / `Max`). Add those keys to the app's dictionary for other languages. The translator should read the app's locale signal so the impure `uiTranslate` pipe re-renders on language change.
+- Without `UI_TRANSLATE` the components use English defaults (`UI_DEFAULT_TEXTS`: `core.grid.*`, `pager.*`, `common.*`, `sidePanel.*`, `htmlEditor.*`, `form.password.*`, `form.errors.*` — including the datepicker's `matDatepickerParse` / `Min` / `Max`). Add those keys to the app's dictionary for other languages. The translator should read the app's locale signal so the impure `uiTranslate` pipe re-renders on language change.
 - Without `UI_REFRESH` no push-based grid reloads happen.
 - `UI_LOCALE` is a *function* returning the locale (default `() => 'en-US'`) so `<ui-shared-display-date>` re-evaluates when the host's locale signal changes; `UI_DATE_FORMAT` is the single Angular date format it renders (default `dd/MM/yyyy, HH:mm`).
 - `UI_THEME_STORAGE_KEY` (default `ui.theme`) lets a host keep the key it already stored the theme under.
+
+```html
+<ui-shared-grid [source]="source" storageKey="users" initialSortField="Name" (rowClick)="open($event)">
+  <ui-shared-text-input labelKey="users.search" [fields]="['Name','Email']" />
+  <ui-shared-select labelKey="users.country" [options]="countries" field="Country" />
+  <ui-shared-segmented [options]="statusOptions" initial="active" [clauseBuilder]="statusClause" />
+  <ui-shared-grid-column key="name" labelKey="users.name" sortField="Name">
+    <ng-template #cell let-u>{{ u.name }}</ng-template>
+  </ui-shared-grid-column>
+  <ng-template #actions let-u><ui-shared-menu-item icon="open_in_new" labelKey="common.open" (click)="open(u)" /></ng-template>
+</ui-shared-grid>
+
+<ui-shared-select [control]="form.controls.country" labelKey="form.country" [options]="countries" nullable />
+<ui-shared-select [control]="form.controls.mark" labelKey="form.mark" [options]="marks" freeText inputMode="numeric" />
+<ui-shared-password-field [control]="form.controls.password" labelKey="auth.password" autocomplete="current-password" />
+
+// app.config.ts - the breadcrumb tree mirrors the routes; the header renders the trail above every title
+provideUiBreadcrumbs([
+  { path: 'admin', labelKey: 'nav.admin', redirect: 'companies', children: [
+    { path: 'companies', labelKey: 'admin.companies.title', children: [{ path: ':id' }] },
+  ] },
+]),
+
+<ui-shared-page-header titleKey="admin.companies.title" ledeKey="admin.companies.lede">
+  <ui-shared-button slot="actions" variant="primary" icon="add" labelKey="admin.companies.add" (click)="create()" />
+</ui-shared-page-header>
+
+<ui-shared-side-drawer [open]="!!editing()" titleKey="admin.companies.edit" (close)="editing.set(null)">
+  …form…
+  <ui-shared-button slot="actions" labelKey="common.cancel" (click)="editing.set(null)" />
+  <ui-shared-button slot="actions" variant="primary" labelKey="common.save" [loading]="saving()" (click)="save()" />
+</ui-shared-side-drawer>
+
+<ui-shared-status-chip [tone]="activeTone(row.isDeleted)" icon="check_circle">Active</ui-shared-status-chip>
+<ui-shared-display-date [value]="row.dateCreated" />
+```
+
+```ts
+inject(UiConfirmService).confirm({ titleKey: 'x.delete', messageKey: 'x.deleteConfirm' }).subscribe(() => …);
+inject(UiNotificationService).success('Saved');
+```
 
 ### Dropdowns
 
@@ -362,10 +195,20 @@ projects/ui-components/
   feedback/src/                confirm-dialog/ (+ confirm.service), loading-overlay/ (+ loading.service),
                                notification/, spinner/, progress-bar/
   grid/src/                    grid/, grid-column/, pager/, odata/ (odata-source, odata-fetch, soft-delete)
-  inputs/src/                  select/, text-input/, textarea-input/, date-input/, password-field/,
+  calendar/src/                calendar/
+  inputs/src/                  color-swatches/, select/, text-input/, textarea-input/, date-input/, password-field/,
                                checkbox/, toggle/, radio-group/, segmented/, file-button/, html-editor/
   layout/src/                  breadcrumb/ (+ ui-breadcrumbs.ts: provideUiBreadcrumbs, resolveUiBreadcrumbs), page-header/, collapsible-panel/, side-drawer/, side-panel/, divider/,
                                tabs/ (+ tab/), nav-list/ (+ nav-item/, nav-group/)
 tools/check-grid-filters.ts    runtime check of the grid filters (`npm run check`)
+tools/migrate-to-ui-shared.py  3.x → 4.x consumer migration
 packages/                      built tarballs that consumers reference
+```
+
+## Migrating an app from 3.x to 4.0
+
+4.0 renames every component to the `ui-shared-` prefix (`<ui-grid>` → `<ui-shared-grid>`, `UiGridComponent` → `UiSharedGridComponent`) and merges the `{ value, label }` option types into `SelectOption` (primary entry; `ComboOption`, `SegmentedOption`, `CoreGridSelectOption`, `CoreGridRadioOption` are gone). The grid filter components are gone: use `<ui-shared-text-input [fields]>`, `<ui-shared-select field>` and `<ui-shared-segmented>` (same attributes). `<ui-combo-input>` / `<ui-shared-autocomplete>` are `<ui-shared-select freeText>`; `<ui-shared-select>` no longer has `multiple`. `StatTone` is `StatusTone | ''`, the resize body class is `ui-resizing`, the components' internal CSS classes are `ui-shared-*` blocks, and the look moved to `@borassoft/ui-components/styles/theme` — add the `@use` to the app's `styles.scss`. Services, tokens and the `uiTranslate` pipe keep their names.
+
+```bash
+python tools/migrate-to-ui-shared.py <app>/src   # selectors, classes, filters, option types, imports
 ```

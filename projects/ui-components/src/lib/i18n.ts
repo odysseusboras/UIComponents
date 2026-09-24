@@ -4,6 +4,7 @@ import { EMPTY, Observable } from 'rxjs';
 /** English fallback for every key the library renders; used when the app provides no translator. */
 export const UI_DEFAULT_TEXTS: Readonly<Record<string, string>> = {
   'core.grid.loading': 'Loading…',
+  'core.color.none': 'No own colour',
   'core.grid.empty': 'No items to display.',
   'core.grid.rowActions': 'Row actions',
   'core.grid.settings': 'Grid settings',
@@ -24,7 +25,6 @@ export const UI_DEFAULT_TEXTS: Readonly<Record<string, string>> = {
   'pager.pageSize': 'Per page',
   'pager.of': 'of',
   'pager.label': 'Pagination',
-  'breadcrumb.label': 'Breadcrumb',
   'common.none': '—',
   'common.back': 'Back',
   'common.close': 'Close',

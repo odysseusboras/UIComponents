@@ -1,0 +1,25 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+
+.ui-shared-calendar__event {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+.ui-shared-calendar__event-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ui-shared-calendar__event-actions { display: inline-flex; }
+.ui-shared-calendar__event-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}

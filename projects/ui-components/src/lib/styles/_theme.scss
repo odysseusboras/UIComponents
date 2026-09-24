@@ -19,7 +19,8 @@ $components:
   ui-shared-confirm-dialog, ui-shared-loading-overlay, ui-shared-progress-bar, ui-shared-spinner,
   ui-shared-grid, ui-shared-pager,
   ui-shared-select, ui-shared-text-input, ui-shared-textarea-input, ui-shared-date-input, ui-shared-password-field,
-  ui-shared-checkbox, ui-shared-toggle, ui-shared-radio-group, ui-shared-segmented, ui-shared-file-button, ui-shared-html-editor,
+  ui-shared-checkbox, ui-shared-toggle, ui-shared-radio-group, ui-shared-segmented, ui-shared-file-button, ui-shared-html-editor, ui-shared-color-swatches,
+  ui-shared-calendar,
   ui-shared-divider, ui-shared-breadcrumb, ui-shared-page-header, ui-shared-collapsible-panel, ui-shared-side-drawer, ui-shared-side-panel,
   ui-shared-tabs, ui-shared-nav-list, ui-shared-nav-item, ui-shared-nav-group;
 
@@ -177,7 +178,8 @@ ui-shared-menu-item { display: block; }
 .mat-mdc-menu-item .mat-mdc-menu-item-text { display: inline-flex; align-items: center; min-width: 0; }
 .mat-mdc-menu-item .ui-shared-button-content { gap: 0.6rem; }
 .mat-mdc-menu-item .ui-shared-button-content__icon { --ui-icon-size: 18px; color: var(--ui-text-muted); }
-.mat-mdc-menu-item .ui-shared-icon .mat-icon { margin: 0 !important; }
+// Material paints menu icons itself; a toned ui-shared-icon (a yellow star) must keep its tone.
+.mat-mdc-menu-item .ui-shared-icon .mat-icon { margin: 0 !important; color: inherit; }
 .mat-mdc-menu-item.ui-shared-menu-item--danger,
 .mat-mdc-menu-item.ui-shared-menu-item--danger .ui-shared-icon { color: var(--ui-danger) !important; }
 .mat-mdc-menu-item.ui-shared-menu-item--danger:hover:not([disabled]) { background: var(--ui-danger-soft) !important; }
@@ -495,32 +497,81 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
   line-height: 1.55;
 }
 
+// ---- ui-shared-color-swatches
+.ui-shared-color-swatches { gap: 0.5rem; }
+.ui-shared-color-swatches__swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ui-radius-pill);
+  border: var(--ui-hairline) solid var(--ui-line);
+  transition: transform var(--ui-motion-fast), box-shadow var(--ui-motion-fast);
+}
+.ui-shared-color-swatches__swatch:hover { transform: translateY(-1px); }
+.ui-shared-color-swatches__swatch--none {
+  background: linear-gradient(135deg, transparent 45%, var(--ui-line-strong) 45%, var(--ui-line-strong) 55%, transparent 55%);
+}
+.ui-shared-color-swatches__swatch--on { box-shadow: 0 0 0 2px var(--ui-surface), 0 0 0 4px var(--ui-accent); }
+.ui-shared-color-swatches__swatch--on:not(.ui-shared-color-swatches__swatch--none)::after {
+  content: '\2713';
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+// ================================================================ calendar
+// FullCalendar draws its grid as raw DOM; its --fc-* properties are set on the host and the
+// rest is plain global CSS, so every rule here is namespaced under .ui-shared-calendar.
+.ui-shared-calendar {
+  --fc-border-color: var(--ui-line);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: var(--ui-surface-alt);
+  --fc-today-bg-color: var(--ui-accent-soft);
+  --fc-button-text-color: var(--ui-on-accent);
+  --fc-button-bg-color: var(--ui-accent);
+  --fc-button-border-color: var(--ui-accent);
+  --fc-button-hover-bg-color: var(--ui-accent-mid);
+  --fc-button-hover-border-color: var(--ui-accent-mid);
+  --fc-button-active-bg-color: var(--ui-accent-alt);
+  --fc-button-active-border-color: var(--ui-accent-alt);
+}
+.ui-shared-calendar .fc { font-family: inherit; }
+.ui-shared-calendar .fc .fc-toolbar { flex-wrap: wrap; gap: 0.5rem; }
+.ui-shared-calendar .fc .fc-toolbar-title { font-size: 1.15rem; font-weight: 600; letter-spacing: -0.015em; color: var(--ui-text); }
+.ui-shared-calendar .fc .fc-button { border-radius: var(--ui-radius-sm); font-weight: 500; letter-spacing: 0; text-transform: capitalize; box-shadow: none; }
+.ui-shared-calendar .fc .fc-button:focus { box-shadow: 0 0 0 3px var(--ui-accent-soft); }
+.ui-shared-calendar .fc .fc-scrollgrid { border-radius: var(--ui-radius); overflow: hidden; }
+.ui-shared-calendar .fc .fc-col-header-cell-cushion {
+  padding: 0.6rem 0.5rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ui-text-muted);
+}
+.ui-shared-calendar .fc .fc-daygrid-day-number { padding: 0.4rem 0.5rem; font-size: 0.82rem; color: var(--ui-text-base); font-variant-numeric: tabular-nums; }
+.ui-shared-calendar .fc .fc-day-other .fc-daygrid-day-number { color: var(--ui-text-faint); }
+.ui-shared-calendar .fc .fc-day-today .fc-daygrid-day-number { font-weight: 700; color: var(--ui-accent); }
+.ui-shared-calendar .fc .fc-daygrid-event {
+  border-radius: var(--ui-radius-sm); padding: 1px 4px 1px 6px; font-size: 0.76rem; font-weight: 500;
+  box-shadow: var(--ui-shadow-sm); transition: filter var(--ui-motion-fast); cursor: default;
+}
+.ui-shared-calendar .fc .fc-daygrid-event:hover { filter: brightness(1.08); }
+.ui-shared-calendar .fc .fc-daygrid-event *, .ui-shared-calendar .fc .fc-daygrid-day-frame { cursor: default; }
+.ui-shared-calendar__event { gap: 0.25rem; }
+.ui-shared-calendar__event-actions { gap: 1px; opacity: 0; transition: opacity var(--ui-motion-fast); }
+.ui-shared-calendar .fc-daygrid-event:hover .ui-shared-calendar__event-actions,
+.ui-shared-calendar .fc-daygrid-event:focus-within .ui-shared-calendar__event-actions { opacity: 1; }
+.ui-shared-calendar__event-btn {
+  width: 18px; height: 18px; border: none; border-radius: var(--ui-radius-sm); background: rgba(255, 255, 255, 0.18); color: #fff;
+}
+.ui-shared-calendar__event-btn:hover { background: rgba(255, 255, 255, 0.32); }
+.ui-shared-calendar__event-btn .material-icons { font-size: 13px; line-height: 1; }
+@media (max-width: 640px) { .ui-shared-calendar .fc .fc-toolbar-title { font-size: 1rem; } }
+
 // ================================================================ layout
 // ---- ui-shared-divider
 .ui-shared-divider { height: var(--ui-hairline); margin: 0.35rem 0; background: var(--ui-line); border: 0; }
 .ui-shared-divider--vertical { width: var(--ui-hairline); height: auto; margin: 0 0.4rem; }
 .mat-mdc-menu-panel .ui-shared-divider { margin: 0.25rem 0; }
 
-// ---- breadcrumb (rendered by the page header)
-.ui-shared-breadcrumb { margin: 0 0 0.6rem; font-size: var(--ui-font-size-sm); line-height: 1.4; color: var(--ui-text-muted); }
-.ui-shared-breadcrumb__list { gap: 0.1rem; }
-.ui-shared-breadcrumb__link,
-.ui-shared-breadcrumb__current,
-.ui-shared-breadcrumb__sep { padding: 0.2rem 0.4rem; line-height: inherit; }
-.ui-shared-breadcrumb__link {
-  border-radius: var(--ui-radius-sm);
-  font-weight: 500;
-  color: var(--ui-text-muted);
-  text-decoration: none;
-  transition: color var(--ui-motion-fast), background var(--ui-motion-fast);
-}
-.ui-shared-breadcrumb__link:hover { color: var(--ui-accent); background: var(--ui-accent-soft); }
-.ui-shared-breadcrumb__sep { padding: 0.2rem 0.1rem; color: var(--ui-text-faint); }
-.ui-shared-breadcrumb__current { font-weight: 600; color: var(--ui-text); }
-
 // ---- page header
 .ui-shared-page-header { column-gap: 2rem; row-gap: 0.5rem; margin-bottom: 2rem; }
-.ui-shared-page-header__main { row-gap: 0.5rem; }
 .ui-shared-page-header__back {
   gap: 0.3rem;
   margin: 0 0 0.6rem;
@@ -537,6 +588,21 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
 }
 .ui-shared-page-header__back mat-icon { width: 16px; height: 16px; font-size: 16px; }
 .ui-shared-page-header__back:hover { color: var(--ui-accent); background: var(--ui-accent-soft); }
+.ui-shared-breadcrumb { margin: 0 0 0.6rem; font-size: var(--ui-font-size-sm); line-height: 1.4; color: var(--ui-text-muted); }
+.ui-shared-breadcrumb__list { gap: 0.1rem; }
+.ui-shared-breadcrumb__link,
+.ui-shared-breadcrumb__current,
+.ui-shared-breadcrumb__sep { padding: 0.2rem 0.4rem; line-height: inherit; }
+.ui-shared-breadcrumb__link {
+  border-radius: var(--ui-radius-sm);
+  font-weight: 500;
+  color: var(--ui-text-muted);
+  text-decoration: none;
+  transition: color var(--ui-motion-fast), background var(--ui-motion-fast);
+}
+.ui-shared-breadcrumb__link:hover { color: var(--ui-accent); background: var(--ui-accent-soft); }
+.ui-shared-breadcrumb__sep { padding: 0.2rem 0.1rem; color: var(--ui-text-faint); }
+.ui-shared-breadcrumb__current { font-weight: 600; color: var(--ui-text); }
 .ui-shared-page-header__title {
   margin: 0;
   font-size: clamp(1.75rem, 2.6vw, 2.125rem);

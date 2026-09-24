@@ -1,0 +1,14 @@
+<div class="ui-shared-color-swatches">
+  @if (optional()) {
+    <button type="button" class="ui-shared-color-swatches__swatch ui-shared-color-swatches__swatch--none"
+            [class.ui-shared-color-swatches__swatch--on]="!control().value"
+            [attr.aria-label]="noneKey() | uiTranslate" [title]="noneKey() | uiTranslate"
+            (click)="pick(null)"></button>
+  }
+  @for (c of presets(); track c) {
+    <button type="button" class="ui-shared-color-swatches__swatch"
+            [class.ui-shared-color-swatches__swatch--on]="control().value === c"
+            [style.background]="c" [attr.aria-label]="c"
+            (click)="pick(c)"></button>
+  }
+</div>

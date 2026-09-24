@@ -25,5 +25,11 @@
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
     "zone.js": "~0.15.0"
+  },
+  "dependencies": {
+    "@fullcalendar/angular": "^6.1.21",
+    "@fullcalendar/core": "^6.1.21",
+    "@fullcalendar/daygrid": "^6.1.21",
+    "@fullcalendar/interaction": "^6.1.21"
   }
 }

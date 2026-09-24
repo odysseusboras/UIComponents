@@ -1,6 +1,6 @@
 {
   "name": "@borassoft/ui-components",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Shared Angular Material UI (ui-shared-* prefix): OData data grid (filters, sorting, paging, row actions, selection, persisted layout), form inputs that double as grid filters (type-to-filter select, text, date, password, checkbox, toggle, radio, segmented toggle, file button, HTML editor), buttons (button, icon button, button group, menu item), layout (page header, collapsible panel, side drawer, side panel), feedback (confirm dialog, loading overlay, notifications), display (status chip, stat tile, date, QR code) and a theme service. Owns the Angular Material + CDK dependency: apps install this package only, include styles/material + styles/theme once, and never import @angular/material themselves.",
   "license": "MIT",
   "peerDependencies": {
@@ -15,6 +15,10 @@
     "tslib": "^2.3.0",
     "@angular/cdk": ">=19.2.0",
     "@angular/material": ">=19.2.0",
+    "@fullcalendar/angular": "^6.1.21",
+    "@fullcalendar/core": "^6.1.21",
+    "@fullcalendar/daygrid": "^6.1.21",
+    "@fullcalendar/interaction": "^6.1.21",
     "qrcode-generator": "^1.5.0"
   },
   "sideEffects": false,

@@ -1,0 +1,13 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+
+.ui-shared-color-swatches { display: flex; flex-wrap: wrap; }
+.ui-shared-color-swatches__swatch { position: relative; padding: 0; cursor: pointer; }
+.ui-shared-color-swatches__swatch--on::after {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

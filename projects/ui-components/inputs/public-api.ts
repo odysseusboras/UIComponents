@@ -9,3 +9,4 @@ export * from './src/radio-group/ui-shared-radio-group.component';
 export * from './src/segmented/ui-shared-segmented.component';
 export * from './src/file-button/ui-shared-file-button.component';
 export * from './src/html-editor/ui-shared-html-editor.component';
+export * from './src/color-swatches/ui-shared-color-swatches.component';
