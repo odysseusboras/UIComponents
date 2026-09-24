@@ -67,7 +67,7 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
   /**
    * Optional storage key — when set, the grid persists per-column widths and
    * order to localStorage so the user's layout is restored across sessions.
-   * Pick something unique-per-grid like "admin-companies" / "user-list".
+   * Pick something unique-per-grid like "admin-companies" / "tenant-contracted".
    */
   storageKey = input<string | undefined>(undefined);
 
@@ -88,7 +88,7 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
   /**
    * When set, the grid reloads its CURRENT page (filters/sort/paging untouched)
    * every time a SignalR `gridRefresh` signal with a matching key arrives — e.g.
-   * "Orders" so an orders grid updates when a background job completes.
+   * "Invoices" so the documents grid updates when a background submit completes.
    */
   refreshKey = input<string | undefined>(undefined);
 
@@ -106,6 +106,19 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
 
   protected actionsTemplate = contentChild('actions', { read: TemplateRef });
   protected bulkActionsTemplate = contentChild('bulkActions', { read: TemplateRef });
+  /**
+   * Master-detail: project `<ng-template #detail let-row>` and every row gets a leading
+   * expand arrow that opens the template under it (one row's detail at a time per click,
+   * several may stay open). Expansion clears on every fetch.
+   */
+  protected detailTemplate = contentChild('detail', { read: TemplateRef });
+  protected expanded = signal<Set<T>>(new Set());
+  protected isExpanded(row: T): boolean { return this.expanded().has(row); }
+  protected toggleExpanded(row: T): void {
+    this.expanded.update(s => { const n = new Set(s); n.has(row) ? n.delete(row) : n.add(row); return n; });
+  }
+  /** Columns a detail row spans: arrow + checkbox + visible + actions. */
+  protected detailSpan = computed(() => 1 + (this.selectable() ? 1 : 0) + this.visibleColumns().length + 1);
 
   /** Rows are clickable (→ {@link rowClick}) only when the grid declares a per-row
    *  action menu (open/edit). Clicks on the checkbox or actions cell don't count. */
@@ -197,6 +210,7 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
           return;
         }
         this.rows.set(res.items);
+        this.expanded.set(new Set());
         const pre = this.preselect();
         if (pre && this.selectable()) this.selected.set(res.items.filter(pre));
         this.total.set(res.total);
@@ -206,7 +220,7 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
     });
 
     // Re-fetch whenever the [source] input ref changes. Pages that need to
-    // force a reload after a mutation (e.g. a page bumps
+    // force a reload after a mutation (e.g. tenant contracted-companies bumps
     // a refreshTick signal so its `source` computed returns a fresh
     // OdataSource instance) rely on this. The first effect run is consumed
     // during initial wiring — ngAfterContentInit owns the very first fetch.
@@ -225,7 +239,7 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
     });
 
     // Reload (data only — filters/sort/paging kept) when a matching gridRefresh
-    // SignalR signal arrives (e.g. after a background job completes).
+    // SignalR signal arrives (e.g. after a background invoice submit completes).
     this.refreshSignals.pipe(takeUntilDestroyed()).subscribe(s => {
       if (s.grid === this.refreshKey()) this.refresh();
     });

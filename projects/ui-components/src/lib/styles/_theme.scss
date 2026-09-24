@@ -365,7 +365,9 @@ ui-shared-confirm-dialog [mat-dialog-actions] button { min-width: 5.5rem; }
 }
 .ui-shared-grid__row:last-child .ui-shared-grid__td { border-bottom: 0; }
 .ui-shared-grid__td--actions { padding: 0 0.25rem; text-align: right; }
-.ui-shared-grid__th--check, .ui-shared-grid__td--check { padding-left: 0.5rem; padding-right: 0; text-align: center; }
+.ui-shared-grid__th--check, .ui-shared-grid__td--check,
+.ui-shared-grid__th--expand, .ui-shared-grid__td--expand { padding-left: 0.5rem; padding-right: 0; text-align: center; }
+.ui-shared-grid__detail-cell { padding: 0.75rem var(--ui-cell-pad-x) 1rem 3rem; background: var(--ui-surface-alt); border-bottom: var(--ui-hairline) solid var(--ui-line); }
 .ui-shared-grid__icon-btn { width: 32px; height: 32px; padding: 0; }
 .ui-shared-grid__icon-btn mat-icon { width: 20px; height: 20px; font-size: 20px; }
 .ui-shared-grid__filters { gap: 1rem; margin-bottom: 0.85rem; align-items: flex-start; }

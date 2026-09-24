@@ -42,7 +42,10 @@
 .ui-shared-grid__th--right, .ui-shared-grid__td--right { text-align: right; }
 .ui-shared-grid__th--center, .ui-shared-grid__td--center { text-align: center; }
 .ui-shared-grid__th--actions, .ui-shared-grid__td--actions { width: 48px; }
-.ui-shared-grid__th--check, .ui-shared-grid__td--check { width: 44px; }
+.ui-shared-grid__th--check, .ui-shared-grid__td--check, .ui-shared-grid__th--expand, .ui-shared-grid__td--expand { width: 44px; }
+.ui-shared-grid__th--expand, .ui-shared-grid__td--expand { cursor: default; overflow: visible; }
+.ui-shared-grid__expand .mat-icon { transition: transform var(--ui-motion-fast); }
+.ui-shared-grid__expand--open .mat-icon { transform: rotate(90deg); }
 .ui-shared-grid__th--actions, .ui-shared-grid__th--check, .ui-shared-grid__td--check { cursor: default; }
 .ui-shared-grid__td--actions, .ui-shared-grid__th--check, .ui-shared-grid__td--check { overflow: visible; }
 .ui-shared-grid__row--clickable { cursor: pointer; }

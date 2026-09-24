@@ -65,6 +65,9 @@
     <table class="ui-shared-grid">
       <thead>
         <tr>
+          @if (detailTemplate()) {
+            <th class="ui-shared-grid__th ui-shared-grid__th--expand"></th>
+          }
           @if (selectable()) {
             <th class="ui-shared-grid__th ui-shared-grid__th--check">
               <mat-checkbox
@@ -156,6 +159,17 @@
               [attr.tabindex]="interactive() ? 0 : null"
               (click)="interactive() && rowClick.emit(row)"
               (keydown.enter)="onRowKeyEnter($event, row)">
+            @if (detailTemplate()) {
+              <td class="ui-shared-grid__td ui-shared-grid__td--expand" (click)="$event.stopPropagation()">
+                <button mat-icon-button type="button" class="ui-shared-grid__icon-btn ui-shared-grid__expand"
+                        [class.ui-shared-grid__expand--open]="isExpanded(row)"
+                        [attr.aria-expanded]="isExpanded(row)"
+                        [attr.aria-label]="'core.grid.detail' | uiTranslate"
+                        (click)="toggleExpanded(row)">
+                  <mat-icon>chevron_right</mat-icon>
+                </button>
+              </td>
+            }
             @if (selectable()) {
               <td class="ui-shared-grid__td ui-shared-grid__td--check" (click)="$event.stopPropagation()">
                 <mat-checkbox
@@ -199,6 +213,15 @@
               }
             </td>
           </tr>
+          @if (detailTemplate(); as detail) {
+            @if (isExpanded(row)) {
+              <tr class="ui-shared-grid__detail">
+                <td class="ui-shared-grid__detail-cell" [attr.colspan]="detailSpan()">
+                  <ng-container [ngTemplateOutlet]="detail" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+                </td>
+              </tr>
+            }
+          }
         }
       </tbody>
     </table>

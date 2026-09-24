@@ -7,6 +7,7 @@ export const UI_DEFAULT_TEXTS: Readonly<Record<string, string>> = {
   'core.color.none': 'No own colour',
   'core.grid.empty': 'No items to display.',
   'core.grid.rowActions': 'Row actions',
+  'core.grid.detail': 'Details',
   'core.grid.settings': 'Grid settings',
   'core.grid.resetLayout': 'Reset to default',
   'core.grid.pagerTop': 'Pagination above the table',
