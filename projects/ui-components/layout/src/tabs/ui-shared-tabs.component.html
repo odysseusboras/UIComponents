@@ -1,4 +1,14 @@
 <ng-content />
+@if (routed()) {
+  <nav mat-tab-nav-bar class="ui-shared-tabs ui-shared-tabs--routed" [tabPanel]="panel" mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
+    @for (tab of tabs(); track tab) {
+      <a mat-tab-link [routerLink]="tab.link()" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+        {{ tab.labelKey() ? (tab.labelKey() | uiTranslate) : tab.label() }}
+      </a>
+    }
+  </nav>
+  <mat-tab-nav-panel #panel></mat-tab-nav-panel>
+} @else {
 <mat-tab-group class="ui-shared-tabs" animationDuration="0ms" mat-stretch-tabs="false" mat-align-tabs="start"
                [dynamicHeight]="false" [preserveContent]="false"
                [selectedIndex]="selected()" (selectedIndexChange)="selectedChange.emit($event)">
@@ -8,3 +18,4 @@
     </mat-tab>
   }
 </mat-tab-group>
+}

@@ -705,8 +705,9 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
 .ui-shared-side-panel__content { padding: var(--ui-page-pad); }
 
 // ---- ui-shared-tabs: flat strip, hairline under the labels, body owns its own inset.
-.ui-shared-tabs .mat-mdc-tab-header { border-bottom: var(--ui-hairline) solid var(--ui-line); }
-.ui-shared-tabs .mat-mdc-tab .mdc-tab__text-label { font-size: 0.86rem; letter-spacing: 0.01em; }
+.ui-shared-tabs .mat-mdc-tab-header, .ui-shared-tabs.mat-mdc-tab-nav-bar { border-bottom: var(--ui-hairline) solid var(--ui-line); }
+.ui-shared-tabs--routed { margin-bottom: 1.25rem; }
+.ui-shared-tabs .mat-mdc-tab .mdc-tab__text-label, .ui-shared-tabs .mat-mdc-tab-link .mdc-tab__text-label { font-size: 0.86rem; letter-spacing: 0.01em; }
 .ui-shared-tabs .mat-mdc-tab-body-content { padding: 0; }
 
 // ---- ui-shared-nav-list: the shell rail.
