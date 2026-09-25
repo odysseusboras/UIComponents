@@ -5,6 +5,7 @@
     "entryFile": "src/public-api.ts"
   },
   "assets": [
+    { "input": ".", "glob": "LICENSE", "output": "." },
     {
       "input": "src/lib/styles",
       "glob": "*.scss",

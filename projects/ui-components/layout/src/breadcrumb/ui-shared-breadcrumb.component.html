@@ -1,5 +1,5 @@
 @if (visible()) {
-  <nav class="ui-shared-breadcrumb" [attr.aria-label]="'breadcrumb.label' | uiTranslate">
+  <nav class="ui-shared-breadcrumb" aria-label="breadcrumb">
     <ol class="ui-shared-breadcrumb__list">
       @for (c of crumbs(); track c.url) {
         <li class="ui-shared-breadcrumb__item">

@@ -1,4 +1,4 @@
-import { InjectionToken, Provider } from '@angular/core';
+import { Injectable, InjectionToken, Provider, signal } from '@angular/core';
 import { Params } from '@angular/router';
 
 /**
@@ -29,8 +29,20 @@ export function provideUiBreadcrumbs(nodes: UiBreadcrumbNode[]): Provider {
   return { provide: UI_BREADCRUMBS, useValue: nodes };
 }
 
+/**
+ * Labels for `:param` crumbs that only the page knows (a company's name for its id): the page
+ * registers `set(paramValue, label)` once it has loaded the record, the trail picks it up.
+ */
+@Injectable({ providedIn: 'root' })
+export class UiBreadcrumbLabels {
+  readonly labels = signal<ReadonlyMap<string, string>>(new Map());
+  set(value: string, label: string): void {
+    this.labels.update(m => { const n = new Map(m); n.set(value, label); return n; });
+  }
+}
+
 /** Walks the URL through the tree: static paths win over `:param` ones; stops at the first segment nothing matches. */
-export function resolveUiBreadcrumbs(nodes: UiBreadcrumbNode[], url: string): UiBreadcrumb[] {
+export function resolveUiBreadcrumbs(nodes: UiBreadcrumbNode[], url: string, labels?: ReadonlyMap<string, string>): UiBreadcrumb[] {
   const segments = url.split(/[?#]/)[0].split('/').filter(Boolean).map(decodeURIComponent);
   const crumbs: UiBreadcrumb[] = [];
   const params: Params = {};
@@ -41,7 +53,8 @@ export function resolveUiBreadcrumbs(nodes: UiBreadcrumbNode[], url: string): Ui
     if (!node) break;
     if (node.path.startsWith(':')) params[node.path.slice(1)] = seg;
     path += '/' + encodeURIComponent(seg);
-    crumbs.push({ labelKey: node.labelKey, label: node.label?.(params), url: node.redirect ? `${path}/${node.redirect}` : path, last: false });
+    const label = node.label?.(params) ?? (node.path.startsWith(':') ? labels?.get(seg) : undefined);
+    crumbs.push({ labelKey: node.labelKey, label, url: node.redirect ? `${path}/${node.redirect}` : path, last: false });
     level = node.children ?? [];
   }
   // A parent that redirects to the page we are on is that page: keep the child, drop the twin.

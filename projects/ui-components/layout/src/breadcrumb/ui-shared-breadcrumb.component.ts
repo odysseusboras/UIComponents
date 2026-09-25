@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 import { UiTranslatePipe } from '@borassoft/ui-components';
-import { UI_BREADCRUMBS, resolveUiBreadcrumbs } from './ui-breadcrumbs';
+import { UI_BREADCRUMBS, UiBreadcrumbLabels, resolveUiBreadcrumbs } from './ui-breadcrumbs';
 
 /**
  * Breadcrumb trail for the current URL, from the tree the app registers with
@@ -25,10 +25,11 @@ export class UiSharedBreadcrumbComponent {
 
   private router = inject(Router);
   private tree = inject(UI_BREADCRUMBS);
+  private labels = inject(UiBreadcrumbLabels);
   private url = toSignal(this.router.events.pipe(
     filter(e => e instanceof NavigationEnd), map(() => this.router.url), startWith(this.router.url)));
 
-  protected crumbs = computed(() => resolveUiBreadcrumbs(this.tree, this.url() ?? ''));
+  protected crumbs = computed(() => resolveUiBreadcrumbs(this.tree, this.url() ?? '', this.labels.labels()));
   /** Whether a trail renders (two crumbs or more); the page header reads it. */
   readonly visible = computed(() => this.crumbs().length > 1);
 }
