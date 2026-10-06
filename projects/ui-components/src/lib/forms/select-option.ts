@@ -10,6 +10,11 @@ export interface SelectOption<T = string> {
   value: T;
   label?: string;
   labelKey?: string;
+  /**
+   * A soft-deleted record: never offered in a dropdown, but when it is the current
+   * value it stays visible, struck through and marked (old data keeps its value).
+   */
+  inactive?: boolean;
 }
 
 /** The text an option shows. */

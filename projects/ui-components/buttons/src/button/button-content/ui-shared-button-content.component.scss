@@ -3,5 +3,6 @@
 @include ui.host(inline-flex);
 :host { align-items: center; }
 .ui-shared-button-content__spinner, .ui-shared-button-content__icon { flex: none; }
-.ui-shared-button-content__label { display: inline-flex; align-items: center; min-width: 0; white-space: nowrap; }
+// Block, not inline-flex: text-overflow only works on a block container, so a too-narrow row ends in an ellipsis.
+.ui-shared-button-content__label { display: block; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ui-shared-button-content__label:empty { display: none; }

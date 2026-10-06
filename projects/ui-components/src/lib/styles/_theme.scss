@@ -18,11 +18,11 @@ $components:
   ui-shared-icon, ui-shared-display-date, ui-shared-qr-code, ui-shared-stat-tile, ui-shared-status-chip,
   ui-shared-confirm-dialog, ui-shared-loading-overlay, ui-shared-progress-bar, ui-shared-spinner,
   ui-shared-grid, ui-shared-pager,
-  ui-shared-select, ui-shared-text-input, ui-shared-textarea-input, ui-shared-date-input, ui-shared-password-field,
+  ui-shared-select, ui-shared-multi-select, ui-shared-text-input, ui-shared-textarea-input, ui-shared-date-input, ui-shared-password-field,
   ui-shared-checkbox, ui-shared-toggle, ui-shared-radio-group, ui-shared-segmented, ui-shared-file-button, ui-shared-html-editor, ui-shared-color-swatches,
   ui-shared-calendar,
   ui-shared-divider, ui-shared-breadcrumb, ui-shared-page-header, ui-shared-collapsible-panel, ui-shared-side-drawer, ui-shared-side-panel,
-  ui-shared-tabs, ui-shared-nav-list, ui-shared-nav-item, ui-shared-nav-group;
+  ui-shared-tabs, ui-shared-nav-list, ui-shared-nav-item, ui-shared-nav-group, ui-shared-app-header, ui-shared-app-footer, ui-shared-avatar, ui-shared-inactive-value, ui-shared-wizard;
 
 // Tokens on the root (Material overlays, forms) and again on each component,
 // so an app can also theme one subtree.
@@ -281,7 +281,9 @@ ui-shared-confirm-dialog [mat-dialog-actions] { gap: 0.5rem; padding: 0.75rem 1.
 ui-shared-confirm-dialog [mat-dialog-actions] button { min-width: 5.5rem; }
 
 // ---- loading overlay
-.ui-shared-loading-overlay {
+// Pending: an invisible layer that swallows clicks at once. Visible (after the grace): the dimmed, blurred backdrop with the ring.
+.ui-shared-loading-overlay { background: transparent; }
+.ui-shared-loading-overlay--visible {
   background: color-mix(in srgb, var(--ui-bg) 58%, transparent);
   backdrop-filter: blur(2px);
   animation: ui-shared-fade var(--ui-motion-fast) both;
@@ -365,15 +367,27 @@ ui-shared-confirm-dialog [mat-dialog-actions] button { min-width: 5.5rem; }
 }
 .ui-shared-grid__row:last-child .ui-shared-grid__td { border-bottom: 0; }
 .ui-shared-grid__td--actions { padding: 0 0.25rem; text-align: right; }
+// Pinned while the table scrolls sideways: opaque, wearing the row's own tint (hover / selected) over the surface.
+.ui-shared-grid__row:hover { --ui-row-tint: var(--ui-hover); }
+.ui-shared-grid__row--selected { --ui-row-tint: var(--ui-selected); }
+.ui-shared-grid__td--actions { background: linear-gradient(var(--ui-row-tint, transparent), var(--ui-row-tint, transparent)), var(--ui-surface); }
+.ui-shared-grid__wrap--scrolls :is(.ui-shared-grid__th--actions, .ui-shared-grid__td--actions) { border-left: var(--ui-hairline) solid var(--ui-line); }
 .ui-shared-grid__th--check, .ui-shared-grid__td--check,
 .ui-shared-grid__th--expand, .ui-shared-grid__td--expand { padding-left: 0.5rem; padding-right: 0; text-align: center; }
 .ui-shared-grid__detail-cell { padding: 0.75rem var(--ui-cell-pad-x) 1rem 3rem; background: var(--ui-surface-alt); border-bottom: var(--ui-hairline) solid var(--ui-line); }
 .ui-shared-grid__icon-btn { width: 32px; height: 32px; padding: 0; }
 .ui-shared-grid__icon-btn mat-icon { width: 20px; height: 20px; font-size: 20px; }
-.ui-shared-grid__filters { gap: 1rem; margin-bottom: 0.85rem; align-items: flex-start; }
-.ui-shared-grid__filter-inputs { gap: 0.75rem; }
+.ui-shared-grid__filter-panel { display: block; margin-bottom: 0.85rem; }
+.ui-shared-grid__filter-panel .ui-shared-collapsible-panel__body { padding: 0.9rem 1.25rem 1rem; }
+.ui-shared-grid__filters { gap: 0.75rem; }
 .ui-shared-grid__filter-actions, .ui-shared-grid__bulk-actions { gap: 0.5rem; }
-.ui-shared-grid__filter-inputs .mat-mdc-form-field-subscript-wrapper { display: none; }
+.ui-shared-grid__filter-inputs .mat-mdc-form-field-subscript-wrapper,
+.ui-shared-grid__filter-advanced .mat-mdc-form-field-subscript-wrapper { display: none; }
+// «Advanced search»: a quiet text toggle after the basic filters; its filters sit in their own block under a hairline.
+.ui-shared-grid__advanced-toggle { --mdc-text-button-label-text-color: var(--ui-text-muted); font-weight: 500; }
+.ui-shared-grid__advanced-toggle:hover, .ui-shared-grid__advanced-toggle--open { --mdc-text-button-label-text-color: var(--ui-accent); }
+.ui-shared-grid__advanced-count { margin-left: 0.4rem; }
+.ui-shared-grid__filter-break { margin: 0.25rem 0; border-top: var(--ui-hairline) solid var(--ui-line); }
 .ui-shared-grid__bulk-bar {
   gap: 1rem;
   margin-bottom: 0.85rem;
@@ -416,7 +430,8 @@ ui-shared-confirm-dialog [mat-dialog-actions] button { min-width: 5.5rem; }
   border-top: var(--ui-hairline) solid var(--ui-line);
 }
 .ui-shared-pager__nav { gap: 0.15rem; }
-.ui-shared-pager__meta { gap: 1rem; }
+.ui-shared-pager__meta { gap: 1rem; align-items: center; }
+.ui-shared-pager__summary { display: inline-flex; align-items: center; height: 42px; }
 // Two classes: outranks Material's single-class button rules.
 .ui-shared-pager .ui-shared-pager__page {
   min-width: 32px;
@@ -434,12 +449,34 @@ ui-shared-confirm-dialog [mat-dialog-actions] button { min-width: 5.5rem; }
 // Compact page-size dropdown: no reserved hint row, shorter than a form field.
 ui-shared-select.ui-shared-pager__size { width: 7.5rem; }
 .ui-shared-pager__size .mat-mdc-form-field-subscript-wrapper { display: none; }
+.ui-shared-pager__size { --mat-form-field-container-height: 42px; --mat-form-field-container-vertical-padding: 9px; }
 .ui-shared-pager__size .mat-mdc-text-field-wrapper { height: 42px; padding-top: 0; }
-.ui-shared-pager__size .mat-mdc-form-field-infix { min-height: 42px; padding-top: 0.6rem; padding-bottom: 0.6rem; }
+.ui-shared-pager__size .mat-mdc-form-field-infix { min-height: 42px; padding-top: 9px; padding-bottom: 9px; }
 // The arrow suffix eats into the value's box, so keep a little air on both sides.
 .ui-shared-pager__size .mat-mdc-form-field-icon-suffix { padding-right: 0.25rem; }
 .ui-shared-pager__summary { font-size: var(--ui-font-size-sm); color: var(--ui-text-muted); font-variant-numeric: tabular-nums; }
 .ui-shared-pager__of { margin: 0 0.25rem; color: var(--ui-text-faint); }
+
+// ---- inactive (soft-deleted) references: struck-through label + small mark, in selects and in ui-shared-inactive-value
+.ui-shared-inactive-mark {
+  display: inline-block; padding: 0 0.4rem; border-radius: var(--ui-radius-pill);
+  font-size: 0.6875rem; font-weight: 600; line-height: 1.4rem; letter-spacing: 0.01em; white-space: nowrap;
+  color: var(--ui-text-muted); background: var(--ui-surface-alt); border: var(--ui-hairline) solid var(--ui-line);
+}
+.ui-shared-select--inactive .mat-mdc-input-element { text-decoration: line-through; color: var(--ui-text-muted); }
+.ui-shared-select__option--inactive .mdc-list-item__primary-text { text-decoration: line-through; color: var(--ui-text-muted); }
+.ui-shared-select__option--inactive .ui-shared-inactive-mark { margin-left: 0.5rem; }
+.ui-shared-inactive-value__label:is(s) { color: var(--ui-text-muted); }
+.ui-shared-multi-select__inactive { color: var(--ui-text-muted); }
+// The search box on top of a long multi-select list (inside Material's panel, hence the inherited background).
+.ui-shared-multi-select__search { padding: 0.25rem 0.75rem 0.5rem; background: inherit; border-bottom: var(--ui-hairline) solid var(--ui-line); }
+.ui-shared-multi-select__search-input {
+  height: 34px; padding: 0 0.6rem;
+  border: var(--ui-hairline) solid var(--ui-line-strong); border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface); color: var(--ui-text); font: inherit; font-size: var(--ui-font-size);
+}
+.ui-shared-multi-select__search-input::placeholder { color: var(--ui-text-muted); }
+.ui-shared-multi-select__search-input:focus { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: -1px; border-color: var(--ui-accent); }
 
 // ================================================================ inputs
 .ui-shared-radio-group { gap: 0.25rem 1rem; }
@@ -454,6 +491,9 @@ ui-shared-segmented {
   --mat-standard-button-toggle-selected-state-text-color: var(--ui-accent);
 }
 ui-shared-segmented .mat-button-toggle-group { border: var(--ui-hairline) solid var(--ui-line-strong); }
+// As a grid filter it sits next to 56px outlined form fields: same height, same baseline.
+ui-shared-segmented.ui-shared-filter { --mat-standard-button-toggle-height: calc(56px - 2 * var(--ui-hairline)); align-self: flex-start; }
+ui-shared-segmented.ui-shared-filter .mat-button-toggle-group { flex-wrap: nowrap; }
 ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
 
 .ui-shared-html-editor {
@@ -645,6 +685,11 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
   border-bottom-right-radius: 0;
 }
 .ui-shared-collapsible-panel__title { font-size: 1rem; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; color: var(--ui-text); }
+.ui-shared-collapsible-panel__badge, .ui-shared-grid__advanced-count {
+  display: inline-block; min-width: 1.4em; margin-left: 0.5rem; padding: 0 0.45em; border-radius: 999px;
+  font-size: 0.75rem; font-weight: 600; line-height: 1.5; text-align: center; vertical-align: 0.1em;
+  color: #fff; background: var(--ui-accent);
+}
 .ui-shared-collapsible-panel__lede { max-width: 62ch; margin-top: 0.25rem; font-size: 0.86rem; line-height: 1.55; color: var(--ui-text-muted); }
 .ui-shared-collapsible-panel__chevron {
   width: 22px; height: 22px; font-size: 22px; line-height: 22px;
@@ -678,6 +723,11 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
   transition: width var(--ui-motion);
 }
 .ui-shared-side-panel__nav-body { padding-right: 6px; }
+// Head row: room for the toggle on the right; hidden padding when nothing is projected (the row keeps the toggle's height).
+.ui-shared-side-panel__head { padding: var(--ui-side-panel-toggle-top) 0.4rem var(--ui-side-panel-toggle-top) 1.1rem; border-bottom: var(--ui-hairline) solid var(--ui-line); }
+.ui-shared-side-panel__head-slot:not(:has(*)) { display: none; }
+.ui-shared-side-panel__title { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; color: var(--ui-text); }
+.ui-shared-side-panel__subtitle { margin: 0.2rem 0 0; font-size: var(--ui-font-size-sm); line-height: 1.4; color: var(--ui-text-muted); }
 .ui-shared-side-panel__handle-grip {
   width: 2px;
   height: 36px;
@@ -700,9 +750,21 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
 }
 .ui-shared-side-panel__toggle:hover { background: var(--ui-surface-alt); color: var(--ui-text); border-color: var(--ui-text-muted); }
 .ui-shared-side-panel__toggle:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: 2px; }
-.ui-shared-side-panel__toggle mat-icon { width: 18px; height: 18px; font-size: 18px; }
-.ui-shared-side-panel__toggle--rail { margin-top: 0.6rem; }
+.ui-shared-side-panel__toggle mat-icon { width: 18px; height: 18px; font-size: 18px; line-height: 18px; }
+
 .ui-shared-side-panel__content { padding: var(--ui-page-pad); }
+
+// ---- ui-shared-wizard: numbered strip, hairline-separated body and footer
+.ui-shared-wizard__steps { gap: 0.25rem; padding-bottom: 1rem; border-bottom: var(--ui-hairline) solid var(--ui-line); }
+.ui-shared-wizard__step-inner { padding: 0.5rem 0.75rem; border-radius: var(--ui-radius-sm); color: var(--ui-text-muted); font-size: var(--ui-font-size-sm); font-weight: 500; }
+a.ui-shared-wizard__step-inner:hover { background: var(--ui-hover); color: var(--ui-text); }
+.ui-shared-wizard__n { width: 26px; height: 26px; border-radius: var(--ui-radius-pill); border: var(--ui-hairline) solid var(--ui-line-strong); font-size: 0.78rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ui-shared-wizard__n mat-icon { width: 16px; height: 16px; font-size: 16px; line-height: 16px; }
+.ui-shared-wizard__step--active .ui-shared-wizard__step-inner { color: var(--ui-text); font-weight: 600; }
+.ui-shared-wizard__step--active .ui-shared-wizard__n { background: var(--ui-accent); border-color: var(--ui-accent); color: var(--ui-on-accent, #fff); }
+.ui-shared-wizard__step--done .ui-shared-wizard__n { background: var(--ui-accent-soft); border-color: transparent; color: var(--ui-accent); }
+.ui-shared-wizard__body { padding: 1.5rem 0; }
+.ui-shared-wizard__footer { padding-top: 1rem; border-top: var(--ui-hairline) solid var(--ui-line); }
 
 // ---- ui-shared-tabs: flat strip, hairline under the labels, body owns its own inset.
 .ui-shared-tabs .mat-mdc-tab-header, .ui-shared-tabs.mat-mdc-tab-nav-bar { border-bottom: var(--ui-hairline) solid var(--ui-line); }
@@ -723,6 +785,8 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
   text-decoration: none;
   transition: background var(--ui-motion-fast), color var(--ui-motion-fast);
   .ui-shared-button-content__icon { --ui-icon-size: 19px; color: var(--ui-text-muted); }
+  // A narrow rail truncates the label with an ellipsis instead of spilling over the edge.
+  .ui-shared-button-content { min-width: 0; max-width: 100%; }
   &:hover { background: var(--ui-hover); }
   &:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: -2px; }
 }
@@ -734,8 +798,13 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
 }
 .ui-shared-nav-group {
   margin: 1rem 0.35rem 0.3rem;
-  padding: 0.75rem 0.55rem 0.35rem;
+  padding: 0.75rem 0 0.35rem;
   border-top: var(--ui-hairline) solid var(--ui-line);
+}
+.ui-shared-nav-group:first-child { border-top: 0; margin-top: 0.25rem; padding-top: 0.4rem; }
+.ui-shared-nav-group__label {
+  display: block;
+  padding: 0 0.55rem;
   color: var(--ui-text-muted);
   font-size: 0.74rem;
   font-weight: 500;
@@ -743,7 +812,88 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-.ui-shared-nav-group:first-child { border-top: 0; margin-top: 0.25rem; padding-top: 0.4rem; }
+// Collapsible: the label becomes a full-width toggle; its items indent slightly and lose the section spacing.
+.ui-shared-nav-group--collapsible { margin-left: 0; margin-right: 0; padding-bottom: 0; }
+.ui-shared-nav-group__toggle {
+  gap: 0.5rem;
+  height: 32px;
+  padding: 0 0.55rem 0 0.9rem;
+  border: 0;
+  border-radius: var(--ui-radius-sm);
+  background: transparent;
+  color: var(--ui-text-muted);
+  font: inherit;
+  text-align: left;
+  transition: background var(--ui-motion-fast), color var(--ui-motion-fast);
+  .ui-shared-nav-group__label { padding: 0; }
+  .ui-shared-nav-group__icon { --ui-icon-size: 18px; }
+  .ui-shared-nav-group__chevron { --ui-icon-size: 18px; color: var(--ui-text-faint); }
+  &:hover { background: var(--ui-hover); color: var(--ui-text); }
+  &:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: -2px; }
+}
+.ui-shared-nav-group__items { padding: 0.15rem 0 0.25rem 0.75rem; gap: 1px; }
+.ui-shared-nav-group__items .ui-shared-nav-item { height: 36px; font-size: 0.85rem; }
+
+// ---- ui-shared-app-header: the sticky top bar every app shares.
+.ui-shared-app-header {
+  background: var(--ui-surface);
+  border-bottom: var(--ui-hairline) solid var(--ui-line);
+  color: var(--ui-text);
+}
+.ui-shared-app-header__inner { gap: 1rem; padding: 0 clamp(1rem, 3vw, 1.75rem); }
+.ui-shared-app-header__nav { gap: 0.5rem; margin-left: 0.5rem; }
+.ui-shared-app-header__actions { gap: 0.35rem; }
+.ui-shared-app-header__brand { display: inline-flex; align-items: center; gap: 0.7rem; padding-right: 0.5rem; color: inherit; text-decoration: none; transition: opacity var(--ui-motion-fast); }
+.ui-shared-app-header__brand:hover { opacity: 0.85; }
+.ui-shared-app-header__mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: var(--ui-radius-sm);
+  background: var(--ui-accent); color: var(--ui-on-accent); font-weight: 700; font-size: 1rem;
+}
+.ui-shared-app-header__wordmark { display: flex; flex-direction: column; line-height: 1.15; }
+.ui-shared-app-header__wordmark strong { font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; color: var(--ui-accent); }
+.ui-shared-app-header__wordmark small { font-size: 0.72rem; color: var(--ui-text-muted); }
+.ui-shared-app-header__sep { width: var(--ui-hairline); height: 22px; margin: 0 0.4rem; background: var(--ui-line); }
+// A user menu trigger: avatar + name (+ role) + caret, as a pill.
+.ui-shared-app-header__user {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  height: 38px; padding: 0 0.6rem 0 0.3rem;
+  border: var(--ui-hairline) solid var(--ui-line); border-radius: var(--ui-radius-pill);
+  background: var(--ui-surface); color: var(--ui-text); font: inherit; cursor: pointer;
+  transition: background var(--ui-motion-fast), border-color var(--ui-motion-fast), box-shadow var(--ui-motion-fast);
+  &:hover { background: var(--ui-hover); border-color: var(--ui-line-strong); box-shadow: var(--ui-shadow-xs); }
+  &:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: 2px; }
+}
+.ui-shared-app-header__user-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
+.ui-shared-app-header__user-name { font-size: 0.85rem; font-weight: 500; color: var(--ui-text); }
+.ui-shared-app-header__user-role { font-size: 0.7rem; color: var(--ui-text-muted); }
+.ui-shared-app-header__user .ui-shared-icon { color: var(--ui-text-faint); margin-left: -2px; }
+@media (max-width: 720px) {
+  .ui-shared-app-header__wordmark small, .ui-shared-app-header__user-text, .ui-shared-app-header__sep { display: none; }
+}
+
+// ---- ui-shared-app-footer: slim, quiet.
+.ui-shared-app-footer {
+  background: var(--ui-surface);
+  border-top: var(--ui-hairline) solid var(--ui-line);
+  color: var(--ui-text-muted);
+  font-size: 0.78rem;
+}
+.ui-shared-app-footer__inner { gap: 0.5rem 1.5rem; padding: 0.6rem clamp(1rem, 3vw, 1.75rem); }
+.ui-shared-app-footer__links { gap: 1rem; }
+.ui-shared-app-footer a { color: var(--ui-text-muted); text-decoration: none; }
+.ui-shared-app-footer a:hover { color: var(--ui-accent); text-decoration: underline; }
+.ui-shared-app-footer__end { color: var(--ui-text-faint); font-variant-numeric: tabular-nums; }
+@media (max-width: 720px) { .ui-shared-app-footer__links { margin: 0; } }
+
+// ---- ui-shared-avatar
+.ui-shared-avatar {
+  width: 30px; height: 30px; border-radius: var(--ui-radius-pill);
+  background: var(--ui-accent); color: var(--ui-on-accent);
+  font-size: 0.74rem; font-weight: 600; letter-spacing: -0.01em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.ui-shared-avatar--lg { width: 40px; height: 40px; font-size: 0.95rem; }
 
 // ================================================================ Material, app-wide
 // The same form, overlay and button behaviour in every app. `!important` only
@@ -782,6 +932,9 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
 // Errors show only once the user has left a field (Material's error state), in ONE
 // colour: outline, label, icon and message stay the same on hover and focus.
 .mat-mdc-form-field {
+  // Resting / hover outline = the same hairline every other bordered control uses (segmented, cards, buttons).
+  --mdc-outlined-text-field-outline-color: var(--ui-line-strong);
+  --mdc-outlined-text-field-hover-outline-color: var(--ui-text-muted);
   --mdc-outlined-text-field-error-hover-outline-color: var(--mdc-outlined-text-field-error-outline-color, var(--mat-sys-error));
   --mdc-outlined-text-field-error-focus-outline-color: var(--mdc-outlined-text-field-error-outline-color, var(--mat-sys-error));
   --mdc-outlined-text-field-error-hover-label-text-color: var(--mdc-outlined-text-field-error-label-text-color, var(--mat-sys-error));
@@ -936,3 +1089,8 @@ $toasts: (success: (--ui-success, --ui-on-danger), warn: (--ui-warning, --ui-on-
 @keyframes ui-shared-pop-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 @keyframes ui-shared-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes ui-shared-bar { 0% { transform: translateX(-120%); } 100% { transform: translateX(320%); } }
+
+// ---- required marker: the asterisk Material adds to a required field's label, plus
+// `.ui-shared-required` for labels an app draws itself (segmented, radio groups).
+.mat-mdc-form-field-required-marker { color: var(--ui-danger); }
+.ui-shared-required::after { content: ' *'; color: var(--ui-danger); }

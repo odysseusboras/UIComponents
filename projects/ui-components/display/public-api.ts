@@ -4,3 +4,5 @@ export * from './src/stat-tile/ui-shared-stat-tile.component';
 export * from './src/display-date/ui-shared-display-date.component';
 export * from './src/qr-code/ui-shared-qr-code.component';
 export * from './src/icon/ui-shared-icon.component';
+export * from './src/avatar/ui-shared-avatar.component';
+export * from './src/inactive-value/ui-shared-inactive-value.component';

@@ -59,7 +59,12 @@ export function eqClause<T>(field: string | undefined | null): ClauseBuilder<T> 
   return field ? v => `${field} eq ${odataLiteral(v)}` : null;
 }
 
-const blank = (v: unknown) => v === null || v === undefined || (typeof v === 'string' && !v.trim());
+/** `field eq a or field eq b …` for a multi-value filter (any of the picked values); null without a field. */
+export function anyOfClause<T>(field: string | undefined | null): ClauseBuilder<T[]> | null {
+  return field ? values => values.map(v => `${field} eq ${odataLiteral(v)}`).join(' or ') : null;
+}
+
+const blank = (v: unknown) => v === null || v === undefined || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && !v.length);
 
 /**
  * Pending vs applied value of an input used as a grid filter: the control holds
@@ -75,6 +80,8 @@ export class GridFilterState<T> implements UiGridFilter {
     private control: () => AbstractControl,
     private builder: () => ClauseBuilder<T> | null,
     private initial: () => T | null = () => null,
+    /** Whether a remembered value still fits this input (a list for a multi-select, a day for a date). */
+    private accepts: (value: unknown) => boolean = () => true,
   ) {}
 
   isFilter(): boolean { return !!this.builder(); }
@@ -87,6 +94,7 @@ export class GridFilterState<T> implements UiGridFilter {
 
   /** Puts a remembered value in place as both pending and applied (no Search needed). */
   restore(value: T): void {
+    if (!this.accepts(value)) return;
     this.control().setValue(value);
     if (this.isFilter()) this.applied.set(value);
   }

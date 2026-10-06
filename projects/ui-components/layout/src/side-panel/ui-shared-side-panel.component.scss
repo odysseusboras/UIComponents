@@ -23,6 +23,10 @@
   max-height: calc(var(--ui-viewport-h, 100dvh) - var(--ui-sticky-top, 0px));
   min-height: min(100%, calc(var(--ui-viewport-h, 100dvh) - var(--ui-sticky-top, 0px)));
 }
+// Head row: the consumer's title (optional) and the collapse toggle are one flex row, so they always share a centre line.
+.ui-shared-side-panel__head { flex: 0 0 auto; display: flex; align-items: center; gap: 0.5rem; }
+.ui-shared-side-panel__head-slot { flex: 1 1 auto; min-width: 0; }
+.ui-shared-side-panel__head-slot > * { margin: 0; }
 .ui-shared-side-panel__nav-body { flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; }
 .ui-shared-side-panel__handle {
   position: absolute;
@@ -34,14 +38,7 @@
   place-items: center;
   cursor: col-resize;
 }
-.ui-shared-side-panel__toggle {
-  position: absolute;
-  top: 0.6rem;
-  right: 0.4rem;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
+.ui-shared-side-panel__toggle { flex: 0 0 auto; display: grid; place-items: center; cursor: pointer; }
 // Collapsed: the toggle is the whole rail's content, centred.
-.ui-shared-side-panel__toggle--rail { position: relative; top: auto; right: auto; display: flex; margin-left: auto; margin-right: auto; }
+.ui-shared-side-panel__toggle--rail { margin: var(--ui-side-panel-toggle-top) auto 0; }
 .ui-shared-side-panel__content { flex: 1; min-width: 0; }

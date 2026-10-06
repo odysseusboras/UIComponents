@@ -10,3 +10,6 @@ export * from './src/nav-list/nav-item/ui-shared-nav-item.component';
 export * from './src/nav-list/nav-group/ui-shared-nav-group.component';
 export * from './src/breadcrumb/ui-breadcrumbs';
 export * from './src/breadcrumb/ui-shared-breadcrumb.component';
+export * from './src/app-header/ui-shared-app-header.component';
+export * from './src/app-footer/ui-shared-app-footer.component';
+export * from './src/wizard/ui-shared-wizard.component';

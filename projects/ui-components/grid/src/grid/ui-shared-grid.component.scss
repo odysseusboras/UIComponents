@@ -2,9 +2,15 @@
 
 @include ui.host(block);
 
-.ui-shared-grid__wrap { position: relative; overflow-x: clip; }
+// More columns than fit (the user shows extra ones from the gear menu): the table scrolls sideways and the
+// utility column (gear + row menu) stays pinned to the right edge, so the way back is always on screen.
+// overflow-y stays hidden: with overflow-x alone it would compute to auto and a button's touch target in the last
+// row would be enough for a vertical scrollbar.
+.ui-shared-grid__wrap { position: relative; overflow-x: auto; overflow-y: hidden; }
 .ui-shared-grid__wrap--loading { pointer-events: none; }
 .ui-shared-grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
+// Column widths are the whole cell (padding included), so declared widths add up to the table width.
+.ui-shared-grid th, .ui-shared-grid td { box-sizing: border-box; }
 
 .ui-shared-grid__th {
   position: relative;
@@ -41,7 +47,9 @@
 }
 .ui-shared-grid__th--right, .ui-shared-grid__td--right { text-align: right; }
 .ui-shared-grid__th--center, .ui-shared-grid__td--center { text-align: center; }
-.ui-shared-grid__th--actions, .ui-shared-grid__td--actions { width: 48px; }
+.ui-shared-grid__th--actions, .ui-shared-grid__td--actions { position: sticky; right: 0; width: 48px; }
+.ui-shared-grid__th--actions { z-index: 3; }
+.ui-shared-grid__td--actions { z-index: 1; }
 .ui-shared-grid__th--check, .ui-shared-grid__td--check, .ui-shared-grid__th--expand, .ui-shared-grid__td--expand { width: 44px; }
 .ui-shared-grid__th--expand, .ui-shared-grid__td--expand { cursor: default; overflow: visible; }
 .ui-shared-grid__expand .mat-icon { transition: transform var(--ui-motion-fast); }
@@ -51,26 +59,31 @@
 .ui-shared-grid__row--clickable { cursor: pointer; }
 .ui-shared-grid__icon-btn { display: inline-grid; place-items: center; }
 
-.ui-shared-grid__filters,
+// One wrapping row of filters: the basic ones, then (after a full-width break) the advanced ones. Clear / Search are
+// its last item, pushed right: the bottom-right corner, beside the last filters when there is room and on a line of
+// their own when there is not. The two groups are only wrappers here (display: contents), so everything shares the row.
+.ui-shared-grid__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.ui-shared-grid__filter-inputs, .ui-shared-grid__filter-advanced { display: contents; }
+.ui-shared-grid__filter-break { flex-basis: 100%; }
 .ui-shared-grid__bulk-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
 }
-.ui-shared-grid__filter-inputs {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
-}
+.ui-shared-grid__advanced-chevron { transition: transform var(--ui-motion-fast); }
+.ui-shared-grid__advanced-toggle--open .ui-shared-grid__advanced-chevron { transform: rotate(180deg); }
 .ui-shared-grid__filter-actions,
 .ui-shared-grid__bulk-actions {
   display: flex;
   align-items: center;
   margin-left: auto;
 }
+.ui-shared-grid__filter-actions { align-self: flex-end; }
 
 .ui-shared-grid__state {
   display: flex;

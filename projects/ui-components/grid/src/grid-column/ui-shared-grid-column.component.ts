@@ -7,6 +7,8 @@ import { Component, TemplateRef, contentChild, input } from '@angular/core';
  *   - <c>sortField</c>: OData PascalCase field name for <c>$orderby</c>.
  *                       Omit to make the column non-sortable.
  *   - <c>align</c>: optional cell alignment hint (default left).
+ *   - <c>width</c>: optional default CSS width (e.g. '5rem'); the user's drag-resize
+ *                   overrides it. Columns without a width share the remaining space.
  *   - A single projected <c>#cell</c> ng-template that receives the row
  *     via <c>let-row</c> and renders the cell body.
  *
@@ -30,6 +32,7 @@ export class UiSharedGridColumnComponent {
   labelKey = input.required<string>();
   sortField = input<string | undefined>(undefined);
   align = input<'left' | 'right' | 'center'>('left');
+  width = input<string | undefined>(undefined);
 
   /** Body cell template. Required — receives the row via <c>$implicit</c>. */
   cell = contentChild.required<TemplateRef<{ $implicit: unknown }>>('cell');

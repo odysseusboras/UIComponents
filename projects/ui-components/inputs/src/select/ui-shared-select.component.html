@@ -16,13 +16,18 @@
       <mat-option [value]="''">{{ nullLabelKey | uiTranslate }}</mat-option>
     }
     @for (o of filtered(); track o.value) {
-      <mat-option [value]="o.value">{{ o | uiOptionText }}</mat-option>
+      <mat-option [value]="o.value" [class.ui-shared-select__option--inactive]="o.inactive">
+        {{ o | uiOptionText }}@if (o.inactive) { <span class="ui-shared-inactive-mark">{{ 'common.inactive' | uiTranslate }}</span> }
+      </mat-option>
     } @empty {
       @if (emptyHintKey) {
         <mat-option disabled>{{ emptyHintKey | uiTranslate }}</mat-option>
       }
     }
   </mat-autocomplete>
+  @if (currentInactive) {
+    <span matSuffix class="ui-shared-inactive-mark" [matTooltip]="'common.inactiveHint' | uiTranslate">{{ 'common.inactive' | uiTranslate }}</span>
+  }
   <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
   <mat-icon matSuffix class="ui-shared-select__arrow"
             (mousedown)="$event.preventDefault()"

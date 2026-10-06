@@ -1,9 +1,30 @@
 @if (hasFilters()) {
+  <ui-shared-collapsible-panel class="ui-shared-grid__filter-panel" titleKey="core.grid.filters" [badge]="appliedFilterCount()" [storageKey]="(storageKey() ?? 'grid') + '.filters'">
   <div class="ui-shared-grid__filters">
     <!-- Enter in any filter runs Search (a dropdown pick lands before keyup). -->
     <div class="ui-shared-grid__filter-inputs" (keyup.enter)="onSearch()">
-      <ng-content select="ui-shared-text-input, ui-shared-select, ui-shared-segmented"></ng-content>
+      <ng-content select="ui-shared-text-input, ui-shared-select, ui-shared-multi-select, ui-shared-date-input, ui-shared-segmented"></ng-content>
+      @if (hasAdvanced()) {
+        <!-- Enter on the toggle opens it; it must not also run Search. -->
+        <button mat-button type="button" class="ui-shared-grid__advanced-toggle"
+                [class.ui-shared-grid__advanced-toggle--open]="advancedOpen()"
+                [attr.aria-expanded]="advancedOpen()"
+                (click)="toggleAdvanced()" (keyup.enter)="$event.stopPropagation()">
+          <mat-icon>tune</mat-icon>
+          <span>{{ 'core.grid.filter.advanced' | uiTranslate }}</span>
+          @if (advancedApplied(); as n) { <span class="ui-shared-grid__advanced-count">{{ n }}</span> }
+          <mat-icon iconPositionEnd class="ui-shared-grid__advanced-chevron">expand_more</mat-icon>
+        </button>
+      }
     </div>
+    <!-- Closed = not rendered, but the filters live on: an applied one keeps filtering (the toggle counts them). -->
+    @if (advancedOpen()) {
+      <span class="ui-shared-grid__filter-break" aria-hidden="true"></span>
+      <div class="ui-shared-grid__filter-advanced" (keyup.enter)="onSearch()">
+        <ng-content select="[uiGridAdvanced]"></ng-content>
+      </div>
+    }
+    <!-- The last item of the row of filters, pushed right: the bottom-right corner of the panel. -->
     <div class="ui-shared-grid__filter-actions">
       @if (hasActiveFilters()) {
         <button mat-button type="button" (click)="onClearFilters()">
@@ -16,6 +37,7 @@
       </button>
     </div>
   </div>
+  </ui-shared-collapsible-panel>
 }
 
 @if (pagerTop() && total() > 0) {
@@ -61,7 +83,7 @@
     </div>
   </div>
 } @else {
-  <div class="ui-shared-grid__wrap" [class.ui-shared-grid__wrap--loading]="loading()" [attr.aria-busy]="loading()">
+  <div #wrap class="ui-shared-grid__wrap" [class.ui-shared-grid__wrap--loading]="loading()" [class.ui-shared-grid__wrap--scrolls]="overflows()" [attr.aria-busy]="loading()">
     <table class="ui-shared-grid">
       <thead>
         <tr>
@@ -174,6 +196,7 @@
               <td class="ui-shared-grid__td ui-shared-grid__td--check" (click)="$event.stopPropagation()">
                 <mat-checkbox
                     [checked]="isSelected(row)"
+                    [disabled]="!isSelectable(row)"
                     (change)="toggleRow(row, $event.checked)">
                 </mat-checkbox>
               </td>

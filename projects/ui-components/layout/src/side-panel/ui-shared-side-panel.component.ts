@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   Component, ElementRef, HostBinding, NgZone, OnDestroy,
   effect, inject, input, numberAttribute, signal,
@@ -12,10 +13,14 @@ import { UiTranslatePipe, trackPointerDrag, uiStorage } from '@borassoft/ui-comp
  *
  * ```html
  * <ui-shared-side-panel storageKey="admin-shell">
- *   <div slot="nav">…sidenav head + nav list…</div>
+ *   <div slot="head"><h2 class="ui-shared-side-panel__title">Admin</h2></div>   (optional)
+ *   <div slot="nav">…nav list…</div>
  *   <div slot="content"><router-outlet /></div>
  * </ui-shared-side-panel>
  * ```
+ *
+ * The head row is where the collapse toggle lives (right edge); the nav body starts below it,
+ * so nothing in the list is ever covered. Without a head the row keeps the toggle's height only.
  *
  * Behaviour:
  *  - **Show / hide.** A toggle button collapses the panel to a slim rail.
@@ -34,7 +39,7 @@ import { UiTranslatePipe, trackPointerDrag, uiStorage } from '@borassoft/ui-comp
 @Component({
   selector: 'ui-shared-side-panel',
   standalone: true,
-  imports: [MatIconModule, MatTooltipModule, UiTranslatePipe],
+  imports: [NgTemplateOutlet, MatIconModule, MatTooltipModule, UiTranslatePipe],
   templateUrl: './ui-shared-side-panel.component.html',
   styleUrl: './ui-shared-side-panel.component.scss',
 })
@@ -52,7 +57,7 @@ export class UiSharedSidePanelComponent implements OnDestroy {
   maxWidth = input(480, { transform: numberAttribute });
 
   /** Width of the slim "collapsed" rail that hosts the expand toggle. */
-  protected readonly railWidth = 36;
+  protected readonly railWidth = 48;
 
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
   private zone = inject(NgZone);

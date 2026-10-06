@@ -1,0 +1,35 @@
+<mat-form-field appearance="outline" [subscriptSizing]="subscriptSizing()">
+  <mat-label>{{ labelKey() | uiTranslate }}</mat-label>
+  <mat-select [formControl]="ctrl()" multiple [required]="required()" [class.ui-shared-multi-select--inactive]="hasInactive"
+              (openedChange)="onOpened($event)" (selectionChange)="focusSearch()">
+    <!-- Own trigger text: the option rows carry the "inactive" mark, which must not leak into the field's summary.
+         Every piece is an element: loose text between the blocks would put a space before each comma. -->
+    <mat-select-trigger>
+      @for (o of selected; track o.value; let last = $last) {
+        @if (o.inactive) {<s class="ui-shared-multi-select__inactive">{{ o | uiOptionText }}</s>} @else {<span>{{ o | uiOptionText }}</span>}
+        @if (!last) {<span>, </span>}
+      }
+    </mat-select-trigger>
+    @if (searchable) {
+      <div class="ui-shared-multi-select__search">
+        <input #search type="text" class="ui-shared-multi-select__search-input" autocomplete="off"
+               [placeholder]="'core.select.search' | uiTranslate" [attr.aria-label]="'core.select.search' | uiTranslate"
+               [value]="query()" (input)="onQuery(search.value)" (keydown)="onSearchKey($event)" />
+      </div>
+    }
+    @for (o of offered; track o.value) {
+      <!-- Filtered out = hidden, not removed: mat-select forgets the selection of an option that leaves the DOM.
+           Disabled as well, so the arrow keys skip it. -->
+      <mat-option [value]="o.value" [class.ui-shared-select__option--inactive]="o.inactive"
+                  [class.ui-shared-multi-select__option--hidden]="filteredOut(o)" [disabled]="filteredOut(o)">
+        {{ o | uiOptionText }}@if (o.inactive) { <span class="ui-shared-inactive-mark">{{ 'common.inactive' | uiTranslate }}</span> }
+      </mat-option>
+    }
+  </mat-select>
+  @if (hintText() || hintKey()) {
+    <mat-hint>{{ hintText() || (hintKey() | uiTranslate) }}</mat-hint>
+  }
+  @if (firstError(ctrl()); as key) {
+    <mat-error>{{ key | uiTranslate }}</mat-error>
+  }
+</mat-form-field>

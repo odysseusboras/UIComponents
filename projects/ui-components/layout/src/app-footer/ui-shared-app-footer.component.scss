@@ -1,0 +1,7 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+:host { margin-top: auto; }
+.ui-shared-app-footer__inner { display: flex; flex-wrap: wrap; align-items: center; }
+.ui-shared-app-footer__links { display: flex; flex-wrap: wrap; align-items: center; margin: 0 auto; }
+.ui-shared-app-footer__end { margin-left: auto; }

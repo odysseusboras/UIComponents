@@ -6,6 +6,7 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent, MatAutocompleteTri
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ClauseBuilder, GridFilterState, SelectOption, UI_TRANSLATE, UiOptionTextPipe, UiTranslatePipe,
   firstError, odataLiteral, optionText, provideGridFilter, storeChoice, storedChoice,
@@ -35,13 +36,13 @@ import {
   selector: 'ui-shared-select',
   standalone: true,
   imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatIconModule,
+    ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatIconModule, MatTooltipModule,
     UiTranslatePipe, UiOptionTextPipe,
   ],
   templateUrl: './ui-shared-select.component.html',
   styleUrl: './ui-shared-select.component.scss',
   providers: [provideGridFilter(() => UiSharedSelectComponent)],
-  host: { '[class.ui-shared-filter]': 'filter.isFilter()' },
+  host: { '[class.ui-shared-filter]': 'filter.isFilter()', '[class.ui-shared-select--inactive]': 'currentInactive' },
 })
 export class UiSharedSelectComponent<T = string> implements OnChanges, OnInit, DoCheck {
   /** Optional when used as a grid filter. */
@@ -95,10 +96,17 @@ export class UiSharedSelectComponent<T = string> implements OnChanges, OnInit, D
 
   protected filtered = computed(() => {
     const q = this.query().trim().toLowerCase();
-    const all = this.allOptions();
+    // Inactive (soft-deleted) options are only offered when they are the current value.
+    const all = this.allOptions().filter(o => !o.inactive || o.value === this.control.value);
     if (!q) return all;
     return all.filter(o => this.label(o).toLowerCase().includes(q) || String(o.value).toLowerCase().includes(q));
   });
+
+  /** The current value points to a soft-deleted record: the field shows it struck through with a marker. */
+  protected get currentInactive(): boolean {
+    const v = this.control.value;
+    return v != null && v !== '' && !!this.allOptions().find(o => o.value === v)?.inactive;
+  }
 
   protected get required(): boolean { return this.control.hasValidator(Validators.required); }
 

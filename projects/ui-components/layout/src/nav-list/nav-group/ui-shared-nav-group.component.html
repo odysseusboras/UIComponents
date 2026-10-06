@@ -1,1 +1,12 @@
-{{ labelKey() | uiTranslate }}
+@if (collapsible()) {
+  <button type="button" class="ui-shared-nav-group__toggle" [attr.aria-expanded]="open()" (click)="toggle()">
+    @if (icon()) { <ui-shared-icon class="ui-shared-nav-group__icon" [name]="icon()" size="sm" /> }
+    <span class="ui-shared-nav-group__label">{{ labelKey() | uiTranslate }}</span>
+    <ui-shared-icon class="ui-shared-nav-group__chevron" [name]="open() ? 'expand_less' : 'expand_more'" size="sm" />
+  </button>
+  @if (open()) {
+    <div class="ui-shared-nav-group__items"><ng-content /></div>
+  }
+} @else {
+  <span class="ui-shared-nav-group__label">{{ labelKey() | uiTranslate }}</span>
+}

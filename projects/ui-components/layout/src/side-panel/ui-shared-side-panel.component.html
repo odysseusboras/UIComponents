@@ -2,6 +2,10 @@
   <aside class="ui-shared-side-panel__nav">
     <div class="ui-shared-side-panel__nav-sticky">
       @if (!collapsed()) {
+        <div class="ui-shared-side-panel__head">
+          <div class="ui-shared-side-panel__head-slot"><ng-content select="[slot=head]" /></div>
+          <ng-container *ngTemplateOutlet="toggle" />
+        </div>
         <div class="ui-shared-side-panel__nav-body">
           <ng-content select="[slot=nav]" />
         </div>
@@ -13,8 +17,12 @@
              [attr.aria-label]="'sidePanel.resize' | uiTranslate">
           <span class="ui-shared-side-panel__handle-grip"></span>
         </div>
+      } @else {
+        <ng-container *ngTemplateOutlet="toggle" />
       }
+    </div>
 
+    <ng-template #toggle>
       <button type="button"
               class="ui-shared-side-panel__toggle"
               [class.ui-shared-side-panel__toggle--rail]="collapsed()"
@@ -24,7 +32,7 @@
               [attr.aria-label]="(collapsed() ? 'sidePanel.show' : 'sidePanel.hide') | uiTranslate">
         <mat-icon>{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
       </button>
-    </div>
+    </ng-template>
   </aside>
 
   <section class="ui-shared-side-panel__content">

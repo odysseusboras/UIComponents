@@ -1,0 +1,8 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(block);
+:host { position: sticky; top: 0; z-index: 20; }
+.ui-shared-app-header__inner { display: flex; align-items: center; height: var(--header-h, 56px); }
+.ui-shared-app-header__start { display: flex; align-items: center; flex-shrink: 0; }
+.ui-shared-app-header__nav { display: flex; align-items: center; min-width: 0; }
+.ui-shared-app-header__actions { display: flex; align-items: center; margin-left: auto; flex-shrink: 0; }

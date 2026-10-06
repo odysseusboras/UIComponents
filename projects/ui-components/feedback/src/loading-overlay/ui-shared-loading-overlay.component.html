@@ -1,9 +1,11 @@
-@if (loading.visible()) {
-  <div class="ui-shared-loading-overlay" role="status" aria-busy="true" aria-live="polite">
-    <div class="ui-shared-loading-overlay__bar" aria-hidden="true"></div>
-    <div class="ui-shared-loading-overlay__card">
-      <span class="ui-shared-loading-overlay__ring" aria-hidden="true"></span>
-      <span class="ui-shared-loading-overlay__label">{{ 'common.loading' | uiTranslate }}</span>
-    </div>
+@if (loading.pending()) {
+  <div class="ui-shared-loading-overlay" [class.ui-shared-loading-overlay--visible]="loading.visible()" role="status" [attr.aria-busy]="true" aria-live="polite">
+    @if (loading.visible()) {
+      <div class="ui-shared-loading-overlay__bar" aria-hidden="true"></div>
+      <div class="ui-shared-loading-overlay__card">
+        <span class="ui-shared-loading-overlay__ring" aria-hidden="true"></span>
+        <span class="ui-shared-loading-overlay__label">{{ 'common.loading' | uiTranslate }}</span>
+      </div>
+    }
   </div>
 }

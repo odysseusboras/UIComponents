@@ -7,6 +7,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   height: 100%;
+  box-sizing: border-box; // the theme's padding and border must not push the tile past its grid row
   text-decoration: none;
   color: inherit;
 }

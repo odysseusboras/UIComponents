@@ -22,6 +22,8 @@ import { UiTranslatePipe, uiStorage } from '@borassoft/ui-components';
 export class UiSharedCollapsiblePanelComponent {
   titleKey = input.required<string>();
   ledeKey = input<string>('');
+  /** Small count next to the title (e.g. applied filters), shown when set and > 0. */
+  badge = input<number | null>(null);
   storageKey = input.required<string>();
 
   private toggled = signal<boolean | null>(null);

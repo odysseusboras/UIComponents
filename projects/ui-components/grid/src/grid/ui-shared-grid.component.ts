@@ -1,7 +1,8 @@
 import { UiEmptyDirective } from './ui-empty.directive';
+import { UiGridAdvancedDirective } from './ui-grid-advanced.directive';
 import {
-  AfterContentInit, Component, DestroyRef, NgZone, OnInit, TemplateRef, booleanAttribute,
-  computed, contentChild, contentChildren, effect, inject, input, output, signal, untracked,
+  AfterContentInit, Component, DestroyRef, ElementRef, NgZone, OnDestroy, OnInit, TemplateRef, booleanAttribute,
+  computed, contentChild, contentChildren, effect, inject, input, output, signal, untracked, viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, of } from 'rxjs';
@@ -19,6 +20,7 @@ import { UI_GRID_FILTER, UI_REFRESH, UiTranslatePipe, andClauses, trackPointerDr
 import { OdataSource, PageQuery, SortDirection } from '../odata/odata-source';
 import { UiSharedPagerComponent } from '../pager/ui-shared-pager.component';
 import { UiSharedGridColumnComponent } from '../grid-column/ui-shared-grid-column.component';
+import { UiSharedCollapsiblePanelComponent } from '@borassoft/ui-components/layout';
 
 /**
  * Reusable table view. Columns are declared by projecting
@@ -48,12 +50,12 @@ import { UiSharedGridColumnComponent } from '../grid-column/ui-shared-grid-colum
     UiEmptyDirective,
     CommonModule,
     MatButtonModule, MatIconModule, MatMenuModule, MatTooltipModule, MatCheckboxModule,
-    MatSlideToggleModule, MatDividerModule, MatProgressSpinnerModule, UiTranslatePipe, UiSharedPagerComponent,
+    MatSlideToggleModule, MatDividerModule, MatProgressSpinnerModule, UiTranslatePipe, UiSharedPagerComponent, UiSharedCollapsiblePanelComponent,
   ],
   templateUrl: './ui-shared-grid.component.html',
   styleUrl: './ui-shared-grid.component.scss',
 })
-export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
+export class UiSharedGridComponent<T> implements OnInit, AfterContentInit, OnDestroy {
   source = input.required<OdataSource<T>>();
   emptyKey = input<string>('core.grid.empty');
   initialPageSize = input<number>(20);
@@ -84,6 +86,11 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
    * accepts is selected as soon as the page arrives. `[preselect]="r => r.status === 'Valid'"`.
    */
   preselect = input<((row: T) => boolean) | null>(null);
+  /**
+   * Rows that may be ticked (only with `selectable`); the others show a disabled checkbox and
+   * select-all skips them. `[canSelect]="r => !r.isDeleted"`.
+   */
+  canSelect = input<((row: T) => boolean) | null>(null);
 
   /**
    * When set, the grid reloads its CURRENT page (filters/sort/paging untouched)
@@ -98,11 +105,28 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
 
   protected columns = contentChildren(UiSharedGridColumnComponent);
 
-  /** Projected inputs acting as filters (ui-shared-text-input / -select / -segmented). */
-  private filters = contentChildren(UI_GRID_FILTER);
+  /** Projected inputs acting as filters (ui-shared-text-input / -select / -multi-select / -date-input / -segmented). */
+  private basicFilters = contentChildren(UI_GRID_FILTER);
+  /** «Advanced search»: the filters inside `[uiGridAdvanced]`, shown on demand. */
+  private advanced = contentChild(UiGridAdvancedDirective);
+  /** Basic first, so a remembered view (matched by position) survives opening or closing the advanced ones. */
+  private filters = computed(() => [...this.basicFilters(), ...(this.advanced()?.filters() ?? [])]);
+  protected hasAdvanced = computed(() => !!this.advanced());
+  /** Shown on the toggle so an applied advanced filter is never hidden silently. */
+  protected advancedApplied = computed(() => this.advanced()?.filters().filter(f => f.isApplied()).length ?? 0);
+  private advancedToggled = signal<boolean | null>(null);
+  protected advancedOpen = computed(() => this.advancedToggled() ?? uiStorage.get(this.advancedKey()) === '1');
+  protected toggleAdvanced(): void {
+    const open = !this.advancedOpen();
+    this.advancedToggled.set(open);
+    uiStorage.set(this.advancedKey(), open ? '1' : '0');
+  }
+  private advancedKey(): string { return `app.coreGrid.${this.storageKey() ?? 'grid'}.advanced`; }
   protected hasFilters = computed(() => this.filters().length > 0);
   /** Any filter currently applied — shows the Clear button. */
   protected hasActiveFilters = computed(() => this.filters().some(f => f.isApplied()));
+  /** Shown on the collapsed filter panel so an applied filter is never hidden silently. */
+  protected appliedFilterCount = computed(() => this.filters().filter(f => f.isApplied()).length);
 
   protected actionsTemplate = contentChild('actions', { read: TemplateRef });
   protected bulkActionsTemplate = contentChild('bulkActions', { read: TemplateRef });
@@ -212,7 +236,7 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
         this.rows.set(res.items);
         this.expanded.set(new Set());
         const pre = this.preselect();
-        if (pre && this.selectable()) this.selected.set(res.items.filter(pre));
+        if (pre && this.selectable()) this.selected.set(res.items.filter(r => pre(r) && this.isSelectable(r)));
         this.total.set(res.total);
       }
       this.loading.set(false);
@@ -273,17 +297,19 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
   protected allOnPageSelected = computed(() => {
     const rows = this.rows();
     const sel = this.selected();
-    return rows.length > 0 && rows.every(r => sel.includes(r));
+    const pickable = rows.filter(r => this.isSelectable(r));
+    return pickable.length > 0 && pickable.every(r => sel.includes(r));
   });
 
   protected isSelected(row: T): boolean { return this.selected().includes(row); }
+  protected isSelectable(row: T): boolean { return this.canSelect()?.(row) ?? true; }
 
   protected toggleRow(row: T, checked: boolean): void {
     this.selected.update(s => checked ? [...s, row] : s.filter(r => r !== row));
   }
 
   protected toggleAll(checked: boolean): void {
-    this.selected.set(checked ? [...this.rows()] : []);
+    this.selected.set(checked ? this.rows().filter(r => this.isSelectable(r)) : []);
   }
 
   /** Public so consumers can drop the selection after a bulk action. */
@@ -341,9 +367,42 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
     this.fetchFirstPage();
   }
 
+  /** The table's available width, kept by a ResizeObserver so width-less columns can take the remainder in px. */
+  private tableWidth = signal(0);
+  private observer?: ResizeObserver;
+  private wrap = viewChild<ElementRef<HTMLElement>>('wrap');
+  // table-layout: fixed hands a width-less column only its minimum when siblings declare widths (percent
+  // widths are ignored there), so the remainder is measured and given to the width-less columns in px.
+  // Measured on the wrap's content box (inside its border): the host's width is a border wider, and a table
+  // sized to it would always scroll sideways by that much.
+  private measure = effect(() => {
+    const wrap = this.wrap()?.nativeElement;
+    this.observer?.disconnect();
+    if (!wrap || typeof ResizeObserver === 'undefined') return;
+    this.observer = new ResizeObserver(entries => { for (const e of entries) this.tableWidth.set(e.contentRect.width); });
+    this.observer.observe(wrap);
+  });
+  ngOnDestroy(): void { this.observer?.disconnect(); }
+
+  /** Checkbox, expand arrow and the gear / row-menu column. */
+  private utilityWidth = computed(() => 48 + (this.selectable() ? 44 : 0) + (this.detailTemplate() ? 44 : 0));
+  /** The shown columns need more room than there is: the table scrolls sideways under the pinned utility column. */
+  protected overflows = computed(() => {
+    const total = this.tableWidth();
+    const widths = this.visibleColumns().map(c => this.widthFor(c));
+    return total > 0 && widths.every(w => !!w) && widths.reduce((sum, w) => sum + toPx(w!), this.utilityWidth()) > total;
+  });
+
   protected widthFor(col: UiSharedGridColumnComponent): string | null {
     const w = this.widths()[col.key()];
-    return w ? `${w}px` : null;
+    if (w) return `${w}px`;
+    if (col.width()) return col.width()!;
+    const sized = this.visibleColumns().map(c => this.widths()[c.key()] ? `${this.widths()[c.key()]}px` : c.width()).filter((x): x is string => !!x);
+    const total = this.tableWidth();
+    if (sized.length === 0 || !total) return null;
+    const autoCount = this.visibleColumns().length - sized.length;
+    const used = sized.reduce((sum, s) => sum + toPx(s), 0);
+    return `${Math.max(80, Math.floor((total - this.utilityWidth() - used) / autoCount))}px`;
   }
 
   /** Pointer down on a column's resize handle. */
@@ -542,4 +601,12 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit {
       filter,
     });
   }
+}
+
+/** A CSS length in px, rem or em (the only units the column `width` input takes) → px. */
+function toPx(v: string): number {
+  const n = parseFloat(v);
+  if (Number.isNaN(n)) return 0;
+  if (v.endsWith('rem') || v.endsWith('em')) return n * parseFloat(getComputedStyle(document.documentElement).fontSize || '16');
+  return n;
 }

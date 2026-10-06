@@ -1,3 +1,6 @@
 @use '../../../../src/lib/styles/host' as ui;
 
 @include ui.host(block);
+.ui-shared-nav-group__toggle { display: flex; align-items: center; width: 100%; cursor: pointer; }
+.ui-shared-nav-group__label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ui-shared-nav-group__items { display: flex; flex-direction: column; }

@@ -1,0 +1,8 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.form-field;
+
+// The search box stays in view while the options scroll under it.
+.ui-shared-multi-select__search { position: sticky; top: 0; z-index: 1; }
+.ui-shared-multi-select__search-input { display: block; box-sizing: border-box; width: 100%; }
+.ui-shared-multi-select__option--hidden { display: none; }

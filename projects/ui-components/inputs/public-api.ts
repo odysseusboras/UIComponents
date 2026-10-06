@@ -10,3 +10,5 @@ export * from './src/segmented/ui-shared-segmented.component';
 export * from './src/file-button/ui-shared-file-button.component';
 export * from './src/html-editor/ui-shared-html-editor.component';
 export * from './src/color-swatches/ui-shared-color-swatches.component';
+export * from './src/multi-select/ui-shared-multi-select.component';
+export * from './src/year-select/ui-shared-year-select.component';
