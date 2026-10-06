@@ -106,6 +106,7 @@
                 [class.ui-shared-grid__th--right]="col.align() === 'right'"
                 [class.ui-shared-grid__th--center]="col.align() === 'center'"
                 [attr.data-col-key]="col.key()"
+                [attr.title]="col.labelKey() | uiTranslate"
                 [style.width]="widthFor(col)"
                 draggable="true"
                 [attr.tabindex]="col.sortable ? 0 : null"

@@ -175,6 +175,8 @@ Any of them takes `[clauseBuilder]` for a custom clause. `[control]` is optional
 
 **Layout of the panel.** Basic filters, the toggle, then the advanced ones after a hairline, all in one wrapping row; Clear / Search are its last item, pushed right, so they sit in the bottom-right corner (beside the last filters when there is room, on a line of their own when not).
 
+**Headers.** A column header carries its full label as a tooltip (`title`), so a label cut by a narrow column can still be read.
+
 **Wide grids.** When the shown columns need more room than the grid has, the table scrolls sideways and the last column (gear + row menu) stays pinned to the right edge.
 
 `firstError(control)` returns `form.errors.<validatorKey>` for the first error of a touched/dirty control — built-in and custom validators alike.
