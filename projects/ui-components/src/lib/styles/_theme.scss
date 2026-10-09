@@ -15,7 +15,7 @@
 // Every ui-shared-* element, by entry point (a new component is added here too).
 $components:
   ui-shared-button, ui-shared-button-content, ui-shared-button-group, ui-shared-icon-button, ui-shared-menu, ui-shared-menu-item,
-  ui-shared-icon, ui-shared-display-date, ui-shared-qr-code, ui-shared-stat-tile, ui-shared-status-chip,
+  ui-shared-icon, ui-shared-display-date, ui-shared-qr-code, ui-shared-stat-tile, ui-shared-status-chip, ui-shared-carousel,
   ui-shared-confirm-dialog, ui-shared-loading-overlay, ui-shared-progress-bar, ui-shared-spinner,
   ui-shared-grid, ui-shared-pager,
   ui-shared-select, ui-shared-multi-select, ui-shared-text-input, ui-shared-textarea-input, ui-shared-date-input, ui-shared-password-field,
@@ -203,6 +203,29 @@ ui-shared-menu-item { display: block; }
 
 .ui-shared-display-date { font-variant-numeric: tabular-nums; }
 .ui-shared-display-date--empty { color: var(--ui-text-muted); }
+
+// ---- ui-shared-carousel: images crossfade; the veil (--ui-carousel-veil, none by default) keeps projected text legible.
+.ui-shared-carousel { min-height: 20rem; border-radius: var(--ui-radius); background: var(--ui-surface-alt); }
+.ui-shared-carousel__image { opacity: 0; transition: opacity 1.2s ease; }
+.ui-shared-carousel__image--on { opacity: 1; }
+.ui-shared-carousel__veil { background: var(--ui-carousel-veil, none); }
+.ui-shared-carousel__content { padding: 1.5rem; }
+// With arrows the text keeps clear of them: room for the button and its margin on both sides.
+.ui-shared-carousel--arrows .ui-shared-carousel__content { padding-inline: 4.75rem; }
+.ui-shared-carousel__dots { gap: 0.5rem; margin-top: 1rem; }
+.ui-shared-carousel__dot {
+  width: 0.625rem; height: 0.625rem; border: var(--ui-hairline) solid currentColor; border-radius: var(--ui-radius-pill);
+  background: transparent; color: inherit; opacity: 0.7; transition: opacity var(--ui-motion-fast), background var(--ui-motion-fast);
+}
+.ui-shared-carousel__dot--on { background: currentColor; opacity: 1; }
+.ui-shared-carousel__dot:focus-visible { outline: var(--ui-focus-width) solid currentColor; outline-offset: 2px; }
+.ui-shared-carousel__arrow {
+  width: 2.5rem; height: 2.5rem; margin: 0 0.75rem; border: var(--ui-hairline) solid currentColor; border-radius: var(--ui-radius-pill);
+  background: transparent; color: inherit; opacity: 0.7; transition: opacity var(--ui-motion-fast), background var(--ui-motion-fast);
+}
+.ui-shared-carousel__arrow:hover { opacity: 1; background: rgba(255, 255, 255, 0.12); }
+.ui-shared-carousel__arrow:focus-visible { outline: var(--ui-focus-width) solid currentColor; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .ui-shared-carousel__image { transition: none; } }
 
 .ui-shared-stat-tile {
   gap: 0.85rem;
@@ -468,8 +491,10 @@ ui-shared-select.ui-shared-pager__size { width: 7.5rem; }
 .ui-shared-select__option--inactive .ui-shared-inactive-mark { margin-left: 0.5rem; }
 .ui-shared-inactive-value__label:is(s) { color: var(--ui-text-muted); }
 .ui-shared-multi-select__inactive { color: var(--ui-text-muted); }
-// The search box on top of a long multi-select list (inside Material's panel, hence the inherited background).
-.ui-shared-multi-select__search { padding: 0.25rem 0.75rem 0.5rem; background: inherit; border-bottom: var(--ui-hairline) solid var(--ui-line); }
+// The search box on top of a multi-select list: sticky, so it needs the panel's own opaque surface for the options to scroll
+// under it; the panel's own top padding goes (else that strip shows the options scrolling through above the box).
+.mat-mdc-select-panel:has(> .ui-shared-multi-select__search) { padding-top: 0 !important; }
+.ui-shared-multi-select__search { padding: 0.5rem 0.75rem; background: var(--ui-surface); border-bottom: var(--ui-hairline) solid var(--ui-line); }
 .ui-shared-multi-select__search-input {
   height: 34px; padding: 0 0.6rem;
   border: var(--ui-hairline) solid var(--ui-line-strong); border-radius: var(--ui-radius-sm);

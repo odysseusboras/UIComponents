@@ -1,0 +1,25 @@
+<div class="ui-shared-carousel" [class.ui-shared-carousel--arrows]="images().length > 1">
+  @for (src of images(); track src; let i = $index) {
+    <img class="ui-shared-carousel__image" [class.ui-shared-carousel__image--on]="i === current()" [src]="src" alt=""
+         [attr.loading]="i ? 'lazy' : null" />
+  }
+  <div class="ui-shared-carousel__veil"></div>
+  <div class="ui-shared-carousel__content">
+    <ng-content />
+    @if (images().length > 1) {
+      <button type="button" class="ui-shared-carousel__arrow ui-shared-carousel__arrow--prev" [attr.aria-label]="'core.carousel.previous' | uiTranslate" (click)="step(-1)">
+        <ui-shared-icon name="chevron_left" />
+      </button>
+      <button type="button" class="ui-shared-carousel__arrow ui-shared-carousel__arrow--next" [attr.aria-label]="'core.carousel.next' | uiTranslate" (click)="step(1)">
+        <ui-shared-icon name="chevron_right" />
+      </button>
+      <div class="ui-shared-carousel__dots">
+        @for (src of images(); track src; let i = $index) {
+          <button type="button" class="ui-shared-carousel__dot" [class.ui-shared-carousel__dot--on]="i === current()"
+                  [attr.aria-label]="('core.carousel.image' | uiTranslate) + ' ' + (i + 1)" [attr.aria-pressed]="i === current()"
+                  (click)="current.set(i)"></button>
+        }
+      </div>
+    }
+  </div>
+</div>

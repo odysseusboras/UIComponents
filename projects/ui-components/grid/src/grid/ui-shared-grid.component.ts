@@ -369,6 +369,13 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit, OnDes
 
   /** The table's available width, kept by a ResizeObserver so width-less columns can take the remainder in px. */
   private tableWidth = signal(0);
+  /**
+   * The table is wider than the room it has: it scrolls sideways under the pinned utility column. Measured on the
+   * table itself, not summed from the declared widths and not read from the wrap's scroll width: whatever sized the
+   * columns counts, and a button's touch target or a sub-pixel layout (rem paddings, a zoomed page) does not. Only a
+   * table that really does not fit gets a scrollbar; the pixel of slack absorbs the rounding of the two widths.
+   */
+  protected overflows = signal(false);
   private observer?: ResizeObserver;
   private wrap = viewChild<ElementRef<HTMLElement>>('wrap');
   // table-layout: fixed hands a width-less column only its minimum when siblings declare widths (percent
@@ -378,20 +385,19 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit, OnDes
   private measure = effect(() => {
     const wrap = this.wrap()?.nativeElement;
     this.observer?.disconnect();
-    if (!wrap || typeof ResizeObserver === 'undefined') return;
-    this.observer = new ResizeObserver(entries => { for (const e of entries) this.tableWidth.set(e.contentRect.width); });
+    const table = wrap?.querySelector('table');
+    if (!wrap || !table || typeof ResizeObserver === 'undefined') return;
+    this.observer = new ResizeObserver(entries => {
+      for (const e of entries) if (e.target === wrap) this.tableWidth.set(e.contentRect.width);
+      this.overflows.set(table.offsetWidth > wrap.clientWidth + 1);
+    });
     this.observer.observe(wrap);
+    this.observer.observe(table);
   });
   ngOnDestroy(): void { this.observer?.disconnect(); }
 
   /** Checkbox, expand arrow and the gear / row-menu column. */
   private utilityWidth = computed(() => 48 + (this.selectable() ? 44 : 0) + (this.detailTemplate() ? 44 : 0));
-  /** The shown columns need more room than there is: the table scrolls sideways under the pinned utility column. */
-  protected overflows = computed(() => {
-    const total = this.tableWidth();
-    const widths = this.visibleColumns().map(c => this.widthFor(c));
-    return total > 0 && widths.every(w => !!w) && widths.reduce((sum, w) => sum + toPx(w!), this.utilityWidth()) > total;
-  });
 
   protected widthFor(col: UiSharedGridColumnComponent): string | null {
     const w = this.widths()[col.key()];

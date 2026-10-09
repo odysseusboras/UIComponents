@@ -5,18 +5,20 @@
     <!-- Own trigger text: the option rows carry the "inactive" mark, which must not leak into the field's summary.
          Every piece is an element: loose text between the blocks would put a space before each comma. -->
     <mat-select-trigger>
-      @for (o of selected; track o.value; let last = $last) {
-        @if (o.inactive) {<s class="ui-shared-multi-select__inactive">{{ o | uiOptionText }}</s>} @else {<span>{{ o | uiOptionText }}</span>}
-        @if (!last) {<span>, </span>}
+      @if (countOnly) {
+        <span>{{ selected.length }} {{ 'core.grid.selected' | uiTranslate }}</span>
+      } @else {
+        @for (o of selected; track o.value; let last = $last) {
+          @if (o.inactive) {<s class="ui-shared-multi-select__inactive">{{ o | uiOptionText }}</s>} @else {<span>{{ o | uiOptionText }}</span>}
+          @if (!last) {<span>, </span>}
+        }
       }
     </mat-select-trigger>
-    @if (searchable) {
-      <div class="ui-shared-multi-select__search">
-        <input #search type="text" class="ui-shared-multi-select__search-input" autocomplete="off"
-               [placeholder]="'core.select.search' | uiTranslate" [attr.aria-label]="'core.select.search' | uiTranslate"
-               [value]="query()" (input)="onQuery(search.value)" (keydown)="onSearchKey($event)" />
-      </div>
-    }
+    <div class="ui-shared-multi-select__search">
+      <input #search type="text" class="ui-shared-multi-select__search-input" autocomplete="off"
+             [placeholder]="'core.select.search' | uiTranslate" [attr.aria-label]="'core.select.search' | uiTranslate"
+             [value]="query()" (input)="onQuery(search.value)" (keydown)="onSearchKey($event)" />
+    </div>
     @for (o of offered; track o.value) {
       <!-- Filtered out = hidden, not removed: mat-select forgets the selection of an option that leaves the DOM.
            Disabled as well, so the arrow keys skip it. -->

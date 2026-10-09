@@ -2,11 +2,13 @@
 
 @include ui.host(block);
 
-// More columns than fit (the user shows extra ones from the gear menu): the table scrolls sideways and the
-// utility column (gear + row menu) stays pinned to the right edge, so the way back is always on screen.
-// overflow-y stays hidden: with overflow-x alone it would compute to auto and a button's touch target in the last
-// row would be enough for a vertical scrollbar.
-.ui-shared-grid__wrap { position: relative; overflow-x: auto; overflow-y: hidden; }
+// The table never shows a scrollbar it does not need: the wrap clips, and scrolls sideways only while the component
+// has measured the table wider than the wrap (--scrolls: more columns shown than fit). The utility column (gear + row
+// menu) is then pinned to the right edge, so the way back is always on screen. While scrolling, overflow-y is hidden:
+// with overflow-x alone it would compute to auto and a button's touch target in the last row would be enough for a
+// vertical scrollbar.
+.ui-shared-grid__wrap { position: relative; overflow: clip; }
+.ui-shared-grid__wrap--scrolls { overflow-x: auto; overflow-y: hidden; }
 .ui-shared-grid__wrap--loading { pointer-events: none; }
 .ui-shared-grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
 // Column widths are the whole cell (padding included), so declared widths add up to the table width.
@@ -55,7 +57,9 @@
 .ui-shared-grid__expand .mat-icon { transition: transform var(--ui-motion-fast); }
 .ui-shared-grid__expand--open .mat-icon { transform: rotate(90deg); }
 .ui-shared-grid__th--actions, .ui-shared-grid__th--check, .ui-shared-grid__td--check { cursor: default; }
-.ui-shared-grid__td--actions, .ui-shared-grid__th--check, .ui-shared-grid__td--check { overflow: visible; }
+// Not the actions cell: it is the last column, and its button's 48px touch target can stick out of it by a fraction
+// of a pixel (the cell's padding is in rem), which would add that fraction to the sideways scroll.
+.ui-shared-grid__th--check, .ui-shared-grid__td--check { overflow: visible; }
 .ui-shared-grid__row--clickable { cursor: pointer; }
 .ui-shared-grid__icon-btn { display: inline-grid; place-items: center; }
 

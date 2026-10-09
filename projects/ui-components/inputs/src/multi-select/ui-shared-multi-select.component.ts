@@ -6,16 +6,16 @@ import {
   ClauseBuilder, GridFilterState, SelectOption, UI_TRANSLATE, UiOptionTextPipe, UiTranslatePipe, anyOfClause, firstError, optionText, provideGridFilter,
 } from '@borassoft/ui-components';
 
-/** A list this long gets a search box on top of its panel. */
-const SEARCH_FROM = 8;
+/** From this many picks on, the field shows the count instead of a truncated list of names. */
+const COUNT_FROM = 3;
 /** Case- and accent-insensitive form for matching: «γαλλια» finds «Γαλλία». */
 const fold = (s: string): string => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/ς/g, 'σ');
 
 /**
  * The one multi-value dropdown: the control holds an array of option VALUES. Inactive
  * (soft-deleted) options are offered only while they are selected, struck through with a marker,
- * exactly like <ui-shared-select> (D-55 of ATLAS). A list of 8 options or more has a search box on top: typing
- * narrows the options (label, ignoring case and accents), the picks made so far stay.
+ * exactly like <ui-shared-select> (D-55 of ATLAS). A search box sits on top of the panel: typing narrows the
+ * options (label, ignoring case and accents), the picks made so far stay. Three picks or more read «3 selected».
  *
  * Inside `<ui-shared-grid>` with `field` (or `[clauseBuilder]`) it is a grid filter: rows matching ANY of the
  * picked values.
@@ -57,7 +57,6 @@ export class UiSharedMultiSelectComponent<T = string> {
   private search = viewChild<ElementRef<HTMLInputElement>>('search');
   private select = viewChild(MatSelect);
   protected query = signal('');
-  protected get searchable(): boolean { return this.options().length >= SEARCH_FROM; }
   protected filteredOut(o: SelectOption<T>): boolean {
     const q = fold(this.query().trim());
     return !!q && !fold(optionText(o, this.translate)).includes(q);
@@ -72,7 +71,13 @@ export class UiSharedMultiSelectComponent<T = string> {
     if (!open) { this.query.set(''); return; }
     // Material walks over disabled options while the panel is open; here "disabled" means filtered out, so skip them.
     this.select()?._keyManager?.skipPredicate(o => o.disabled);
-    this.focusSearch();
+    // Once attached, Material scrolls the active (first) option to the panel's top, which puts it under the sticky search
+    // box and leaves the list jumping; start at the top instead, with the search box focused.
+    setTimeout(() => {
+      const panel = this.select()?.panel?.nativeElement;
+      if (panel) panel.scrollTop = 0;
+      this.focusSearch();
+    });
   }
   /** Typing goes to the search box: on open, and again after a pick (a click moves the focus to the panel). */
   protected focusSearch(): void { this.search()?.nativeElement.focus(); }
@@ -91,6 +96,7 @@ export class UiSharedMultiSelectComponent<T = string> {
     const v = this.ctrl().value ?? [];
     return this.options().filter(o => v.includes(o.value));
   }
+  protected get countOnly(): boolean { return (this.ctrl().value?.length ?? 0) >= COUNT_FROM; }
   protected get hasInactive() {
     const selected = this.ctrl().value ?? [];
     return this.options().some(o => o.inactive && selected.includes(o.value));
