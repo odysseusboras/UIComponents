@@ -1,9 +1,10 @@
 import { Component, booleanAttribute, computed, input } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, SubscriptSizing } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
   ClauseBuilder, GridFilterState, UiTranslatePipe, firstError, odataString, provideGridFilter,
+  requiredSignal,
 } from '@borassoft/ui-components';
 
 export type TextInputType = 'text' | 'email' | 'number' | 'tel' | 'url' | 'search' | 'time' | 'date';
@@ -63,7 +64,7 @@ export class UiSharedTextInputComponent {
   readonly filter = new GridFilterState<string>(() => this.ctrl(), () => this.clauseBuilder() ?? this.containsAny());
 
   protected readonly firstError = firstError;
-  protected required = computed(() => this.ctrl().hasValidator(Validators.required));
+  protected required = requiredSignal(this.ctrl);
 
   private containsAny(): ClauseBuilder<string> | null {
     const fields = this.fields();

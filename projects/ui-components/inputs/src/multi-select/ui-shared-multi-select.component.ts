@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, input, signal, viewChild } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, SubscriptSizing } from '@angular/material/form-field';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import {
   ClauseBuilder, GridFilterState, SelectOption, UI_TRANSLATE, UiOptionTextPipe, UiTranslatePipe, anyOfClause, firstError, optionText, provideGridFilter,
+  requiredSignal,
 } from '@borassoft/ui-components';
 
 /** From this many picks on, the field shows the count instead of a truncated list of names. */
@@ -51,7 +52,7 @@ export class UiSharedMultiSelectComponent<T = string> {
   readonly filter = new GridFilterState<T[]>(() => this.ctrl(), () => this.clauseBuilder() ?? anyOfClause<T>(this.field()), () => null, Array.isArray);
 
   protected readonly firstError = firstError;
-  protected required = computed(() => this.ctrl().hasValidator(Validators.required));
+  protected required = requiredSignal(this.ctrl);
 
   private translate = inject(UI_TRANSLATE);
   private search = viewChild<ElementRef<HTMLInputElement>>('search');

@@ -1,9 +1,9 @@
 import { Component, computed, input } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule, SubscriptSizing } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ClauseBuilder, GridFilterState, UiTranslatePipe, firstError, provideGridFilter } from '@borassoft/ui-components';
+import { ClauseBuilder, GridFilterState, UiTranslatePipe, firstError, provideGridFilter, requiredSignal } from '@borassoft/ui-components';
 
 /**
  * The one date picker. Day-first typing/display comes from `provideUiDates()` in the app config.
@@ -45,7 +45,7 @@ export class UiSharedDateInputComponent {
   }, () => null, v => isoDay(v as Date | string) !== null);
 
   protected readonly firstError = firstError;
-  protected required = computed(() => this.ctrl().hasValidator(Validators.required));
+  protected required = requiredSignal(this.ctrl);
 }
 
 /** The local calendar day of a date as `YYYY-MM-DD`; null when it is not a date. */
