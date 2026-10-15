@@ -181,8 +181,18 @@ export class UiSharedSelectComponent<T = string> implements OnChanges, OnInit, D
     (event.target as HTMLInputElement).select();
   }
 
-  protected onBlur(): void {
+  /**
+   * Clicking an option blurs the input BEFORE the click lands. Clearing the
+   * filter here would re-render the full list under the pointer and pick
+   * whatever option now sits there, so while the panel is open the filter
+   * stays until the panel closes (`resetQuery`).
+   */
+  protected onBlur(trigger: MatAutocompleteTrigger): void {
     this.control.markAsTouched();
+    if (!trigger.panelOpen) this.resetQuery();
+  }
+
+  protected resetQuery(): void {
     this.query.set('');
     this.syncText();
   }

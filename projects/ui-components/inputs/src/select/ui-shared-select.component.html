@@ -8,10 +8,11 @@
          [matAutocomplete]="panel" #trigger="matAutocompleteTrigger"
          (input)="onInput($event)"
          (focus)="onFocus($event)"
-         (blur)="onBlur()" />
+         (blur)="onBlur(trigger)" />
   <mat-autocomplete #panel="matAutocomplete" autoActiveFirstOption
                     [displayWith]="displayWith"
-                    (optionSelected)="onPick($event)">
+                    (optionSelected)="onPick($event)"
+                    (closed)="resetQuery()">
     @if (nullable) {
       <mat-option [value]="''">{{ nullLabelKey | uiTranslate }}</mat-option>
     }
