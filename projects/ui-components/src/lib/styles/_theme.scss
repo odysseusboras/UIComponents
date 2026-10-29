@@ -966,6 +966,8 @@ a.ui-shared-wizard__step-inner:hover { background: var(--ui-hover); color: var(-
   object-fit: contain;
   border-radius: var(--ui-radius-sm);
 }
+.ui-shared-image--full { display: flex; width: 100%; max-width: 100%; }
+.ui-shared-image--full .ui-shared-image__img { width: 100%; height: auto; max-width: 100%; max-height: var(--ui-image-height); object-fit: cover; }
 .ui-shared-image__fallback { font-weight: 600; color: var(--ui-text); overflow-wrap: anywhere; }
 
 // ================================================================ Material, app-wide
