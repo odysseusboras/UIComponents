@@ -17,6 +17,11 @@ export interface SelectOption<T = string> {
   inactive?: boolean;
 }
 
+/** Case- and accent-insensitive form for matching typed text: «γαλλια» finds «Γαλλία», «τμημα» finds «Τμήμα». */
+export function foldText(s: string): string {
+  return s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/ς/g, 'σ');
+}
+
 /** The text an option shows. */
 export function optionText(o: SelectOption<unknown>, translate: (key: string) => string): string {
   return o.labelKey ? translate(o.labelKey) : o.label ?? String(o.value ?? '');

@@ -22,7 +22,7 @@ $components:
   ui-shared-checkbox, ui-shared-toggle, ui-shared-radio-group, ui-shared-segmented, ui-shared-file-button, ui-shared-html-editor, ui-shared-color-swatches,
   ui-shared-calendar,
   ui-shared-divider, ui-shared-breadcrumb, ui-shared-page-header, ui-shared-collapsible-panel, ui-shared-side-drawer, ui-shared-side-panel,
-  ui-shared-tabs, ui-shared-nav-list, ui-shared-nav-item, ui-shared-nav-group, ui-shared-app-header, ui-shared-app-footer, ui-shared-avatar, ui-shared-inactive-value, ui-shared-wizard;
+  ui-shared-tabs, ui-shared-nav-list, ui-shared-nav-item, ui-shared-nav-group, ui-shared-app-header, ui-shared-app-footer, ui-shared-avatar, ui-shared-image, ui-shared-inactive-value, ui-shared-wizard;
 
 // Tokens on the root (Material overlays, forms) and again on each component,
 // so an app can also theme one subtree.
@@ -59,8 +59,6 @@ body.ui-resizing, body.ui-resizing * { cursor: col-resize !important; user-selec
   text-decoration: none;
   cursor: pointer;
   user-select: none;
-  transition: background var(--ui-motion-fast), border-color var(--ui-motion-fast), color var(--ui-motion-fast),
-    box-shadow var(--ui-motion-fast), transform var(--ui-motion-fast);
   -webkit-appearance: none;
   appearance: none;
 }
@@ -68,7 +66,8 @@ body.ui-resizing, body.ui-resizing * { cursor: col-resize !important; user-selec
   background: var(--ui-button-hover-bg);
   border-color: var(--ui-button-hover-border);
 }
-.ui-shared-button:active:not(:disabled) { transform: translateY(0); filter: brightness(0.97); }
+// Buttons do not move or animate (ATLAS, 2026-10-16): hover only changes the fill, at once; press darkens it slightly.
+.ui-shared-button:active:not(:disabled) { filter: brightness(0.97); }
 .ui-shared-button:focus-visible { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: 2px; }
 .ui-shared-button:disabled,
 .ui-shared-button[aria-disabled='true'] {
@@ -89,14 +88,13 @@ body.ui-resizing, body.ui-resizing * { cursor: col-resize !important; user-selec
     0 2px 8px -2px color-mix(in srgb, var(--ui-accent) 28%, transparent),
     inset 0 -1px 0 rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
-.ui-shared-button--primary:hover:not(:disabled) { box-shadow: var(--ui-shadow-accent); transform: translateY(-1px); }
 .ui-shared-button--danger-filled {
   --ui-button-bg: var(--ui-danger);
   --ui-button-fg: var(--ui-on-danger);
   --ui-button-hover-bg: var(--ui-danger);
   --ui-button-shadow: 0 1px 2px color-mix(in srgb, var(--ui-danger) 30%, transparent);
 }
-.ui-shared-button--danger-filled:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+.ui-shared-button--danger-filled:hover:not(:disabled) { filter: brightness(1.06); }
 .ui-shared-button--secondary {
   --ui-button-bg: var(--ui-surface);
   --ui-button-border: var(--ui-line-strong);
@@ -432,6 +430,8 @@ ui-shared-confirm-dialog [mat-dialog-actions] button { min-width: 5.5rem; }
 .ui-shared-grid__state-title { margin: 0; font-weight: 600; color: var(--ui-text); }
 .ui-shared-grid__state-actions { gap: 0.5rem; }
 // Settings menu: pager position toggle + one checkbox per column.
+// Half the screen at most (Material's default is the full height); the column list scrolls inside it.
+.mat-mdc-menu-panel.ui-shared-grid__settings-menu { max-height: 50vh; overflow-y: auto; }
 .ui-shared-grid__settings { gap: 0.15rem; min-width: 220px; padding: 0.5rem 1rem 0.25rem; }
 .ui-shared-grid__settings .mat-divider { margin: 0.4rem 0; }
 .ui-shared-grid__settings-title {
@@ -486,24 +486,61 @@ ui-shared-select.ui-shared-pager__size { width: 7.5rem; }
   font-size: 0.6875rem; font-weight: 600; line-height: 1.4rem; letter-spacing: 0.01em; white-space: nowrap;
   color: var(--ui-text-muted); background: var(--ui-surface-alt); border: var(--ui-hairline) solid var(--ui-line);
 }
-.ui-shared-select--inactive .mat-mdc-input-element { text-decoration: line-through; color: var(--ui-text-muted); }
+.ui-shared-select--inactive :is(.mat-mdc-input-element, .mat-mdc-select-value-text) { text-decoration: line-through; color: var(--ui-text-muted); }
 .ui-shared-select__option--inactive .mdc-list-item__primary-text { text-decoration: line-through; color: var(--ui-text-muted); }
 .ui-shared-select__option--inactive .ui-shared-inactive-mark { margin-left: 0.5rem; }
 .ui-shared-inactive-value__label:is(s) { color: var(--ui-text-muted); }
 .ui-shared-multi-select__inactive { color: var(--ui-text-muted); }
-// The search box on top of a multi-select list: sticky, so it needs the panel's own opaque surface for the options to scroll
+// The search box on top of a dropdown list (single and multi): sticky, so it needs the panel's own opaque surface for the options to scroll
 // under it; the panel's own top padding goes (else that strip shows the options scrolling through above the box).
-.mat-mdc-select-panel:has(> .ui-shared-multi-select__search) { padding-top: 0 !important; }
-.ui-shared-multi-select__search { padding: 0.5rem 0.75rem; background: var(--ui-surface); border-bottom: var(--ui-hairline) solid var(--ui-line); }
-.ui-shared-multi-select__search-input {
-  height: 34px; padding: 0 0.6rem;
-  border: var(--ui-hairline) solid var(--ui-line-strong); border-radius: var(--ui-radius-sm);
-  background: var(--ui-surface); color: var(--ui-text); font: inherit; font-size: var(--ui-font-size);
+.mat-mdc-select-panel:has(> :is(.ui-shared-select__search, .ui-shared-multi-select__search)) { padding-top: 0 !important; }
+:is(.ui-shared-select__search, .ui-shared-multi-select__search) { position: relative; padding: 0.5rem 0.75rem; background: var(--ui-surface); border-bottom: var(--ui-hairline) solid var(--ui-line); }
+// A soft filled box with a magnifier, no accent ring: it is a filter for the list, not a form field (ATLAS, 2026-10-16).
+:is(.ui-shared-select__search, .ui-shared-multi-select__search)::before {
+  content: 'search'; position: absolute; left: 1.35rem; top: 50%; transform: translateY(-50%); pointer-events: none;
+  font-family: 'Material Icons'; font-size: 18px; line-height: 1; color: var(--ui-text-faint);
 }
-.ui-shared-multi-select__search-input::placeholder { color: var(--ui-text-muted); }
-.ui-shared-multi-select__search-input:focus { outline: var(--ui-focus-width) solid var(--ui-accent); outline-offset: -1px; border-color: var(--ui-accent); }
+:is(.ui-shared-select__search-input, .ui-shared-multi-select__search-input) {
+  width: 100%; box-sizing: border-box; height: 36px; padding: 0 0.75rem 0 2.15rem;
+  border: var(--ui-hairline) solid transparent; border-radius: var(--ui-radius);
+  background: var(--ui-surface-alt); color: var(--ui-text); font: inherit; font-size: var(--ui-font-size);
+}
+:is(.ui-shared-select__search-input, .ui-shared-multi-select__search-input)::placeholder { color: var(--ui-text-faint); }
+:is(.ui-shared-select__search-input, .ui-shared-multi-select__search-input):focus {
+  outline: none; background: var(--ui-surface); border-color: var(--ui-line-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-text) 6%, transparent);
+}
 
 // ================================================================ inputs
+// Switch: on = a white handle with the accent tick on the accent track; off = a muted handle on a light track; the same in
+// every state. Material's own hover / focus / press colours paint the handle the colour of the track, so on hover (and on
+// focus, which the grid's settings menu gives its toggle when it opens) the handle vanished into a blue blob.
+:is(ui-shared-toggle, .ui-shared-grid__settings-toggle) {
+  --mdc-switch-selected-handle-color: var(--ui-on-accent);
+  --mdc-switch-selected-hover-handle-color: var(--ui-on-accent);
+  --mdc-switch-selected-focus-handle-color: var(--ui-on-accent);
+  --mdc-switch-selected-pressed-handle-color: var(--ui-on-accent);
+  --mdc-switch-selected-icon-color: var(--ui-accent);
+  --mdc-switch-selected-track-color: var(--ui-accent);
+  --mdc-switch-selected-hover-track-color: var(--ui-accent);
+  --mdc-switch-selected-focus-track-color: var(--ui-accent);
+  --mdc-switch-selected-pressed-track-color: var(--ui-accent);
+  --mdc-switch-selected-hover-state-layer-color: var(--ui-accent);
+  --mdc-switch-selected-focus-state-layer-color: var(--ui-accent);
+  --mdc-switch-selected-pressed-state-layer-color: var(--ui-accent);
+  --mdc-switch-unselected-handle-color: var(--ui-text-muted);
+  --mdc-switch-unselected-hover-handle-color: var(--ui-text-muted);
+  --mdc-switch-unselected-focus-handle-color: var(--ui-text-muted);
+  --mdc-switch-unselected-pressed-handle-color: var(--ui-text-muted);
+  --mdc-switch-unselected-icon-color: var(--ui-surface);
+  --mdc-switch-unselected-track-color: var(--ui-line-strong);
+  --mdc-switch-unselected-hover-track-color: var(--ui-line-strong);
+  --mdc-switch-unselected-focus-track-color: var(--ui-line-strong);
+  --mdc-switch-unselected-pressed-track-color: var(--ui-line-strong);
+  --mdc-switch-unselected-hover-state-layer-color: var(--ui-text-muted);
+  --mdc-switch-unselected-focus-state-layer-color: var(--ui-text-muted);
+  --mdc-switch-unselected-pressed-state-layer-color: var(--ui-text-muted);
+}
 .ui-shared-radio-group { gap: 0.25rem 1rem; }
 .ui-shared-radio-group__label { color: var(--ui-text-muted); font-size: var(--ui-font-size-sm); }
 
@@ -749,7 +786,7 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
 }
 .ui-shared-side-panel__nav-body { padding-right: 6px; }
 // Head row: room for the toggle on the right; hidden padding when nothing is projected (the row keeps the toggle's height).
-.ui-shared-side-panel__head { padding: var(--ui-side-panel-toggle-top) 0.4rem var(--ui-side-panel-toggle-top) 1.1rem; border-bottom: var(--ui-hairline) solid var(--ui-line); }
+.ui-shared-side-panel__head { padding: var(--ui-side-panel-toggle-top) 0.4rem var(--ui-side-panel-toggle-top) 1.1rem; }
 .ui-shared-side-panel__head-slot:not(:has(*)) { display: none; }
 .ui-shared-side-panel__title { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; color: var(--ui-text); }
 .ui-shared-side-panel__subtitle { margin: 0.2rem 0 0; font-size: var(--ui-font-size-sm); line-height: 1.4; color: var(--ui-text-muted); }
@@ -824,9 +861,8 @@ a.ui-shared-wizard__step-inner:hover { background: var(--ui-hover); color: var(-
 .ui-shared-nav-group {
   margin: 1rem 0.35rem 0.3rem;
   padding: 0.75rem 0 0.35rem;
-  border-top: var(--ui-hairline) solid var(--ui-line);
 }
-.ui-shared-nav-group:first-child { border-top: 0; margin-top: 0.25rem; padding-top: 0.4rem; }
+.ui-shared-nav-group:first-child { margin-top: 0.25rem; padding-top: 0.4rem; }
 .ui-shared-nav-group__label {
   display: block;
   padding: 0 0.55rem;
@@ -919,6 +955,18 @@ a.ui-shared-wizard__step-inner:hover { background: var(--ui-hover); color: var(-
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 .ui-shared-avatar--lg { width: 40px; height: 40px; font-size: 0.95rem; }
+
+// ---- ui-shared-image: the picture as it is - fitted, never framed.
+.ui-shared-image { max-width: var(--ui-image-max-width); }
+.ui-shared-image__img {
+  display: block;
+  height: var(--ui-image-height);
+  width: auto;
+  max-width: var(--ui-image-max-width);
+  object-fit: contain;
+  border-radius: var(--ui-radius-sm);
+}
+.ui-shared-image__fallback { font-weight: 600; color: var(--ui-text); overflow-wrap: anywhere; }
 
 // ================================================================ Material, app-wide
 // The same form, overlay and button behaviour in every app. `!important` only
@@ -1055,16 +1103,17 @@ $toasts: (success: (--ui-success, --ui-on-danger), warn: (--ui-warning, --ui-on-
 }
 .mat-mdc-unelevated-button.mat-primary:hover:not([disabled]) {
   background: var(--ui-accent-mid) !important;
-  box-shadow: var(--ui-shadow-accent), inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
-  transform: translateY(-1px);
 }
-.mat-mdc-unelevated-button.mat-primary:active:not([disabled]) { transform: translateY(0); filter: brightness(0.96); }
+.mat-mdc-unelevated-button.mat-primary:active:not([disabled]) { filter: brightness(0.96); }
 .mat-mdc-unelevated-button.mat-warn {
   background: var(--ui-danger) !important;
   color: var(--ui-on-danger) !important;
   box-shadow: 0 1px 2px color-mix(in srgb, var(--ui-danger) 30%, transparent) !important;
 }
-.mat-mdc-unelevated-button.mat-warn:hover:not([disabled]) { filter: brightness(1.06); transform: translateY(-1px); }
+.mat-mdc-unelevated-button.mat-warn:hover:not([disabled]) { filter: brightness(1.06); }
+// No ripple and no fading state layer on Material buttons either: the hover tint appears at once.
+.mat-mdc-button-base .mat-ripple-element { display: none; }
+.mat-mdc-button-base .mat-mdc-button-persistent-ripple::before { transition: none !important; }
 .mat-mdc-unelevated-button.mat-primary[disabled],
 .mat-mdc-unelevated-button.mat-warn[disabled] {
   background: var(--ui-surface-alt) !important;

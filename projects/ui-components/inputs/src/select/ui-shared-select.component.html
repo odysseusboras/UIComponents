@@ -1,42 +1,80 @@
-<mat-form-field appearance="outline" subscriptSizing="dynamic">
-  <mat-label>{{ labelKey | uiTranslate }}</mat-label>
-  <input matInput #input type="text" autocomplete="off"
-         [formControl]="text"
-         [required]="required"
-         [errorStateMatcher]="errorMatcher"
-         [attr.inputmode]="inputMode"
-         [matAutocomplete]="panel" #trigger="matAutocompleteTrigger"
-         (input)="onInput($event)"
-         (focus)="onFocus($event)"
-         (blur)="onBlur(trigger)" />
-  <mat-autocomplete #panel="matAutocomplete" autoActiveFirstOption
-                    [displayWith]="displayWith"
-                    (optionSelected)="onPick($event)"
-                    (closed)="resetQuery()">
-    @if (nullable) {
-      <mat-option [value]="''">{{ nullLabelKey | uiTranslate }}</mat-option>
-    }
-    @for (o of filtered(); track o.value) {
-      <mat-option [value]="o.value" [class.ui-shared-select__option--inactive]="o.inactive">
-        {{ o | uiOptionText }}@if (o.inactive) { <span class="ui-shared-inactive-mark">{{ 'common.inactive' | uiTranslate }}</span> }
-      </mat-option>
-    } @empty {
-      @if (emptyHintKey) {
-        <mat-option disabled>{{ emptyHintKey | uiTranslate }}</mat-option>
+@if (!freeText) {
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>{{ labelKey | uiTranslate }}</mat-label>
+    <mat-select [formControl]="control" [required]="required" [errorStateMatcher]="errorMatcher" (openedChange)="onOpened($event)">
+      <!-- Own trigger text: the option rows carry the "inactive" mark, which must not leak into the field. -->
+      <mat-select-trigger>{{ current ? (current | uiOptionText) : '' }}</mat-select-trigger>
+      <div class="ui-shared-select__search">
+        <input #search type="text" class="ui-shared-select__search-input" autocomplete="off" [attr.inputmode]="inputMode"
+               [placeholder]="'core.select.search' | uiTranslate" [attr.aria-label]="'core.select.search' | uiTranslate"
+               [value]="query()" (input)="onQuery(search.value)" (keydown)="onSearchKey($event)" />
+      </div>
+      @if (nullable) {
+        <mat-option [value]="''" [class.ui-shared-select__option--hidden]="filteredOut(null)" [disabled]="filteredOut(null)">{{ nullLabelKey | uiTranslate }}</mat-option>
       }
+      @for (o of offered; track o.value) {
+        <mat-option [value]="o.value" [class.ui-shared-select__option--inactive]="o.inactive"
+                    [class.ui-shared-select__option--hidden]="filteredOut(o)" [disabled]="filteredOut(o)">
+          {{ o | uiOptionText }}@if (o.inactive) { <span class="ui-shared-inactive-mark">{{ 'common.inactive' | uiTranslate }}</span> }
+        </mat-option>
+      } @empty {
+        @if (emptyHintKey) {
+          <mat-option disabled>{{ emptyHintKey | uiTranslate }}</mat-option>
+        }
+      }
+    </mat-select>
+    @if (currentInactive) {
+      <span matSuffix class="ui-shared-inactive-mark" [matTooltip]="'common.inactiveHint' | uiTranslate">{{ 'common.inactive' | uiTranslate }}</span>
     }
-  </mat-autocomplete>
-  @if (currentInactive) {
-    <span matSuffix class="ui-shared-inactive-mark" [matTooltip]="'common.inactiveHint' | uiTranslate">{{ 'common.inactive' | uiTranslate }}</span>
-  }
-  <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
-  <mat-icon matSuffix class="ui-shared-select__arrow"
-            (mousedown)="$event.preventDefault()"
-            (click)="toggle(trigger, input)">arrow_drop_down</mat-icon>
-  @if (hintText || hintKey) {
-    <mat-hint>{{ hintText || ((hintKey ?? '') | uiTranslate) }}</mat-hint>
-  }
-  @if (firstError(control); as err) {
-    <mat-error>{{ err | uiTranslate }}</mat-error>
-  }
-</mat-form-field>
+    <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
+    @if (hintText || hintKey) {
+      <mat-hint>{{ hintText || ((hintKey ?? '') | uiTranslate) }}</mat-hint>
+    }
+    @if (firstError(control); as err) {
+      <mat-error>{{ err | uiTranslate }}</mat-error>
+    }
+  </mat-form-field>
+} @else {
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>{{ labelKey | uiTranslate }}</mat-label>
+    <input matInput #input type="text" autocomplete="off"
+           [formControl]="text"
+           [required]="required"
+           [errorStateMatcher]="errorMatcher"
+           [attr.inputmode]="inputMode"
+           [matAutocomplete]="panel" #trigger="matAutocompleteTrigger"
+           (input)="onInput($event)"
+           (focus)="onFocus($event)"
+           (blur)="onBlur(trigger)" />
+    <mat-autocomplete #panel="matAutocomplete" autoActiveFirstOption
+                      [displayWith]="displayWith"
+                      (optionSelected)="onPick($event)"
+                      (closed)="resetQuery()">
+      @if (nullable) {
+        <mat-option [value]="''">{{ nullLabelKey | uiTranslate }}</mat-option>
+      }
+      @for (o of filtered(); track o.value) {
+        <mat-option [value]="o.value" [class.ui-shared-select__option--inactive]="o.inactive">
+          {{ o | uiOptionText }}@if (o.inactive) { <span class="ui-shared-inactive-mark">{{ 'common.inactive' | uiTranslate }}</span> }
+        </mat-option>
+      } @empty {
+        @if (emptyHintKey) {
+          <mat-option disabled>{{ emptyHintKey | uiTranslate }}</mat-option>
+        }
+      }
+    </mat-autocomplete>
+    @if (currentInactive) {
+      <span matSuffix class="ui-shared-inactive-mark" [matTooltip]="'common.inactiveHint' | uiTranslate">{{ 'common.inactive' | uiTranslate }}</span>
+    }
+    <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
+    <mat-icon matSuffix class="ui-shared-select__arrow"
+              (mousedown)="$event.preventDefault()"
+              (click)="toggle(trigger, input)">arrow_drop_down</mat-icon>
+    @if (hintText || hintKey) {
+      <mat-hint>{{ hintText || ((hintKey ?? '') | uiTranslate) }}</mat-hint>
+    }
+    @if (firstError(control); as err) {
+      <mat-error>{{ err | uiTranslate }}</mat-error>
+    }
+  </mat-form-field>
+}

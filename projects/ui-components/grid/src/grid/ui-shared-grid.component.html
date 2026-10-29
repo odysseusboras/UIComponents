@@ -139,6 +139,7 @@
                     type="button"
                     class="ui-shared-grid__icon-btn ui-shared-grid__settings-trigger"
                     [matMenuTriggerFor]="gridSettingsMenu"
+                    (menuOpened)="onSettingsOpened()"
                     [matTooltip]="'core.grid.settings' | uiTranslate"
                     [attr.aria-label]="'core.grid.settings' | uiTranslate"
                     aria-haspopup="menu">

@@ -55,30 +55,27 @@ class App {
       const g: any = this.grid;
       results.push('initial=' + queries.at(-1)?.filter);
       (this.text as any).ctrl().setValue("O'Neil");
-      const type = (text: string) => { this.auto.onInput({ target: { value: text } }); this.auto.onBlur(); };
-      type('cyprus');                                   // typed label, no pick
-      // The trigger shows everything through displayWith: an option value AND the label we write.
-      results.push('display=' + this.auto.displayWith('CY') + '|' + this.auto.displayWith('Cyprus') + '|' + this.auto.displayWith(null));
+      // The strict select is a list: a search narrows it, a pick sets the value.
+      const pick = (value: string) => this.auto.control.setValue(value);
+      this.auto.onQuery('cyprus');
+      results.push('search=' + this.auto.filteredOut(this.countries[0]) + '|' + this.auto.filteredOut(this.countries[1]));
+      pick('CY');
+      results.push('display=' + this.auto.current?.label);
       (this.seg as any).own.setValue('all');
       results.push('pendingOnly=' + queries.at(-1)?.filter);
       g.onSearch();
       results.push('search=' + queries.at(-1)?.filter + ' active=' + g.hasActiveFilters());
-      type('Nowhere');                                  // no such option: the pick stays
+      this.auto.onQuery('Nowhere');                     // no such option: the pick stays
       g.onSearch();
-      results.push('noMatch=' + queries.at(-1)?.filter + ' text=' + this.auto.text.value);
-      type('guid land');
+      results.push('noMatch=' + queries.at(-1)?.filter + ' text=' + this.auto.current?.label);
+      pick('e059e15f-816b-4bdf-a90c-40c03cc217eb');
       g.onSearch();
       results.push('guid=' + queries.at(-1)?.filter);
       g.onClearFilters();
-      // Silent control changes ({ emitEvent: false }) must still reach the input.
+      // Silent control changes ({ emitEvent: false }) must still reach the field.
       const silent = (this.auto as any);
-      silent.control.disable({ emitEvent: false });
-      silent.ngDoCheck();
-      const lockedWhileDisabled = silent.text.disabled;
-      silent.control.enable({ emitEvent: false });
       silent.control.setValue('GR', { emitEvent: false });
-      silent.ngDoCheck();
-      results.push('silent=' + lockedWhileDisabled + '|' + silent.text.disabled + '|' + silent.text.value);
+      results.push('silent=' + silent.current?.label);
       silent.control.setValue('', { emitEvent: false });
       results.push('clear=' + queries.at(-1)?.filter + ' active=' + g.hasActiveFilters() + ' seg=' + (this.seg as any).own.value + ' filters=' + g.filters().length);
       // Multi-select (any of the picked values) + a date inside the advanced group, which filters while closed.
@@ -99,12 +96,13 @@ class App {
 
 const expected = [
   'initial=IsDeleted eq false',
-  'display=Cyprus|Cyprus|',
+  'search=true|false',
+  'display=Cyprus',
   'pendingOnly=IsDeleted eq false',
   "search=(contains(tolower(Name), 'o''neil') or contains(tolower(Email), 'o''neil')) and (Country eq 'CY') active=true",
   "noMatch=(contains(tolower(Name), 'o''neil') or contains(tolower(Email), 'o''neil')) and (Country eq 'CY') text=Cyprus",
   "guid=(contains(tolower(Name), 'o''neil') or contains(tolower(Email), 'o''neil')) and (Country eq e059e15f-816b-4bdf-a90c-40c03cc217eb)",
-  'silent=true|false|Greece',
+  'silent=Greece',
   'clear=IsDeleted eq false active=false seg=active filters=3',
   'badRestore=[]',
   "multi=(Country eq 'GR' or Country eq 'CY') and (Created ge 2026-10-06) advanced=true|false|1 filters=2",

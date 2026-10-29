@@ -3,3 +3,8 @@
 @include ui.form-field;
 
 .ui-shared-select__arrow { cursor: pointer; }
+
+// The search box stays in view while the options scroll under it (strict mode).
+.ui-shared-select__search { position: sticky; top: 0; z-index: 1; }
+.ui-shared-select__search-input { display: block; box-sizing: border-box; width: 100%; }
+.ui-shared-select__option--hidden { display: none; }

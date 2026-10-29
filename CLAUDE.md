@@ -31,7 +31,7 @@ projects/ui-components/
   display/src/                      icon, status-chip (+ tones), stat-tile, display-date, qr-code, avatar
   feedback/src/                     confirm-dialog (+ service), loading-overlay (+ service), notification/, spinner, progress-bar
   grid/src/                         grid/ (+ ui-grid-advanced.directive: the «advanced search» filter group), grid-column/, pager/, odata/ (source, fetch, soft-delete)
-  inputs/src/                       select (the one dropdown, type-to-filter), multi-select, text-input, textarea-input, date-input, password-field, checkbox, toggle, radio-group, segmented, file-button, html-editor
+  inputs/src/                       select (the one dropdown: a list with a search box like multi-select; `freeText` makes it an editable field), multi-select, text-input, textarea-input, date-input, password-field, checkbox, toggle, radio-group, segmented, file-button, html-editor
   layout/src/                       app-header, app-footer, page-header, collapsible-panel, side-drawer, side-panel (+ head slot), divider, tabs (+ tab), nav-list (+ nav-item, nav-group: label or collapsible)
 tools/migrate-to-ui-shared.py       3.x → 4.x consumer migration (selectors, classes, filters, option types, imports)
 tools/check-grid-filters.ts         runtime check of inputs-as-grid-filters (npm run check)

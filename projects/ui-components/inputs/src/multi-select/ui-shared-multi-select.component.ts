@@ -3,14 +3,12 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, SubscriptSizing } from '@angular/material/form-field';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import {
-  ClauseBuilder, GridFilterState, SelectOption, UI_TRANSLATE, UiOptionTextPipe, UiTranslatePipe, anyOfClause, firstError, optionText, provideGridFilter,
-  requiredSignal,
+  ClauseBuilder, GridFilterState, SelectOption, UI_TRANSLATE, UiOptionTextPipe, UiTranslatePipe, anyOfClause, firstError, foldText, optionText,
+  provideGridFilter, requiredSignal,
 } from '@borassoft/ui-components';
 
 /** From this many picks on, the field shows the count instead of a truncated list of names. */
 const COUNT_FROM = 3;
-/** Case- and accent-insensitive form for matching: «γαλλια» finds «Γαλλία». */
-const fold = (s: string): string => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/ς/g, 'σ');
 
 /**
  * The one multi-value dropdown: the control holds an array of option VALUES. Inactive
@@ -59,8 +57,8 @@ export class UiSharedMultiSelectComponent<T = string> {
   private select = viewChild(MatSelect);
   protected query = signal('');
   protected filteredOut(o: SelectOption<T>): boolean {
-    const q = fold(this.query().trim());
-    return !!q && !fold(optionText(o, this.translate)).includes(q);
+    const q = foldText(this.query().trim());
+    return !!q && !foldText(optionText(o, this.translate)).includes(q);
   }
   protected onQuery(text: string): void {
     this.query.set(text);

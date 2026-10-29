@@ -1,4 +1,4 @@
-import { Component, DestroyRef, DoCheck, Input, OnChanges, OnInit, booleanAttribute, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, DoCheck, ElementRef, Input, OnChanges, OnInit, ViewChild, booleanAttribute, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -6,21 +6,20 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent, MatAutocompleteTri
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ClauseBuilder, GridFilterState, SelectOption, UI_TRANSLATE, UiOptionTextPipe, UiTranslatePipe,
-  firstError, odataLiteral, optionText, provideGridFilter, storeChoice, storedChoice,
+  firstError, foldText, odataLiteral, optionText, provideGridFilter, storeChoice, storedChoice,
 } from '@borassoft/ui-components';
 
 /**
- * The one dropdown. Every dropdown is editable: typing filters the options
- * (label or value, case-insensitive), arrows / Enter / click pick one, and the
- * input shows the picked option's label. The control holds the option VALUE.
+ * The one dropdown. The control holds the option VALUE.
  *
- *  - strict (default): only option values reach the control; text that matches
- *    no option is put back to the current choice when the field is left.
- *    Clearing the text sets `''` (use `nullable` to also offer an explicit "none").
- *  - `freeText`: any typed text is a value too (codes, numbers the list may not have).
+ *  - strict (default): a list with a search box on top, like <ui-shared-multi-select>: typing narrows the options
+ *    (label or value, ignoring case and accents), arrows / Enter / click pick one. `nullable` adds an explicit "none".
+ *  - `freeText`: an editable field instead; typing filters the options the same way, and any typed text is a value
+ *    too (codes, numbers the list may not have).
  *
  * `disableWhenEmpty` disables the control while there are no options (cascade
  * children); it re-enables only when the control's group is enabled.
@@ -36,7 +35,7 @@ import {
   selector: 'ui-shared-select',
   standalone: true,
   imports: [
-    ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatIconModule, MatTooltipModule,
+    ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatSelectModule, MatIconModule, MatTooltipModule,
     UiTranslatePipe, UiOptionTextPipe,
   ],
   templateUrl: './ui-shared-select.component.html',
@@ -86,7 +85,7 @@ export class UiSharedSelectComponent<T = string> implements OnChanges, OnInit, D
   private translate = inject(UI_TRANSLATE);
   private destroyRef = inject(DestroyRef);
   private allOptions = signal<SelectOption<T>[]>([]);
-  private query = signal('');
+  protected query = signal('');
   private typing = false;
   /** The control value the input text was last derived from. */
   private shownValue: unknown;
@@ -95,12 +94,48 @@ export class UiSharedSelectComponent<T = string> implements OnChanges, OnInit, D
   readonly filter: GridFilterState<T> = new GridFilterState<T>(() => this.control, () => this.clauseBuilder ?? this.optionEq(), () => this.initial);
 
   protected filtered = computed(() => {
-    const q = this.query().trim().toLowerCase();
     // Inactive (soft-deleted) options are only offered when they are the current value.
     const all = this.allOptions().filter(o => !o.inactive || o.value === this.control.value);
-    if (!q) return all;
-    return all.filter(o => this.label(o).toLowerCase().includes(q) || String(o.value).toLowerCase().includes(q));
+    return this.query().trim() ? all.filter(o => !this.filteredOut(o)) : all;
   });
+
+  // ---- strict mode: the list with its search box
+  @ViewChild('search') private search?: ElementRef<HTMLInputElement>;
+  @ViewChild(MatSelect) private select?: MatSelect;
+  /** Active options, plus the current one when it is inactive. Filtered-out options stay in the list, hidden: mat-select
+   *  forgets a selection whose option leaves the DOM. */
+  protected get offered(): SelectOption<T>[] {
+    return this.allOptions().filter(o => !o.inactive || o.value === this.control.value);
+  }
+  protected get current(): SelectOption<T> | undefined {
+    return this.allOptions().find(o => o.value === this.control.value);
+  }
+  protected filteredOut(o: SelectOption<T> | null): boolean {
+    const q = foldText(this.query().trim());
+    if (!q) return false;
+    const text = o ? this.label(o) : this.translate(this.nullLabelKey);
+    return !foldText(text).includes(q) && !(o && foldText(String(o.value)).includes(q));
+  }
+  protected onQuery(text: string): void {
+    this.query.set(text);
+    // The first match becomes the active option: arrows and Enter go on from there.
+    setTimeout(() => this.select?._keyManager?.setFirstItemActive());
+  }
+  protected onOpened(open: boolean): void {
+    if (!open) { this.query.set(''); return; }
+    // Filtered-out options are disabled; the arrows skip them.
+    this.select?._keyManager?.skipPredicate(o => o.disabled);
+    // Start at the top with the search box focused (Material would scroll the picked option under the sticky box).
+    setTimeout(() => {
+      const panel = this.select?.panel?.nativeElement;
+      if (panel) panel.scrollTop = 0;
+      this.search?.nativeElement.focus();
+    });
+  }
+  /** The panel's own keys still work from the box (arrows, Enter to pick, Escape, Tab); the rest is text, not type-ahead. */
+  protected onSearchKey(event: KeyboardEvent): void {
+    if (!['ArrowDown', 'ArrowUp', 'Enter', 'Escape', 'Tab'].includes(event.key)) event.stopPropagation();
+  }
 
   /** The current value points to a soft-deleted record: the field shows it struck through with a marker. */
   protected get currentInactive(): boolean {
@@ -156,9 +191,9 @@ export class UiSharedSelectComponent<T = string> implements OnChanges, OnInit, D
   protected onInput(event: Event): void {
     const typed = (event.target as HTMLInputElement).value;
     this.query.set(typed);
-    const key = typed.trim().toLowerCase();
+    const key = foldText(typed.trim());
     const match = key
-      ? this.allOptions().find(o => this.label(o).toLowerCase() === key || String(o.value).toLowerCase() === key)
+      ? this.allOptions().find(o => foldText(this.label(o)) === key || foldText(String(o.value)) === key)
       : undefined;
     const next = !key ? '' : match ? match.value : this.freeText ? (typed as T) : undefined;
     if (next === undefined) return;

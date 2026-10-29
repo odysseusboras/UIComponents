@@ -564,6 +564,18 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit, OnDes
    * persisted localStorage entries, so the grid renders with its declared
    * columns at their default widths.
    */
+  /**
+   * Material focuses the menu's first mat-menu-item, which here is «Reset» at the very bottom, so a long column list opened
+   * scrolled to its end. Once Material has placed its focus, go back to the top and focus the first toggle instead.
+   */
+  protected onSettingsOpened(): void {
+    setTimeout(() => {
+      const panel = document.querySelector<HTMLElement>('.ui-shared-grid__settings-menu');
+      panel?.scrollTo({ top: 0 });
+      panel?.querySelector<HTMLElement>('.ui-shared-grid__settings-toggle button')?.focus({ preventScroll: true });
+    });
+  }
+
   protected resetLayout(): void {
     this.widths.set({});
     this.order.set(null);
