@@ -5,7 +5,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { UiTranslatePipe } from '@borassoft/ui-components';
 import { UiSharedButtonContentComponent } from './button-content/ui-shared-button-content.component';
 
-export type UiButtonVariant = 'primary' | 'secondary' | 'accent' | 'danger' | 'danger-filled' | 'text';
+export type UiButtonVariant = 'primary' | 'secondary' | 'accent' | 'danger' | 'danger-filled' | 'text' | 'pill';
 export type UiButtonSize = 'sm' | 'md' | 'lg';
 
 /**
@@ -18,6 +18,7 @@ export type UiButtonSize = 'sm' | 'md' | 'lg';
  *   danger         outlined red (delete, deactivate)
  *   danger-filled  filled red (destructive primary)
  *   text           borderless (reset, whole month)
+ *   pill           compact rounded header pill (context switchers: icon + name + caret as content)
  *
  * Renders an `<a>` when `routerLink` is set, a spinner + `loadingKey` while
  * `loading`. With neither `labelKey` nor `label`, projected content is the label

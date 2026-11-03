@@ -1,5 +1,5 @@
-<mat-radio-group [formControl]="control()" class="ui-shared-radio-group" [class.ui-shared-radio-group--column]="direction() === 'column'">
-  @if (labelKey()) { <span class="ui-shared-radio-group__label">{{ labelKey() | uiTranslate }}</span> }
+<mat-radio-group [formControl]="control()" [required]="required()" class="ui-shared-radio-group" [class.ui-shared-radio-group--column]="direction() === 'column'">
+  @if (labelKey()) { <span class="ui-shared-radio-group__label">{{ labelKey() | uiTranslate }}@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }</span> }
   @for (o of options(); track o.value) {
     <mat-radio-button [value]="o.value">{{ o | uiOptionText }}</mat-radio-button>
   }

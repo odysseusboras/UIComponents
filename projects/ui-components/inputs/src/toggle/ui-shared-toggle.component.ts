@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { UiTranslatePipe } from '@borassoft/ui-components';
+import { UiTranslatePipe, requiredSignal } from '@borassoft/ui-components';
 
 /** The one on/off switch: a boolean FormControl with a translated label (or projected content). */
 @Component({
@@ -15,4 +15,6 @@ import { UiTranslatePipe } from '@borassoft/ui-components';
 export class UiSharedToggleComponent {
   control = input.required<FormControl<boolean>>();
   labelKey = input<string>('');
+
+  protected required = requiredSignal(this.control);
 }

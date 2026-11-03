@@ -1,12 +1,12 @@
 import {
-  Component, ElementRef, Injector, ViewChild, afterNextRender, computed, forwardRef, inject, input, numberAttribute, signal,
+  Component, ElementRef, Injector, OnInit, ViewChild, afterNextRender, computed, forwardRef, inject, input, numberAttribute, signal,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { AbstractControl, ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { UiTranslatePipe } from '@borassoft/ui-components';
+import { UiTranslatePipe, requiredSignal } from '@borassoft/ui-components';
 
 /**
  * Tiny HTML editor with a Source / Preview toggle.
@@ -19,8 +19,10 @@ import { UiTranslatePipe } from '@borassoft/ui-components';
  * (`formControlName="bodyEn"`). The current mode is component-local; the
  * bound form value is always the raw HTML string.
  *
- *   <ui-shared-html-editor formControlName="bodyEn" rows="16" />
+ *   <ui-shared-html-editor formControlName="bodyEn" rows="16" labelKey="templates.body" />
  */
+let nextId = 0;
+
 @Component({
   selector: 'ui-shared-html-editor',
   standalone: true,
@@ -33,12 +35,16 @@ import { UiTranslatePipe } from '@borassoft/ui-components';
     multi: true,
   }],
 })
-export class UiSharedHtmlEditorComponent implements ControlValueAccessor {
+export class UiSharedHtmlEditorComponent implements ControlValueAccessor, OnInit {
   /** Visible row count for the source textarea. */
   rows = input(16, { transform: numberAttribute });
 
   /** Optional placeholder shown in the source textarea when empty. */
   placeholder = input<string>('');
+
+  /** Visible label above the editor, tied to the source textarea. */
+  labelKey = input<string>('');
+  protected readonly sourceId = `ui-shared-html-editor-${nextId++}`;
 
   private sanitizer = inject(DomSanitizer);
   private injector = inject(Injector);
@@ -51,8 +57,18 @@ export class UiSharedHtmlEditorComponent implements ControlValueAccessor {
   protected previewHtml = computed<SafeHtml>(() =>
     this.sanitizer.bypassSecurityTrustHtml(this.value() || ''));
 
+  /** The host's control (formControl / formControlName); it can only be read once the NgControl directive is built. */
+  private hostControl = signal<AbstractControl | null>(null);
+  private own = new FormControl('');
+  protected required = requiredSignal(computed(() => this.hostControl() ?? this.own));
+
   private onChange: (v: string) => void = () => {};
   private onTouched: () => void = () => {};
+
+  ngOnInit(): void {
+    // Injecting NgControl in the constructor would loop through NG_VALUE_ACCESSOR; by now the directive exists.
+    this.hostControl.set(this.injector.get(NgControl, null, { self: true, optional: true })?.control ?? null);
+  }
 
   writeValue(v: string | null): void {
     this.value.set(v ?? '');

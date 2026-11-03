@@ -1,1 +1,1 @@
-<mat-slide-toggle [formControl]="control()">@if (labelKey()) { {{ labelKey() | uiTranslate }} } @else { <ng-content /> }</mat-slide-toggle>
+<mat-slide-toggle [formControl]="control()" [required]="required()">@if (labelKey()) { {{ labelKey() | uiTranslate }} } @else { <ng-content /> }@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }</mat-slide-toggle>

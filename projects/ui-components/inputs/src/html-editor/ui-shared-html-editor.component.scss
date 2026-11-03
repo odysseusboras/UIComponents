@@ -2,6 +2,8 @@
 
 @include ui.host(block);
 
+.ui-shared-html-editor__label { display: block; }
+
 .ui-shared-html-editor { display: flex; flex-direction: column; overflow: hidden; }
 .ui-shared-html-editor--disabled { pointer-events: none; }
 .ui-shared-html-editor__toolbar { display: flex; align-items: stretch; }

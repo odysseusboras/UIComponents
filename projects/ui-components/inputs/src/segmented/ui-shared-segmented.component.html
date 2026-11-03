@@ -1,7 +1,9 @@
-<mat-button-toggle-group [formControl]="ctrl()" hideSingleSelectionIndicator
-                         [attr.aria-label]="ariaLabelKey() ? (ariaLabelKey() | uiTranslate) : null"
+@if (labelKey()) { <span class="ui-shared-segmented__label">{{ labelKey() | uiTranslate }}@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }</span> }
+<mat-button-toggle-group [formControl]="ctrl()" hideSingleSelectionIndicator [attr.aria-required]="required() || null"
+                         [attr.aria-label]="(ariaLabelKey() || labelKey()) ? ((ariaLabelKey() || labelKey()) | uiTranslate) : null"
                          (change)="onChange($event.value)">
   @for (o of options(); track o.value) {
     <mat-button-toggle [value]="o.value">{{ o | uiOptionText }}</mat-button-toggle>
   }
 </mat-button-toggle-group>
+@if (hintKey()) { <span class="ui-shared-segmented__hint">{{ hintKey() | uiTranslate }}</span> }

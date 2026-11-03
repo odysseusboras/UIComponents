@@ -3,7 +3,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import {
   ClauseBuilder, GridFilterState, SelectOption, UiOptionTextPipe, UiTranslatePipe,
-  eqClause, provideGridFilter, storeChoice, storedChoice,
+  eqClause, provideGridFilter, requiredSignal, storeChoice, storedChoice,
 } from '@borassoft/ui-components';
 
 /**
@@ -20,6 +20,7 @@ import {
  *
  *   <ui-shared-segmented [options]="years" [value]="year()" (valueChange)="year.set($event)" storageKey="home.year" />
  *   <ui-shared-segmented [options]="statusOptions" initial="active" [clauseBuilder]="softDeleteClauseBuilder" />
+ *   <ui-shared-segmented [control]="form.controls.unit" [options]="units" labelKey="log.unit" hintKey="log.unitHint" />
  */
 @Component({
   selector: 'ui-shared-segmented',
@@ -29,13 +30,20 @@ import {
   templateUrl: './ui-shared-segmented.component.html',
   styleUrl: './ui-shared-segmented.component.scss',
   providers: [provideGridFilter(() => UiSharedSegmentedComponent)],
-  host: { '[class.ui-shared-filter]': 'filter.isFilter()' },
+  host: {
+    '[class.ui-shared-filter]': 'filter.isFilter()',
+    '[class.ui-shared-segmented--labelled]': '!!labelKey() || !!hintKey()',
+  },
 })
 export class UiSharedSegmentedComponent<T = string> implements OnInit {
   options = input.required<SelectOption<T>[]>();
   value = input<T | null>(null);
   disabled = input(false, { transform: booleanAttribute });
   ariaLabelKey = input<string>('');
+  /** Visible label above the row (also its accessible name unless `ariaLabelKey` is set). */
+  labelKey = input<string>('');
+  /** Explanatory text under the row, like a form field's hint. */
+  hintKey = input<string>('');
   valueChange = output<T>();
   control = input<FormControl<T | null> | null>(null);
   /** Remember the choice in the browser under this key. */
@@ -50,6 +58,7 @@ export class UiSharedSegmentedComponent<T = string> implements OnInit {
   private own = new FormControl<T | null>(null);
   /** The group always binds a control: the caller's, or an internal one (view state / filter). */
   protected ctrl = computed<FormControl<T | null>>(() => this.control() ?? this.own);
+  protected required = requiredSignal(this.ctrl);
   readonly filter: GridFilterState<T> = new GridFilterState<T>(
     () => this.ctrl(),
     () => this.clauseBuilder() ?? this.fieldEq(),

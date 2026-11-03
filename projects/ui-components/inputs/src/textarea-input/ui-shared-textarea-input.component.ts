@@ -1,8 +1,8 @@
-import { Component, booleanAttribute, computed, input, numberAttribute } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, booleanAttribute, input, numberAttribute } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, SubscriptSizing } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { UiTranslatePipe, firstError } from '@borassoft/ui-components';
+import { UiTranslatePipe, firstError, requiredSignal } from '@borassoft/ui-components';
 
 /** The one multi-line input. Same contract as ui-shared-text-input, plus `rows`. */
 @Component({
@@ -25,5 +25,5 @@ export class UiSharedTextareaInputComponent {
   subscriptSizing = input<SubscriptSizing>('dynamic');
 
   protected readonly firstError = firstError;
-  protected required = computed(() => this.control().hasValidator(Validators.required));
+  protected required = requiredSignal(this.control);
 }

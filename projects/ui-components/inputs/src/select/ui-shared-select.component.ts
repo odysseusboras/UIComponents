@@ -1,6 +1,6 @@
 import { Component, DestroyRef, DoCheck, ElementRef, Input, OnChanges, OnInit, ViewChild, booleanAttribute, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,7 +10,7 @@ import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ClauseBuilder, GridFilterState, SelectOption, UI_TRANSLATE, UiOptionTextPipe, UiTranslatePipe,
-  firstError, foldText, odataLiteral, optionText, provideGridFilter, storeChoice, storedChoice,
+  firstError, foldText, odataLiteral, optionText, provideGridFilter, requiredSignal, storeChoice, storedChoice,
 } from '@borassoft/ui-components';
 
 /**
@@ -47,6 +47,7 @@ export class UiSharedSelectComponent<T = string> implements OnChanges, OnInit, D
   /** Optional when used as a grid filter. */
   @Input() set control(c: FormControl) {
     this._control = c;
+    this.controlSignal.set(c);
     this.syncText();
   }
   get control(): FormControl { return this._control; }
@@ -90,6 +91,9 @@ export class UiSharedSelectComponent<T = string> implements OnChanges, OnInit, D
   /** The control value the input text was last derived from. */
   private shownValue: unknown;
   private _control: FormControl = new FormControl(null);
+  /** The bound control as a signal, for `requiredSignal` (the input is a setter, not a signal input). */
+  private controlSignal = signal<FormControl>(this._control);
+  protected required = requiredSignal(this.controlSignal);
 
   readonly filter: GridFilterState<T> = new GridFilterState<T>(() => this.control, () => this.clauseBuilder ?? this.optionEq(), () => this.initial);
 
@@ -142,8 +146,6 @@ export class UiSharedSelectComponent<T = string> implements OnChanges, OnInit, D
     const v = this.control.value;
     return v != null && v !== '' && !!this.allOptions().find(o => o.value === v)?.inactive;
   }
-
-  protected get required(): boolean { return this.control.hasValidator(Validators.required); }
 
   /**
    * Callers often change the control with `{ emitEvent: false }` (a loading

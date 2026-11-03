@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
-import { SelectOption, UiOptionTextPipe, UiTranslatePipe } from '@borassoft/ui-components';
+import { SelectOption, UiOptionTextPipe, UiTranslatePipe, requiredSignal } from '@borassoft/ui-components';
 
 /** The one radio group for forms. Options are `SelectOption`s (label or labelKey), like ui-shared-select. */
 @Component({
@@ -17,4 +17,6 @@ export class UiSharedRadioGroupComponent {
   options = input.required<SelectOption[]>();
   labelKey = input<string>('');
   direction = input<'row' | 'column'>('row');
+
+  protected required = requiredSignal(this.control);
 }

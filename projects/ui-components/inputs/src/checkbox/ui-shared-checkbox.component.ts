@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, booleanAttribute, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, computed, input, output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgTemplateOutlet } from '@angular/common';
-import { UiTranslatePipe } from '@borassoft/ui-components';
+import { UiTranslatePipe, requiredSignal } from '@borassoft/ui-components';
 
 /**
  * The one checkbox. Two modes:
@@ -30,4 +30,7 @@ export class UiSharedCheckboxComponent {
   indeterminate = input(false, { transform: booleanAttribute });
   disabled = input(false, { transform: booleanAttribute });
   changed = output<boolean>();
+
+  private own = new FormControl(false);
+  protected required = requiredSignal(computed(() => this.control() ?? this.own));
 }

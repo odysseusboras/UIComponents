@@ -1,5 +1,5 @@
 @if (control(); as c) {
-  <mat-checkbox [formControl]="c" [matTooltip]="tooltipKey() ? (tooltipKey() | uiTranslate) : ''"
+  <mat-checkbox [formControl]="c" [required]="required()" [matTooltip]="tooltipKey() ? (tooltipKey() | uiTranslate) : ''"
                 [aria-label]="ariaLabelKey() ? (ariaLabelKey() | uiTranslate) : ''"><ng-container *ngTemplateOutlet="label" /></mat-checkbox>
 } @else {
   <mat-checkbox [checked]="checked()" [indeterminate]="indeterminate()" [disabled]="disabled()"
@@ -9,4 +9,4 @@
     <ng-container *ngTemplateOutlet="label" />
   </mat-checkbox>
 }
-<ng-template #label>@if (labelKey()) { {{ labelKey() | uiTranslate }} } @else { <ng-content /> }</ng-template>
+<ng-template #label>@if (labelKey()) { {{ labelKey() | uiTranslate }} } @else { <ng-content /> }@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }</ng-template>

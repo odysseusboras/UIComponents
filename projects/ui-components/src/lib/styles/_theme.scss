@@ -78,7 +78,9 @@ body.ui-resizing, body.ui-resizing * { cursor: col-resize !important; user-selec
   cursor: not-allowed;
   pointer-events: none;
 }
-.ui-shared-button-content__spinner circle { stroke: currentColor !important; }
+.ui-shared-button-content__spinner circle,
+.ui-shared-file-button__spinner circle { stroke: currentColor !important; }
+.ui-shared-file-button__spinner { margin-right: 0.5rem; }
 
 .ui-shared-button--primary {
   --ui-button-bg: linear-gradient(180deg, var(--ui-accent-mid) 0%, var(--ui-accent) 100%);
@@ -116,6 +118,17 @@ body.ui-resizing, body.ui-resizing * { cursor: col-resize !important; user-selec
   --ui-button-hover-border: var(--ui-danger);
 }
 .ui-shared-button--text { --ui-button-fg: inherit; }
+// Compact rounded header pill (a context switcher in the app header). The padding is a variable so a
+// host can tighten it (e.g. once it hides the label on a phone): `--ui-button-pill-padding` on any ancestor.
+.ui-shared-button--pill {
+  --ui-button-bg: var(--ui-surface);
+  --ui-button-fg: var(--ui-text);
+  --ui-button-border: var(--ui-line);
+  --ui-button-hover-border: var(--ui-line-strong);
+  padding: var(--ui-button-pill-padding, 0 0.5rem 0 0.65rem);
+  border-radius: var(--ui-radius-pill);
+}
+.ui-shared-button--pill:hover:not(:disabled) { box-shadow: var(--ui-shadow-xs); }
 
 .ui-shared-button--sm { --ui-button-height: 30px; padding: 0 0.75rem; font-size: 0.8rem; }
 .ui-shared-button--lg { --ui-button-height: 48px; padding: 0 1.75rem; font-weight: 600; font-size: 0.95rem; }
@@ -129,6 +142,10 @@ body.ui-resizing, body.ui-resizing * { cursor: col-resize !important; user-selec
   margin-top: 1.25rem;
   padding-top: 1.25rem;
   border-top: var(--ui-hairline) solid var(--ui-line);
+}
+// stack="narrow": below this width of the group itself every button takes a whole line.
+@container (max-width: 640px) {
+  .ui-shared-button-group--stack-narrow > * { flex-basis: 100%; }
 }
 
 // ---- ui-shared-icon-button: square, quiet; tone colours the hover.
@@ -557,12 +574,24 @@ ui-shared-segmented .mat-button-toggle-group { border: var(--ui-hairline) solid 
 ui-shared-segmented.ui-shared-filter { --mat-standard-button-toggle-height: calc(56px - 2 * var(--ui-hairline)); align-self: flex-start; }
 ui-shared-segmented.ui-shared-filter .mat-button-toggle-group { flex-wrap: nowrap; }
 ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
+// Segmented / HTML editor label: an eyebrow above the control; the segmented hint sits below like a form field's subscript.
+.ui-shared-segmented--labelled { gap: 0.4rem; }
+.ui-shared-segmented__label,
+.ui-shared-html-editor__label {
+  color: var(--ui-text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ui-shared-segmented__hint { color: var(--ui-text-muted); font-size: 0.8rem; line-height: 1.3; }
 
 .ui-shared-html-editor {
   border: var(--ui-hairline) solid var(--ui-line);
   border-radius: var(--ui-radius);
   background: var(--ui-surface);
 }
+.ui-shared-html-editor__label { margin-bottom: 0.4rem; }
 .ui-shared-html-editor--disabled { opacity: 0.65; }
 .ui-shared-html-editor__toolbar {
   gap: 0.25rem;
@@ -622,6 +651,29 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
   font-weight: 700;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
+
+// ---- ui-shared-password-field [strength]: three segments filled 1 / 2 / 3 in danger / warning / success.
+.ui-shared-password-field__strength {
+  --ui-strength-color: var(--ui-text-muted);
+  gap: 0.6rem;
+  min-height: 1.1rem;
+  margin: 0.15rem 0 0.4rem;
+  font-size: var(--ui-font-size-sm);
+}
+.ui-shared-password-field__strength[data-strength='weak'] { --ui-strength-color: var(--ui-danger); }
+.ui-shared-password-field__strength[data-strength='medium'] { --ui-strength-color: var(--ui-warning); }
+.ui-shared-password-field__strength[data-strength='strong'] { --ui-strength-color: var(--ui-success); }
+.ui-shared-password-field__meter { gap: 4px; }
+.ui-shared-password-field__meter > span {
+  height: 4px;
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-line);
+  transition: background-color var(--ui-motion-fast);
+}
+[data-strength='weak'] > .ui-shared-password-field__meter > span:nth-child(-n + 1),
+[data-strength='medium'] > .ui-shared-password-field__meter > span:nth-child(-n + 2),
+[data-strength='strong'] > .ui-shared-password-field__meter > span { background: var(--ui-strength-color); }
+.ui-shared-password-field__strength-label { color: var(--ui-strength-color); font-weight: 600; }
 
 // ================================================================ calendar
 // FullCalendar draws its grid as raw DOM; its --fc-* properties are set on the host and the
@@ -1166,7 +1218,9 @@ $toasts: (success: (--ui-success, --ui-on-danger), warn: (--ui-warning, --ui-on-
 @keyframes ui-shared-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes ui-shared-bar { 0% { transform: translateX(-120%); } 100% { transform: translateX(320%); } }
 
-// ---- required marker: the asterisk Material adds to a required field's label, plus
-// `.ui-shared-required` for labels an app draws itself (segmented, radio groups).
+// ---- required marker: the asterisk Material adds to a required field's label; the same asterisk
+// (`.ui-shared-required-marker`) after the label of an input that has no form field (checkbox, toggle, radio group,
+// segmented, HTML editor), and `.ui-shared-required` for labels an app draws itself.
 .mat-mdc-form-field-required-marker { color: var(--ui-danger); }
+.ui-shared-required-marker { margin-left: 0.2em; color: var(--ui-danger); }
 .ui-shared-required::after { content: ' *'; color: var(--ui-danger); }

@@ -9,7 +9,7 @@ export type UiIconButtonTone = 'default' | 'danger' | 'accent' | 'warning';
  * Square icon-only button; `tooltipKey` doubles as the accessible name.
  * `size="sm"` (32px) is the inline row action (remove line, open row);
  * `size="md"` (40px) the toolbar one. `tone="danger"` turns red on hover,
- * `tone="accent"` is always accent (favourite on).
+ * `tone="accent"` is always accent (favourite on). `[pressed]` makes it a toggle button.
  *
  *   <ui-shared-icon-button icon="delete" tone="danger" tooltipKey="common.delete" (click)="remove(i)" />
  *   <ui-shared-icon-button slot="trigger" icon="more_vert" tooltipKey="core.grid.rowActions" />  (inside <ui-shared-menu>)
@@ -31,6 +31,8 @@ export class UiSharedIconButtonComponent {
   disabled = input(false, { transform: booleanAttribute });
   /** Count bubble on the icon (notifications); hidden when null / 0. */
   badge = input<number | string | null | undefined>(null);
+  /** Toggle state (favourite on / off): sets `aria-pressed` on the inner button; null leaves it off (a plain action). */
+  pressed = input<boolean | null>(null);
 
   protected get classes(): string {
     return `ui-shared-icon-button ui-shared-icon-button--${this.size()} ui-shared-icon-button--${this.tone()}`;

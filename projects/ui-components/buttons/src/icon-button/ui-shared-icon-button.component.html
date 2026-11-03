@@ -1,4 +1,5 @@
 <button [type]="type()" [class]="classes" [disabled]="disabled()"
-        [matTooltip]="tooltipKey() | uiTranslate" [attr.aria-label]="tooltipKey() | uiTranslate">
+        [matTooltip]="tooltipKey() | uiTranslate" [attr.aria-label]="tooltipKey() | uiTranslate"
+        [attr.aria-pressed]="pressed() ?? null">
   <ui-shared-icon [name]="icon()" [badge]="badge()" />
 </button>

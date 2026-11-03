@@ -1,7 +1,7 @@
 @if (!freeText) {
   <mat-form-field appearance="outline" subscriptSizing="dynamic">
     <mat-label>{{ labelKey | uiTranslate }}</mat-label>
-    <mat-select [formControl]="control" [required]="required" [errorStateMatcher]="errorMatcher" (openedChange)="onOpened($event)">
+    <mat-select [formControl]="control" [required]="required()" [errorStateMatcher]="errorMatcher" (openedChange)="onOpened($event)">
       <!-- Own trigger text: the option rows carry the "inactive" mark, which must not leak into the field. -->
       <mat-select-trigger>{{ current ? (current | uiOptionText) : '' }}</mat-select-trigger>
       <div class="ui-shared-select__search">
@@ -39,7 +39,7 @@
     <mat-label>{{ labelKey | uiTranslate }}</mat-label>
     <input matInput #input type="text" autocomplete="off"
            [formControl]="text"
-           [required]="required"
+           [required]="required()"
            [errorStateMatcher]="errorMatcher"
            [attr.inputmode]="inputMode"
            [matAutocomplete]="panel" #trigger="matAutocompleteTrigger"

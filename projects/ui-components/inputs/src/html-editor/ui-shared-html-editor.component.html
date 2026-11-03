@@ -1,3 +1,4 @@
+@if (labelKey()) { <label class="ui-shared-html-editor__label" [for]="sourceId">{{ labelKey() | uiTranslate }}@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }</label> }
 <div class="ui-shared-html-editor" [class.ui-shared-html-editor--disabled]="disabled()">
   <div class="ui-shared-html-editor__toolbar">
     <button mat-button type="button"
@@ -19,10 +20,11 @@
   </div>
 
   @if (mode() === 'source') {
-    <textarea #ta class="ui-shared-html-editor__source"
+    <textarea #ta class="ui-shared-html-editor__source" [id]="sourceId"
               [rows]="rows()"
               [value]="value()"
               [disabled]="disabled()"
+              [attr.aria-required]="required() || null"
               [placeholder]="placeholder()"
               (input)="onInput($event)"
               (blur)="onBlur()"

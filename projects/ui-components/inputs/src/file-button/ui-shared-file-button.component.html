@@ -1,12 +1,14 @@
 <input #picker type="file" hidden [attr.accept]="accept() || null" [multiple]="multiple()" (change)="onChange(picker)" />
 @if (variant() === 'flat') {
-  <button mat-flat-button type="button" [color]="color()" [disabled]="disabled()" (click)="picker.click()">
-    @if (icon()) { <mat-icon>{{ icon() }}</mat-icon> }
-    <span>{{ labelKey() | uiTranslate }}</span>
+  <button mat-flat-button type="button" [color]="color()" [disabled]="disabled() || loading()" (click)="picker.click()">
+    @if (loading()) { <ui-shared-spinner class="ui-shared-file-button__spinner" size="16" /> }
+    @else if (icon()) { <mat-icon>{{ icon() }}</mat-icon> }
+    <span>{{ label | uiTranslate }}</span>
   </button>
 } @else {
-  <button mat-stroked-button type="button" [color]="color()" [disabled]="disabled()" (click)="picker.click()">
-    @if (icon()) { <mat-icon>{{ icon() }}</mat-icon> }
-    <span>{{ labelKey() | uiTranslate }}</span>
+  <button mat-stroked-button type="button" [color]="color()" [disabled]="disabled() || loading()" (click)="picker.click()">
+    @if (loading()) { <ui-shared-spinner class="ui-shared-file-button__spinner" size="16" /> }
+    @else if (icon()) { <mat-icon>{{ icon() }}</mat-icon> }
+    <span>{{ label | uiTranslate }}</span>
   </button>
 }

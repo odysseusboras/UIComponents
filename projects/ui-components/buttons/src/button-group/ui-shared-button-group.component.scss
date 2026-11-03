@@ -10,3 +10,4 @@
 :host([data-align='between']) { justify-content: space-between; }
 :host([data-align='center']) { justify-content: center; }
 :host(.ui-shared-button-group--stack) { flex-direction: column; align-items: stretch; }
+:host(.ui-shared-button-group--stack-narrow) { container-type: inline-size; }
