@@ -50,7 +50,8 @@
   --ui-font-size-sm: 0.82rem;
   // Explanation lines (hints, errors, ledes): one size everywhere, a step under the body text.
   --ui-hint-size:   0.84rem;
-  --ui-hint-icon:   16px;
+  // The one size of every helper icon: the "i", the password eye, the date picker toggle.
+  --ui-hint-icon:   20px;
   // Outlined form fields (text, select, date, password): one height, shared by the segmented filter.
   --ui-field-h:     56px;
   --ui-font-mono:   var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
