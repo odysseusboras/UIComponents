@@ -3,9 +3,9 @@
   <textarea matInput [formControl]="control()" [rows]="rows()" [required]="required()" [readonly]="readonly()"
             [attr.maxlength]="maxlength()"></textarea>
   @if (hintText() || hintKey()) {
-    <mat-hint>{{ hintText() || (hintKey() | uiTranslate) }}</mat-hint>
+    <mat-hint><ui-shared-hint [text]="hintText() || (hintKey() | uiTranslate)" /></mat-hint>
   }
   @if (firstError(control()); as key) {
-    <mat-error>{{ key | uiTranslate }}</mat-error>
+    <mat-error><ui-shared-hint tone="danger" [text]="key | uiTranslate" /></mat-error>
   }
 </mat-form-field>

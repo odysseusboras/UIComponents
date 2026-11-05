@@ -4,6 +4,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule, SubscriptSizing } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ClauseBuilder, GridFilterState, UiTranslatePipe, firstError, provideGridFilter, requiredSignal } from '@borassoft/ui-components';
+import { UiSharedHintComponent } from '@borassoft/ui-components/display';
 
 /**
  * The one date picker. Day-first typing/display comes from `provideUiDates()` in the app config.
@@ -18,7 +19,7 @@ import { ClauseBuilder, GridFilterState, UiTranslatePipe, firstError, provideGri
   standalone: true,
   // Default change detection: a parent's markAllAsTouched() changes no input, and the
   // mat-error below must still appear (same as select / password-field).
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, UiTranslatePipe],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, UiTranslatePipe, UiSharedHintComponent],
   templateUrl: './ui-shared-date-input.component.html',
   styleUrl: './ui-shared-date-input.component.scss',
   providers: [provideGridFilter(() => UiSharedDateInputComponent)],

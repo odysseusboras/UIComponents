@@ -5,6 +5,7 @@ import {
   ClauseBuilder, GridFilterState, SelectOption, UiOptionTextPipe, UiTranslatePipe,
   eqClause, provideGridFilter, requiredSignal, storeChoice, storedChoice,
 } from '@borassoft/ui-components';
+import { UiSharedHintComponent } from '@borassoft/ui-components/display';
 
 /**
  * The one segmented control (single-choice button toggle row). Three uses:
@@ -26,7 +27,7 @@ import {
   selector: 'ui-shared-segmented',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatButtonToggleModule, UiTranslatePipe, UiOptionTextPipe],
+  imports: [ReactiveFormsModule, MatButtonToggleModule, UiTranslatePipe, UiOptionTextPipe, UiSharedHintComponent],
   templateUrl: './ui-shared-segmented.component.html',
   styleUrl: './ui-shared-segmented.component.scss',
   providers: [provideGridFilter(() => UiSharedSegmentedComponent)],

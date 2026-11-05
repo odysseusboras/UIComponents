@@ -10,3 +10,4 @@
   </mat-checkbox>
 }
 <ng-template #label>@if (labelKey()) { {{ labelKey() | uiTranslate }} } @else { <ng-content /> }@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }</ng-template>
+@if (hintKey()) { <ui-shared-hint class="ui-shared-control-hint" [textKey]="hintKey()" /> }

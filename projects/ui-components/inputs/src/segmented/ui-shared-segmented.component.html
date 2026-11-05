@@ -6,4 +6,4 @@
     <mat-button-toggle [value]="o.value">{{ o | uiOptionText }}</mat-button-toggle>
   }
 </mat-button-toggle-group>
-@if (hintKey()) { <span class="ui-shared-segmented__hint">{{ hintKey() | uiTranslate }}</span> }
+@if (hintKey()) { <ui-shared-hint class="ui-shared-segmented__hint" [textKey]="hintKey()" /> }

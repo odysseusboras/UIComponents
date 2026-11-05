@@ -28,10 +28,10 @@
     }
     <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
     @if (hintText || hintKey) {
-      <mat-hint>{{ hintText || ((hintKey ?? '') | uiTranslate) }}</mat-hint>
+      <mat-hint><ui-shared-hint [text]="hintText || ((hintKey ?? '') | uiTranslate)" /></mat-hint>
     }
     @if (firstError(control); as err) {
-      <mat-error>{{ err | uiTranslate }}</mat-error>
+      <mat-error><ui-shared-hint tone="danger" [text]="err | uiTranslate" /></mat-error>
     }
   </mat-form-field>
 } @else {
@@ -71,10 +71,10 @@
               (mousedown)="$event.preventDefault()"
               (click)="toggle(trigger, input)">arrow_drop_down</mat-icon>
     @if (hintText || hintKey) {
-      <mat-hint>{{ hintText || ((hintKey ?? '') | uiTranslate) }}</mat-hint>
+      <mat-hint><ui-shared-hint [text]="hintText || ((hintKey ?? '') | uiTranslate)" /></mat-hint>
     }
     @if (firstError(control); as err) {
-      <mat-error>{{ err | uiTranslate }}</mat-error>
+      <mat-error><ui-shared-hint tone="danger" [text]="err | uiTranslate" /></mat-error>
     }
   </mat-form-field>
 }

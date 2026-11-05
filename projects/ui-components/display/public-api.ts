@@ -8,3 +8,4 @@ export * from './src/avatar/ui-shared-avatar.component';
 export * from './src/inactive-value/ui-shared-inactive-value.component';
 export * from './src/carousel/ui-shared-carousel.component';
 export * from './src/image/ui-shared-image.component';
+export * from './src/hint/ui-shared-hint.component';

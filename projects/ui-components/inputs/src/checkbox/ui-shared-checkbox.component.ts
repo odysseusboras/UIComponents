@@ -4,6 +4,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgTemplateOutlet } from '@angular/common';
 import { UiTranslatePipe, requiredSignal } from '@borassoft/ui-components';
+import { UiSharedHintComponent } from '@borassoft/ui-components/display';
 
 /**
  * The one checkbox. Two modes:
@@ -16,13 +17,15 @@ import { UiTranslatePipe, requiredSignal } from '@borassoft/ui-components';
   selector: 'ui-shared-checkbox',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, ReactiveFormsModule, MatCheckboxModule, MatTooltipModule, UiTranslatePipe],
+  imports: [NgTemplateOutlet, ReactiveFormsModule, MatCheckboxModule, MatTooltipModule, UiTranslatePipe, UiSharedHintComponent],
   templateUrl: './ui-shared-checkbox.component.html',
   styleUrl: './ui-shared-checkbox.component.scss',
 })
 export class UiSharedCheckboxComponent {
   control = input<FormControl<boolean> | null>(null);
   labelKey = input<string>('');
+  /** A sentence of help under the control. */
+  hintKey = input<string>('');
   ariaLabelKey = input<string>('');
   /** Hover hint on the whole checkbox. */
   tooltipKey = input<string>('');

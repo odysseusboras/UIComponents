@@ -12,6 +12,7 @@ import {
   ClauseBuilder, GridFilterState, SelectOption, UI_TRANSLATE, UiOptionTextPipe, UiTranslatePipe,
   firstError, foldText, odataLiteral, optionText, provideGridFilter, requiredSignal, storeChoice, storedChoice,
 } from '@borassoft/ui-components';
+import { UiSharedHintComponent } from '@borassoft/ui-components/display';
 
 /**
  * The one dropdown. The control holds the option VALUE.
@@ -36,7 +37,7 @@ import {
   standalone: true,
   imports: [
     ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatSelectModule, MatIconModule, MatTooltipModule,
-    UiTranslatePipe, UiOptionTextPipe,
+    UiTranslatePipe, UiOptionTextPipe, UiSharedHintComponent
   ],
   templateUrl: './ui-shared-select.component.html',
   styleUrl: './ui-shared-select.component.scss',

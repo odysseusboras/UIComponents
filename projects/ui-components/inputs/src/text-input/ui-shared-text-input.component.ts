@@ -6,6 +6,7 @@ import {
   ClauseBuilder, GridFilterState, UiTranslatePipe, firstError, odataString, provideGridFilter,
   requiredSignal,
 } from '@borassoft/ui-components';
+import { UiSharedHintComponent } from '@borassoft/ui-components/display';
 
 export type TextInputType = 'text' | 'email' | 'number' | 'tel' | 'url' | 'search' | 'time' | 'date';
 
@@ -30,7 +31,7 @@ export type TextInputType = 'text' | 'email' | 'number' | 'tel' | 'url' | 'searc
   standalone: true,
   // Default change detection: a parent's markAllAsTouched() changes no input, and the
   // mat-error below must still appear (same as select / password-field).
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, UiTranslatePipe],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, UiTranslatePipe, UiSharedHintComponent],
   templateUrl: './ui-shared-text-input.component.html',
   styleUrl: './ui-shared-text-input.component.scss',
   providers: [provideGridFilter(() => UiSharedTextInputComponent)],

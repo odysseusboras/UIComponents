@@ -1,0 +1,6 @@
+@use '../../../src/lib/styles/host' as ui;
+
+@include ui.host(inline-flex);
+:host { align-items: flex-start; }
+mat-icon { flex: none; }
+.ui-shared-hint__text { min-width: 0; }

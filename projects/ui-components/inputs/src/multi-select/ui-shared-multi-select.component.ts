@@ -6,6 +6,7 @@ import {
   ClauseBuilder, GridFilterState, SelectOption, UI_TRANSLATE, UiOptionTextPipe, UiTranslatePipe, anyOfClause, firstError, foldText, optionText,
   provideGridFilter, requiredSignal,
 } from '@borassoft/ui-components';
+import { UiSharedHintComponent } from '@borassoft/ui-components/display';
 
 /** From this many picks on, the field shows the count instead of a truncated list of names. */
 const COUNT_FROM = 3;
@@ -25,7 +26,7 @@ const COUNT_FROM = 3;
 @Component({
   selector: 'ui-shared-multi-select',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatSelectModule, UiTranslatePipe, UiOptionTextPipe],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatSelectModule, UiTranslatePipe, UiOptionTextPipe, UiSharedHintComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ui-shared-multi-select.component.html',
   styleUrl: './ui-shared-multi-select.component.scss',

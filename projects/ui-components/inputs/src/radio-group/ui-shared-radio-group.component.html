@@ -4,3 +4,4 @@
     <mat-radio-button [value]="o.value">{{ o | uiOptionText }}</mat-radio-button>
   }
 </mat-radio-group>
+@if (hintKey()) { <ui-shared-hint class="ui-shared-control-hint" [textKey]="hintKey()" /> }

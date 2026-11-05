@@ -1,0 +1,2 @@
+<mat-icon class="ui-shared-hint__icon" aria-hidden="true">{{ icon() }}</mat-icon>
+<span class="ui-shared-hint__text">@if (textKey()) { {{ textKey() | uiTranslate }} } @else if (text()) { {{ text() }} } @else { <ng-content /> }</span>

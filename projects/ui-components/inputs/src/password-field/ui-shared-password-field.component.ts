@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UiTranslatePipe, firstError, passwordStrength, requiredSignal } from '@borassoft/ui-components';
+import { UiSharedHintComponent } from '@borassoft/ui-components/display';
 
 /**
  * The single password / secret-credential input used app-wide: masked by
@@ -21,7 +22,7 @@ import { UiTranslatePipe, firstError, passwordStrength, requiredSignal } from '@
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    UiTranslatePipe,
+    UiTranslatePipe, UiSharedHintComponent
   ],
   templateUrl: './ui-shared-password-field.component.html',
   styleUrl: './ui-shared-password-field.component.scss',
@@ -32,7 +33,7 @@ export class UiSharedPasswordFieldComponent {
   autocomplete = input<string>('off');
   hintKey = input<string>('');
   maxlength = input<number | null>(null);
-  subscriptSizing = input<'fixed' | 'dynamic'>('fixed');
+  subscriptSizing = input<'fixed' | 'dynamic'>('dynamic');
   strength = input(false);
 
   protected revealed = signal(false);
