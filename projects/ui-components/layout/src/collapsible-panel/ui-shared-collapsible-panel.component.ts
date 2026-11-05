@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UiTranslatePipe, uiStorage } from '@borassoft/ui-components';
+import { UiSharedHintComponent } from '@borassoft/ui-components/display';
 
 /**
  * A card panel whose body can be collapsed to its header. The state is
@@ -15,7 +16,7 @@ import { UiTranslatePipe, uiStorage } from '@borassoft/ui-components';
   selector: 'ui-shared-collapsible-panel',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, MatTooltipModule, UiTranslatePipe],
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule, UiTranslatePipe, UiSharedHintComponent],
   templateUrl: './ui-shared-collapsible-panel.component.html',
   styleUrl: './ui-shared-collapsible-panel.component.scss',
 })

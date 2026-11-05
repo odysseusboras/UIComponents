@@ -48,6 +48,11 @@
   --ui-ease-out:    var(--ease-out, ease-out);
   --ui-font-size:   0.92rem;
   --ui-font-size-sm: 0.82rem;
+  // Explanation lines (hints, errors, ledes): one size everywhere, a step under the body text.
+  --ui-hint-size:   0.84rem;
+  --ui-hint-icon:   16px;
+  // Outlined form fields (text, select, date, password): one height, shared by the segmented filter.
+  --ui-field-h:     56px;
   --ui-font-mono:   var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
   --ui-control-h:   44px;
   --ui-cell-pad-y:  0.85rem;

@@ -28,7 +28,7 @@ Each entry: `<entry>/public-api.ts` + `<entry>/src/<component>/ui-shared-<compon
 projects/ui-components/
   src/lib/                          primary entry: i18n.ts, storage.ts (uiStorage, storedChoice), pointer-drag.ts, forms/ (firstError, SelectOption, uiOptionText, dates → provideUiDates), filters/grid-filter.ts (UI_GRID_FILTER, GridFilterState, odataString, andClauses), theme/ (UiThemeService), styles/ (_host, _tokens, _theme, _material)
   buttons/src/                      button (+ button-content), icon-button, button-group, menu (+ menu-item)
-  display/src/                      icon, status-chip (+ tones), stat-tile, display-date, qr-code, avatar
+  display/src/                      icon, hint (the one explanation: `iconOnly` = the "i" at the end of a field (matIconSuffix) or after a checkbox / toggle / radio / segmented label with the text as tooltip; with text = icon + one ellipsised line and the whole text on hover; tone danger = a wrapping red error), status-chip (+ tones), stat-tile, display-date, qr-code, avatar
   feedback/src/                     confirm-dialog (+ service), loading-overlay (+ service), notification/, spinner, progress-bar
   grid/src/                         grid/ (+ ui-grid-advanced.directive: the «advanced search» filter group), grid-column/, pager/, odata/ (source, fetch, soft-delete)
   inputs/src/                       select (the one dropdown: a list with a search box like multi-select; `freeText` makes it an editable field), multi-select, text-input, textarea-input, date-input, password-field, checkbox, toggle, radio-group, segmented, file-button, html-editor

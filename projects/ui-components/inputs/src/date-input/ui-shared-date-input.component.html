@@ -1,11 +1,11 @@
 <mat-form-field appearance="outline" [subscriptSizing]="subscriptSizing()">
   <mat-label>{{ labelKey() | uiTranslate }}</mat-label>
   <input matInput [matDatepicker]="picker" [formControl]="ctrl()" [required]="required()" [min]="min()" [max]="max()" />
+  @if (hintText() || hintKey()) {
+    <ui-shared-hint matIconSuffix iconOnly [text]="hintText() || (hintKey() | uiTranslate)" />
+  }
   <mat-datepicker-toggle matIconSuffix [for]="picker" />
   <mat-datepicker #picker />
-  @if (hintText() || hintKey()) {
-    <mat-hint><ui-shared-hint [text]="hintText() || (hintKey() | uiTranslate)" /></mat-hint>
-  }
   @if (firstError(ctrl()); as key) {
     <mat-error><ui-shared-hint tone="danger" [text]="key | uiTranslate" /></mat-error>
   }

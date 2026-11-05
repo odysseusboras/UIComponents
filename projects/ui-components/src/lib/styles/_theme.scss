@@ -306,33 +306,41 @@ ui-shared-menu-item { display: block; }
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--chip-color) 22%, transparent);
 }
 
-// ---- hint: the one explanation line (an "i" and muted text). Under form fields it is the mat-hint /
-// mat-error body; under a checkbox / toggle / radio group / segmented it is `.ui-shared-control-hint`;
-// on its own it explains a group of fields or a panel. Tone danger = an error, warning = a caution.
+// ---- hint: the one explanation. Icon-only (`iconOnly`): the "i" at the end of a form field (matIconSuffix)
+// or after a checkbox / toggle / radio / segmented label, the text as its tooltip. With text: one line under
+// a title (a lede), cut with an ellipsis and shown whole on hover; an error (tone danger) wraps and is red.
+// One icon size and one text size everywhere, whatever Material sets around it.
 .ui-shared-hint {
   gap: 0.4rem;
-  font-size: var(--ui-font-size-sm);
+  font-size: var(--ui-hint-size);
   font-weight: 400;
-  line-height: 1.45;
+  line-height: 1.5;
   letter-spacing: 0;
   color: var(--ui-text-muted);
-  max-width: 72ch;
+  max-width: 100%;
 }
-.ui-shared-hint__icon {
-  width: 16px; height: 16px; font-size: 16px; line-height: 16px;
-  margin-top: 0.12em;
-  color: var(--ui-text-faint);
+.ui-shared-hint .ui-shared-hint__icon.mat-icon {
+  width: var(--ui-hint-icon); height: var(--ui-hint-icon); font-size: var(--ui-hint-icon); line-height: var(--ui-hint-icon);
+  margin: 0;
+  color: var(--ui-text-muted);
+  opacity: 0.8;
 }
+.ui-shared-hint--icon .ui-shared-hint__icon.mat-icon { opacity: 0.7; transition: opacity var(--ui-motion-fast), color var(--ui-motion-fast); }
+.ui-shared-hint--icon:hover .ui-shared-hint__icon.mat-icon { opacity: 1; color: var(--ui-accent); }
 .ui-shared-hint--danger { color: var(--ui-danger); }
-.ui-shared-hint--danger .ui-shared-hint__icon { color: var(--ui-danger); }
+.ui-shared-hint--danger .ui-shared-hint__icon.mat-icon { color: var(--ui-danger); opacity: 1; }
 .ui-shared-hint--warning { color: var(--ui-warning); }
-.ui-shared-hint--warning .ui-shared-hint__icon { color: var(--ui-warning); }
-// Inside a field's subscript Material already sets the colour and size: the hint only adds the icon.
-.mat-mdc-form-field-hint .ui-shared-hint,
-.mat-mdc-form-field-error .ui-shared-hint { font-size: inherit; color: inherit; max-width: none; }
-.mat-mdc-form-field-error .ui-shared-hint__icon { color: inherit; }
-// Under a control that has no form field: a touch of air after the control row.
-.ui-shared-control-hint { margin-top: 0.3rem; }
+.ui-shared-hint--warning .ui-shared-hint__icon.mat-icon { color: var(--ui-warning); opacity: 1; }
+// In a field's error row Material sets the colour; keep our size.
+.mat-mdc-form-field-error .ui-shared-hint { color: inherit; }
+.mat-mdc-form-field-error .ui-shared-hint__icon.mat-icon { color: inherit; opacity: 1; }
+// At the end of a field: Material's icon-suffix slot already pads it; the icon sits on the input's centre line.
+.mat-mdc-form-field-icon-suffix > .ui-shared-hint--icon { padding: 0 0.5rem 0 0.25rem; }
+// After a control's label: a small gap, same centre line as the label.
+.ui-shared-control-hint { margin-left: 0.4rem; vertical-align: middle; }
+// The tooltip that carries a whole explanation: readable width and size.
+.mat-mdc-tooltip.ui-shared-hint-tooltip .mdc-tooltip__surface,
+.mat-mdc-tooltip .mdc-tooltip__surface { max-width: 36ch; }
 
 // ================================================================ feedback
 // ---- confirm dialog
@@ -599,7 +607,7 @@ ui-shared-segmented {
 }
 ui-shared-segmented .mat-button-toggle-group { border: var(--ui-hairline) solid var(--ui-line-strong); }
 // As a grid filter it sits next to 56px outlined form fields: same height, same baseline.
-ui-shared-segmented.ui-shared-filter { --mat-standard-button-toggle-height: calc(56px - 2 * var(--ui-hairline)); align-self: flex-start; }
+ui-shared-segmented.ui-shared-filter { --mat-standard-button-toggle-height: calc(var(--ui-field-h) - 2 * var(--ui-hairline)); align-self: flex-start; }
 ui-shared-segmented.ui-shared-filter .mat-button-toggle-group { flex-wrap: nowrap; }
 ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
 // Segmented / HTML editor label: an eyebrow above the control; the segmented hint sits below like a form field's subscript.
@@ -612,7 +620,6 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.ui-shared-segmented__hint { margin-top: 0.1rem; }
 
 .ui-shared-html-editor {
   border: var(--ui-hairline) solid var(--ui-line);
@@ -832,7 +839,7 @@ ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
   font-size: 0.75rem; font-weight: 600; line-height: 1.5; text-align: center; vertical-align: 0.1em;
   color: #fff; background: var(--ui-accent);
 }
-.ui-shared-collapsible-panel__lede { max-width: 62ch; margin-top: 0.25rem; font-size: 0.86rem; line-height: 1.55; color: var(--ui-text-muted); }
+ui-shared-hint.ui-shared-collapsible-panel__lede { display: flex; margin-top: 0.3rem; text-align: left; }
 .ui-shared-collapsible-panel__chevron {
   width: 22px; height: 22px; font-size: 22px; line-height: 22px;
   color: var(--ui-text-muted);
@@ -1090,6 +1097,9 @@ a.ui-shared-wizard__step-inner:hover { background: var(--ui-hover); color: var(-
   // Resting / hover outline = the same hairline every other bordered control uses (segmented, cards, buttons).
   --mdc-outlined-text-field-outline-color: var(--ui-line-strong);
   --mdc-outlined-text-field-hover-outline-color: var(--ui-text-muted);
+  // Every outlined field shares the buttons' / segmented's corner and the 56px control height.
+  --mdc-outlined-text-field-container-shape: var(--ui-radius-sm);
+  --mat-form-field-container-height: var(--ui-field-h);
   --mdc-outlined-text-field-error-hover-outline-color: var(--mdc-outlined-text-field-error-outline-color, var(--mat-sys-error));
   --mdc-outlined-text-field-error-focus-outline-color: var(--mdc-outlined-text-field-error-outline-color, var(--mat-sys-error));
   --mdc-outlined-text-field-error-hover-label-text-color: var(--mdc-outlined-text-field-error-label-text-color, var(--mat-sys-error));
@@ -1105,7 +1115,7 @@ a.ui-shared-wizard__step-inner:hover { background: var(--ui-hover); color: var(-
 .mat-mdc-form-field-subscript-wrapper .mat-mdc-form-field-hint-wrapper,
 .mat-mdc-form-field-subscript-wrapper .mat-mdc-form-field-error-wrapper { padding-left: 0.85rem; padding-right: 0.85rem; }
 .mat-mdc-form-field-error,
-.mat-mdc-form-field-hint { display: flex; padding-top: 0.35rem; line-height: 1.45; }
+.mat-mdc-form-field-hint { display: flex; padding-top: 0.35rem; font-size: var(--ui-hint-size); line-height: 1.5; }
 .mat-mdc-form-field-hint-wrapper,
 .mat-mdc-form-field-error-wrapper { padding-bottom: 0; }
 // Material's fixed-size subscript (an app that still asks for it) keeps one line's room, never more.

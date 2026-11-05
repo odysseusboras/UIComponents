@@ -7,7 +7,7 @@
     <span class="ui-shared-collapsible-panel__title-group">
       <span class="ui-shared-collapsible-panel__title">{{ titleKey() | uiTranslate }}@if (badge()) { <span class="ui-shared-collapsible-panel__badge">{{ badge() }}</span> }</span>
       @if (ledeKey() && !collapsed()) {
-        <span class="ui-shared-collapsible-panel__lede">{{ ledeKey() | uiTranslate }}</span>
+        <ui-shared-hint class="ui-shared-collapsible-panel__lede" [textKey]="ledeKey()" />
       }
     </span>
     <mat-icon class="ui-shared-collapsible-panel__chevron" aria-hidden="true">expand_more</mat-icon>

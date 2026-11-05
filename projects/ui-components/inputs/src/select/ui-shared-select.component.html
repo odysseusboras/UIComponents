@@ -23,13 +23,13 @@
         }
       }
     </mat-select>
+    @if (hintText || hintKey) {
+      <ui-shared-hint matIconSuffix iconOnly [text]="hintText || ((hintKey ?? '') | uiTranslate)" />
+    }
     @if (currentInactive) {
       <span matSuffix class="ui-shared-inactive-mark" [matTooltip]="'common.inactiveHint' | uiTranslate">{{ 'common.inactive' | uiTranslate }}</span>
     }
     <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
-    @if (hintText || hintKey) {
-      <mat-hint><ui-shared-hint [text]="hintText || ((hintKey ?? '') | uiTranslate)" /></mat-hint>
-    }
     @if (firstError(control); as err) {
       <mat-error><ui-shared-hint tone="danger" [text]="err | uiTranslate" /></mat-error>
     }
@@ -66,13 +66,13 @@
     @if (currentInactive) {
       <span matSuffix class="ui-shared-inactive-mark" [matTooltip]="'common.inactiveHint' | uiTranslate">{{ 'common.inactive' | uiTranslate }}</span>
     }
+    @if (hintText || hintKey) {
+      <ui-shared-hint matIconSuffix iconOnly [text]="hintText || ((hintKey ?? '') | uiTranslate)" />
+    }
     <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
     <mat-icon matSuffix class="ui-shared-select__arrow"
               (mousedown)="$event.preventDefault()"
               (click)="toggle(trigger, input)">arrow_drop_down</mat-icon>
-    @if (hintText || hintKey) {
-      <mat-hint><ui-shared-hint [text]="hintText || ((hintKey ?? '') | uiTranslate)" /></mat-hint>
-    }
     @if (firstError(control); as err) {
       <mat-error><ui-shared-hint tone="danger" [text]="err | uiTranslate" /></mat-error>
     }

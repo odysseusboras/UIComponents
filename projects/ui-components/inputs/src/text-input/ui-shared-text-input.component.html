@@ -13,10 +13,10 @@
          [attr.step]="step()"
          [attr.inputmode]="inputMode() || null"
          [attr.autocomplete]="autocomplete() || null" />
-  <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
   @if (hintText() || hintKey()) {
-    <mat-hint><ui-shared-hint [text]="hintText() || (hintKey() | uiTranslate)" /></mat-hint>
+    <ui-shared-hint matIconSuffix iconOnly [text]="hintText() || (hintKey() | uiTranslate)" />
   }
+  <ng-content select="[suffix]" ngProjectAs="[matSuffix]" />
   @if (firstError(ctrl()); as key) {
     <mat-error><ui-shared-hint tone="danger" [text]="key | uiTranslate" /></mat-error>
   }

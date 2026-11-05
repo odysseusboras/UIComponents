@@ -2,5 +2,7 @@
 
 @include ui.host(inline-flex);
 :host { align-items: flex-start; }
+:host(.ui-shared-hint--icon) { align-items: center; cursor: help; }
 mat-icon { flex: none; }
 .ui-shared-hint__text { min-width: 0; }
+:host(.ui-shared-hint--clamp) .ui-shared-hint__text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

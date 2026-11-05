@@ -1,2 +1,1 @@
-<mat-slide-toggle [formControl]="control()" [required]="required()">@if (labelKey()) { {{ labelKey() | uiTranslate }} } @else { <ng-content /> }@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }</mat-slide-toggle>
-@if (hintKey()) { <ui-shared-hint class="ui-shared-control-hint" [textKey]="hintKey()" /> }
+<mat-slide-toggle [formControl]="control()" [required]="required()">@if (labelKey()) { {{ labelKey() | uiTranslate }} } @else { <ng-content /> }@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }@if (hintKey()) { <ui-shared-hint class="ui-shared-control-hint" iconOnly [textKey]="hintKey()" /> }</mat-slide-toggle>

@@ -32,6 +32,7 @@ export class UiSharedPasswordFieldComponent {
   labelKey = input.required<string>();
   autocomplete = input<string>('off');
   hintKey = input<string>('');
+  hintText = input<string>('');
   maxlength = input<number | null>(null);
   subscriptSizing = input<'fixed' | 'dynamic'>('dynamic');
   strength = input(false);

@@ -1,4 +1,4 @@
-@if (labelKey()) { <span class="ui-shared-segmented__label">{{ labelKey() | uiTranslate }}@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }</span> }
+@if (labelKey()) { <span class="ui-shared-segmented__label">{{ labelKey() | uiTranslate }}@if (required()) { <span class="ui-shared-required-marker" aria-hidden="true">*</span> }@if (hintKey()) { <ui-shared-hint class="ui-shared-control-hint" iconOnly [textKey]="hintKey()" /> }</span> }
 <mat-button-toggle-group [formControl]="ctrl()" hideSingleSelectionIndicator [attr.aria-required]="required() || null"
                          [attr.aria-label]="(ariaLabelKey() || labelKey()) ? ((ariaLabelKey() || labelKey()) | uiTranslate) : null"
                          (change)="onChange($event.value)">
@@ -6,4 +6,3 @@
     <mat-button-toggle [value]="o.value">{{ o | uiOptionText }}</mat-button-toggle>
   }
 </mat-button-toggle-group>
-@if (hintKey()) { <ui-shared-hint class="ui-shared-segmented__hint" [textKey]="hintKey()" /> }
