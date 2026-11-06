@@ -8,4 +8,3 @@ export * from './lib/forms/select-option';
 export * from './lib/filters/grid-filter';
 export * from './lib/theme/theme.service';
 export * from './lib/forms/dates';
-export * from './lib/scroll.service';

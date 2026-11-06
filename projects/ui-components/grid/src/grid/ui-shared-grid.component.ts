@@ -408,7 +408,9 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit, OnDes
     if (sized.length === 0 || !total) return null;
     const autoCount = this.visibleColumns().length - sized.length;
     const used = sized.reduce((sum, s) => sum + toPx(s), 0);
-    return `${Math.max(80, Math.floor((total - this.utilityWidth() - used) / autoCount))}px`;
+    // A width-less column is the main text (a title, a name): it keeps a readable floor and the grid scrolls sideways
+    // rather than squeezing it to a few letters next to fixed-width columns.
+    return `${Math.max(200, Math.floor((total - this.utilityWidth() - used) / autoCount))}px`;
   }
 
   /** Pointer down on a column's resize handle. */

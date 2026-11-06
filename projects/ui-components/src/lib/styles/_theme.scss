@@ -531,7 +531,8 @@ ui-shared-confirm-dialog [mat-dialog-actions] button { min-width: 5.5rem; }
 .ui-shared-pager .ui-shared-pager__page--current { background: var(--ui-accent-soft); color: var(--ui-accent); font-weight: 600; }
 .ui-shared-pager__ellipsis { width: 32px; height: 32px; color: var(--ui-text-faint); }
 // Compact page-size dropdown: no reserved hint row, shorter than a form field.
-ui-shared-select.ui-shared-pager__size { width: 7.5rem; }
+// Wide enough for the floated label in Greek («Ανά σελίδα») as well as English.
+ui-shared-select.ui-shared-pager__size { width: 8.75rem; }
 .ui-shared-pager__size .mat-mdc-form-field-subscript-wrapper { display: none; }
 .ui-shared-pager__size { --mat-form-field-container-height: 42px; --mat-form-field-container-vertical-padding: 9px; }
 .ui-shared-pager__size .mat-mdc-text-field-wrapper { height: 42px; padding-top: 0; }
@@ -617,6 +618,17 @@ ui-shared-segmented .mat-button-toggle-group { border: var(--ui-hairline) solid 
 // As a grid filter it sits next to 56px outlined form fields: same height, same baseline.
 ui-shared-segmented.ui-shared-filter { --mat-standard-button-toggle-height: calc(var(--ui-field-h) - 2 * var(--ui-hairline)); align-self: flex-start; }
 ui-shared-segmented.ui-shared-filter .mat-button-toggle-group { flex-wrap: nowrap; }
+// Phones: a filter switch spans the filter row and its options share the width, a two-word label wrapping inside its
+// segment at the field's height; a group whose single words still do not fit scrolls sideways inside the panel.
+@media (max-width: 600px) {
+  ui-shared-segmented.ui-shared-filter { width: 100%; max-width: 100%; }
+  ui-shared-segmented.ui-shared-filter .mat-button-toggle-group { width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+  ui-shared-segmented.ui-shared-filter .mat-button-toggle { flex: 1 1 auto; }
+  ui-shared-segmented.ui-shared-filter .mat-button-toggle-label-content {
+    display: flex; align-items: center; justify-content: center; min-height: var(--mat-standard-button-toggle-height);
+    padding: 0 0.625rem; white-space: normal; line-height: 1.2; text-align: center;
+  }
+}
 ui-shared-segmented .mat-button-toggle-checked { font-weight: 600; }
 // Segmented / HTML editor label: an eyebrow above the control; the segmented hint sits below like a form field's subscript.
 .ui-shared-segmented--labelled { gap: 0.4rem; }

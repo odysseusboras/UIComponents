@@ -105,7 +105,6 @@ Copy the tarball into the app's own `packages/` folder (next to its `package.jso
 - Without `UI_TRANSLATE` the components use English defaults (`UI_DEFAULT_TEXTS`: `core.grid.*`, `pager.*`, `common.*`, `sidePanel.*`, `htmlEditor.*`, `form.password.*` (with `form.password.strength.weak|medium|strong`), `form.errors.*` (with `passwordWeak`, `passwordMismatch`), including the datepicker's `matDatepickerParse` / `Min` / `Max`). Add those keys to the app's dictionary for other languages. The translator should read the app's locale signal so the impure `uiTranslate` pipe re-renders on language change.
 - Without `UI_REFRESH` no push-based grid reloads happen.
 - `UI_LOCALE` is a *function* returning the locale (default `() => 'en-US'`) so `<ui-shared-display-date>` re-evaluates when the host's locale signal changes; `UI_DATE_FORMAT` is the single Angular date format it renders (default `dd/MM/yyyy, HH:mm`).
-- `UiScrollService` (`y`, `pastHeader` signals): a shell shows its brand in the side-panel head once the app header has scrolled away (`--header-h`).
 - `UI_THEME_STORAGE_KEY` (default `ui.theme`) lets a host keep the key it already stored the theme under.
 
 ```html
