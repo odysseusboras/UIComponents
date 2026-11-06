@@ -30,13 +30,13 @@ import { UiSharedCollapsiblePanelComponent } from '@borassoft/ui-components/layo
  *   - column WIDTH  per column key (px), set by dragging the right edge
  *     of each header.
  *   - column ORDER, set by dragging a header onto another.
- *   - the current VIEW: applied filter values, page and page size, so a reload
+ *   - the current VIEW: applied filter values, sort, page and page size, so a reload
  *     (or coming back to the page) lands on what the user was looking at.
  * All three are restored on init so a logged-in user gets their layout and
  * their view back across sessions. State lives at:
  *     app.coreGrid.<storageKey>.widths   ->  { [key]: number }
  *     app.coreGrid.<storageKey>.order    ->  string[]   (column keys)
- *     app.coreGrid.<storageKey>.view     ->  { page, pageSize, filters: unknown[] }
+ *     app.coreGrid.<storageKey>.view     ->  { page, pageSize, filters: unknown[], sortField, sortDir, clause }
  *     app.coreGrid.<storageKey>.settings ->  { hidden: string[], pagerTop: boolean }
  *   (hidden columns + "pager above the table", picked in the header gear menu).
  *
@@ -477,6 +477,9 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit, OnDes
       page: this.page(),
       pageSize: this.pageSize(),
       filters: this.filters().map(f => f.value()),
+      // null = the user cleared the sort; the declared initial sort applies only to a grid with no view yet.
+      sortField: this.sortField(),
+      sortDir: this.sortDir(),
       // The CLAUSE as well as the values: a filter whose options load async (a
       // select over an OData lookup) answers `null` until they arrive, so
       // replaying values alone would send the first request unfiltered and need
@@ -496,15 +499,24 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit, OnDes
     const k = this.storageKey();
     if (!k) return;
     const view = uiStorage.getJson(this.viewKey(k)) as
-      { page?: unknown; pageSize?: unknown; filters?: unknown; clause?: unknown } | null;
+      { page?: unknown; pageSize?: unknown; filters?: unknown; clause?: unknown; sortField?: unknown; sortDir?: unknown } | null;
     if (!view || typeof view !== 'object') return;
 
     const filters = this.filters();
-    if (Array.isArray(view.filters) && view.filters.length === filters.length) {
+    const sameFilters = Array.isArray(view.filters) && view.filters.length === filters.length;
+    if (sameFilters) {
       filters.forEach((f, i) => {
         const value = (view.filters as unknown[])[i];
         if (value !== null && value !== undefined && value !== '') f.restore(value);
       });
+    }
+
+    if ('sortField' in view) {
+      const field = typeof view.sortField === 'string' && this.columns().some(c => c.sortField() === view.sortField) ? view.sortField : null;
+      const dir = view.sortDir === 'asc' || view.sortDir === 'desc' ? view.sortDir : null;
+      // A remembered field the grid no longer sorts by falls back to the declared initial sort.
+      if (field && dir) { this.sortField.set(field); this.sortDir.set(dir); }
+      else if (view.sortField === null) { this.sortField.set(null); this.sortDir.set(null); }
     }
 
     if (typeof view.pageSize === 'number' && this.pageSizeOptions().includes(view.pageSize)) {
@@ -513,7 +525,7 @@ export class UiSharedGridComponent<T> implements OnInit, AfterContentInit, OnDes
     if (typeof view.page === 'number' && Number.isInteger(view.page) && view.page >= 1) {
       this.page.set(view.page);
     }
-    if (typeof view.clause === 'string' && view.clause) this.restoredClause = view.clause;
+    if (sameFilters && typeof view.clause === 'string' && view.clause) this.restoredClause = view.clause;
   }
 
   /**
