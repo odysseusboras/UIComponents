@@ -1,8 +1,10 @@
 @use '../../../src/lib/styles/host' as ui;
 
 @include ui.host(block);
-:host { position: sticky; top: 0; z-index: 20; }
-.ui-shared-app-header__inner { display: flex; align-items: center; height: var(--header-h, 56px); }
+// Exactly --header-h tall, its bottom border included: the side panel sticks at that offset, so a header one hairline
+// taller would let the rail slide that hairline under it on the first pixel of scroll.
+:host { position: sticky; top: 0; z-index: 20; height: var(--header-h, 56px); }
+.ui-shared-app-header__inner { display: flex; align-items: center; height: 100%; }
 .ui-shared-app-header__start { display: flex; align-items: center; flex-shrink: 0; }
 .ui-shared-app-header__nav { display: flex; align-items: center; min-width: 0; }
 .ui-shared-app-header__actions { display: flex; align-items: center; margin-left: auto; flex-shrink: 0; }
