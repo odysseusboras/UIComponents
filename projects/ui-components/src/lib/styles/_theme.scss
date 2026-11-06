@@ -1120,6 +1120,9 @@ a.ui-shared-wizard__step-inner:hover { background: var(--ui-hover); color: var(-
   // Every outlined field shares the buttons' / segmented's corner and the 56px control height.
   --mdc-outlined-text-field-container-shape: var(--ui-radius-sm);
   --mat-form-field-container-height: var(--ui-field-h);
+  // The text sits in the middle of that height whatever density the app's Material theme uses (density -2 pads for
+  // 48px and would leave the value 4px high in a 56px field).
+  --mat-form-field-container-vertical-padding: calc((var(--ui-field-h) - var(--mat-form-field-container-text-line-height, 24px)) / 2);
   --mdc-outlined-text-field-error-hover-outline-color: var(--mdc-outlined-text-field-error-outline-color, var(--mat-sys-error));
   --mdc-outlined-text-field-error-focus-outline-color: var(--mdc-outlined-text-field-error-outline-color, var(--mat-sys-error));
   --mdc-outlined-text-field-error-hover-label-text-color: var(--mdc-outlined-text-field-error-label-text-color, var(--mat-sys-error));
